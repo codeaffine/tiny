@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
+    <Properties>
+        <Property name="basePath">${sys:com.codeaffine.tiny.star.workingDirectory}/logs</Property>
+        <Property name="file-pattern">%d | %-5p | %t | %m | %C (%F:%L)%n</Property>
+        <Property name="console-pattern-default">%d{HH:mm:ss.SSS} | %p: %n  method (line): %C.%M(%F:%L)%n  message      : %m%n</Property>
+        <Property name="console-pattern-info">%d{HH:mm:ss.SSS} | %p: %m%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="system.out" target="SYSTEM_OUT">
+            <PatternLayout>
+                <LevelPatternSelector defaultPattern="${console-pattern-default}">
+                    <PatternMatch key="INFO" pattern="${console-pattern-info}" />
+                </LevelPatternSelector>
+            </PatternLayout>
+            <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
+        </Console>
+        <Console name="system.err" target="SYSTEM_ERR">
+            <PatternLayout pattern="${console-pattern-default}" />
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+        <RollingFile
+                name="rolling-file"
+                fileName="${basePath}/application.log"
+                filePattern="${basePath}/application.%d{dd-MM-yyyy}.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout pattern="${file-pattern}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.codeaffine.tiny.demo" level="TRACE" additivity="false">
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+            <AppenderRef ref="system.out" />
+            <AppenderRef ref="system.err" />
+            <AppenderRef ref="rolling-file" />
+        </Logger>
+        <Logger name="com.codeaffine.tiny.star" level="TRACE" additivity="false">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <AppenderRef ref="system.out" />
+            <AppenderRef ref="system.err" />
+            <AppenderRef ref="rolling-file" />
+        </Logger>
+        <Root level="ERROR">
+            <AppenderRef ref="system.out" />
+            <AppenderRef ref="system.err" />
+            <AppenderRef ref="rolling-file" />
+        </Root>
+    </Loggers>
+</Configuration>

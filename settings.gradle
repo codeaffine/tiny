@@ -1,0 +1,4 @@
+include 'com.codeaffine.tiny.star'
+include 'com.codeaffine.tiny.star.undertow'
+include 'com.codeaffine.tiny.star.tomcat'
+include 'com.codeaffine.tiny.demo'

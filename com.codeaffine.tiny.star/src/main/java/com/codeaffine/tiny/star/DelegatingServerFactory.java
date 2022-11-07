@@ -8,7 +8,6 @@ import com.codeaffine.tiny.star.spi.Server;
 import com.codeaffine.tiny.star.spi.ServerFactory;
 
 import java.io.File;
-import java.util.ServiceLoader;
 
 class DelegatingServerFactory implements ServerFactory {
 

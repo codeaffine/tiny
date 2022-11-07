@@ -1,7 +1,6 @@
 package com.codeaffine.tiny.demo;
 
 import static com.codeaffine.tiny.star.ApplicationRunner.newApplicationRunnerBuilder;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.application.Application;
@@ -13,7 +12,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import java.util.UUID;
-import lombok.extern.java.Log;
 
 public class ApplicationLauncher extends AbstractEntryPoint implements ApplicationConfiguration {
 

@@ -1,5 +1,6 @@
 .gradle
-/build
+**/build
+**/out
 
 ### Mac OS ###
-.DS_Store
+**.DS_Store

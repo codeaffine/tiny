@@ -11,29 +11,30 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Use a shutdown hook to delete the temporary directory on application shutdown
+ * A {@link Runtime#addShutdownHook(Thread)} handler that deletes the temporary
+ * application resource directory on application shutdown
  * since {@link File#deleteOnExit()} did not work in all cases. In particular,
  * with Log4j2 some appenders do not shut down immediately and thus prevent the
  * deletion of the temporary directory.
  */
 @RequiredArgsConstructor(access = PACKAGE)
-class DeleteOnExitShutdownHook implements Runnable {
+class DeleteApplicationDirectoryOnExitHandler implements Runnable {
 
     @NonNull
-    private final Path path;
+    private final Path directoryToDelete;
     @NonNull
     private final String logManagerClass;
     @NonNull
     private final String shutdownMethod;
 
-    DeleteOnExitShutdownHook(Path path) {
-        this(path, "org.apache.logging.log4j.LogManager", "shutdown");
+    DeleteApplicationDirectoryOnExitHandler(Path directoryToDelete) {
+        this(directoryToDelete, "org.apache.logging.log4j.LogManager", "shutdown");
     }
 
     @Override
     public void run() {
         attemptToShutdownLog4jIfUsed();
-        deleteDirectory(path);
+        deleteDirectory(directoryToDelete);
     }
 
     private void attemptToShutdownLog4jIfUsed() {

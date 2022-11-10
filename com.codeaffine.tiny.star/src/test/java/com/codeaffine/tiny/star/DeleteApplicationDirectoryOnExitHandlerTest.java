@@ -2,6 +2,7 @@ package com.codeaffine.tiny.star;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import static java.util.Objects.nonNull;
 
@@ -18,7 +19,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-class DeleteOnExitShutdownHookTest {
+class DeleteApplicationDirectoryOnExitHandlerTest {
 
     private static final String UNKNOWN_LOG_MANAGER_CLASS = "unknownLogManagerClass";
     private static final String SHUTDOWN_METHOD = "shutdown";
@@ -28,7 +29,7 @@ class DeleteOnExitShutdownHookTest {
     private PrintStream errorPrintStreamBuffer;
     private File childOfDirectoryToDelete;
     private boolean fileHasBeenCreated;
-    private ByteArrayOutputStream out;
+    private ByteArrayOutputStream errorOut;
     @TempDir
     private File directoryToDelete;
 
@@ -53,9 +54,8 @@ class DeleteOnExitShutdownHookTest {
     @BeforeEach
     void setUp() throws IOException {
         errorPrintStreamBuffer = System.err;
-        out = new ByteArrayOutputStream();
-        PrintStream err = new PrintStream(out);
-        System.setErr(err);
+        errorOut = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errorOut));
         FakeLogManager.initialize();
         childOfDirectoryToDelete = new File(directoryToDelete, "test");
         fileHasBeenCreated = childOfDirectoryToDelete.createNewFile();
@@ -68,7 +68,7 @@ class DeleteOnExitShutdownHookTest {
 
     @Test
     void run() {
-        DeleteOnExitShutdownHook shutdownHook = new DeleteOnExitShutdownHook(directoryToDelete.toPath(), FakeLogManager.class.getName(), SHUTDOWN_METHOD);
+        DeleteApplicationDirectoryOnExitHandler shutdownHook = new DeleteApplicationDirectoryOnExitHandler(directoryToDelete.toPath(), FakeLogManager.class.getName(), SHUTDOWN_METHOD);
 
         shutdownHook.run();
 
@@ -80,7 +80,7 @@ class DeleteOnExitShutdownHookTest {
 
     @Test
     void runIfLog4JIsNotUsed() {
-        DeleteOnExitShutdownHook shutdownHook = new DeleteOnExitShutdownHook(directoryToDelete.toPath(), UNKNOWN_LOG_MANAGER_CLASS, SHUTDOWN_METHOD);
+        DeleteApplicationDirectoryOnExitHandler shutdownHook = new DeleteApplicationDirectoryOnExitHandler(directoryToDelete.toPath(), UNKNOWN_LOG_MANAGER_CLASS, SHUTDOWN_METHOD);
 
         shutdownHook.run();
 
@@ -92,7 +92,7 @@ class DeleteOnExitShutdownHookTest {
 
     @Test
     void runIfShutdownMethodIsNotFoundOrUnaccessible() {
-        DeleteOnExitShutdownHook shutdownHook = new DeleteOnExitShutdownHook(directoryToDelete.toPath(), FakeLogManager.class.getName(), WRONG_METHOD);
+        DeleteApplicationDirectoryOnExitHandler shutdownHook = new DeleteApplicationDirectoryOnExitHandler(directoryToDelete.toPath(), FakeLogManager.class.getName(), WRONG_METHOD);
 
         shutdownHook.run();
 
@@ -100,7 +100,7 @@ class DeleteOnExitShutdownHookTest {
         assertThat(fileHasBeenCreated).isTrue();
         assertThat(childOfDirectoryToDelete).doesNotExist();
         assertThat(directoryToDelete).doesNotExist();
-        assertThat(out.toString())
+        assertThat(errorOut.toString())
             .contains(FakeLogManager.class.getName())
             .contains(WRONG_METHOD);
     }
@@ -108,7 +108,7 @@ class DeleteOnExitShutdownHookTest {
     @Test
     void runIfShutdownMethodThrowsRuntimeException() {
         FakeLogManager.problemHolder.set(new RuntimeException(ERROR_MESSAGE));
-        DeleteOnExitShutdownHook shutdownHook = new DeleteOnExitShutdownHook(directoryToDelete.toPath(), FakeLogManager.class.getName(), SHUTDOWN_METHOD);
+        DeleteApplicationDirectoryOnExitHandler shutdownHook = new DeleteApplicationDirectoryOnExitHandler(directoryToDelete.toPath(), FakeLogManager.class.getName(), SHUTDOWN_METHOD);
 
         shutdownHook.run();
 
@@ -116,7 +116,7 @@ class DeleteOnExitShutdownHookTest {
         assertThat(fileHasBeenCreated).isTrue();
         assertThat(childOfDirectoryToDelete).doesNotExist();
         assertThat(directoryToDelete).doesNotExist();
-        assertThat(out.toString())
+        assertThat(errorOut.toString())
             .contains(FakeLogManager.class.getName())
             .contains(SHUTDOWN_METHOD)
             .contains(ERROR_MESSAGE);
@@ -125,7 +125,7 @@ class DeleteOnExitShutdownHookTest {
     @Test
     void runIfShutdownMethodThrowsException() {
         FakeLogManager.problemHolder.set(new Exception(ERROR_MESSAGE));
-        DeleteOnExitShutdownHook shutdownHook = new DeleteOnExitShutdownHook(directoryToDelete.toPath(), FakeLogManager.class.getName(), SHUTDOWN_METHOD);
+        DeleteApplicationDirectoryOnExitHandler shutdownHook = new DeleteApplicationDirectoryOnExitHandler(directoryToDelete.toPath(), FakeLogManager.class.getName(), SHUTDOWN_METHOD);
 
         shutdownHook.run();
 
@@ -133,17 +133,43 @@ class DeleteOnExitShutdownHookTest {
         assertThat(fileHasBeenCreated).isTrue();
         assertThat(childOfDirectoryToDelete).doesNotExist();
         assertThat(directoryToDelete).doesNotExist();
-        assertThat(out.toString())
+        assertThat(errorOut.toString())
             .contains(FakeLogManager.class.getName())
             .contains(SHUTDOWN_METHOD)
             .contains(ERROR_MESSAGE);
     }
 
     @Test
+    void runIfDirectoryCannotBeDeleted() {
+        Path unknownDirectoryPath = new File("unknown").toPath();
+        DeleteApplicationDirectoryOnExitHandler shutdownHook = new DeleteApplicationDirectoryOnExitHandler(unknownDirectoryPath, FakeLogManager.class.getName(), SHUTDOWN_METHOD);
+
+        Throwable actual = catchThrowable(shutdownHook::run);
+
+        assertThat(actual)
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining(unknownDirectoryPath.toString());
+        assertThat(errorOut.toString()).isEmpty();
+    }
+
+    @Test
+    void runIfChildOfRootDirectoryCannotBeDeleted() {
+        Path unknownDirectoryPath = new File(directoryToDelete, "unknown").toPath();
+        DeleteApplicationDirectoryOnExitHandler shutdownHook = new DeleteApplicationDirectoryOnExitHandler(unknownDirectoryPath, FakeLogManager.class.getName(), SHUTDOWN_METHOD);
+
+        Throwable actual = catchThrowable(shutdownHook::run);
+
+        assertThat(actual)
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining(unknownDirectoryPath.toString());
+        assertThat(errorOut.toString()).isEmpty();
+    }
+
+    @Test
     void constructWithNullAsPathArgument() {
         String logManagerClass = FakeLogManager.class.getName();
 
-        assertThatThrownBy(() -> new DeleteOnExitShutdownHook(null, logManagerClass, SHUTDOWN_METHOD))
+        assertThatThrownBy(() -> new DeleteApplicationDirectoryOnExitHandler(null, logManagerClass, SHUTDOWN_METHOD))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -151,7 +177,7 @@ class DeleteOnExitShutdownHookTest {
     void constructWithNullAsLogManagerClassNameArgument() {
         Path path = directoryToDelete.toPath();
 
-        assertThatThrownBy(() -> new DeleteOnExitShutdownHook(path, null, SHUTDOWN_METHOD))
+        assertThatThrownBy(() -> new DeleteApplicationDirectoryOnExitHandler(path, null, SHUTDOWN_METHOD))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -160,7 +186,7 @@ class DeleteOnExitShutdownHookTest {
         String logManagerClass = FakeLogManager.class.getName();
         Path path = directoryToDelete.toPath();
 
-        assertThatThrownBy(() -> new DeleteOnExitShutdownHook(path, logManagerClass, null))
+        assertThatThrownBy(() -> new DeleteApplicationDirectoryOnExitHandler(path, logManagerClass, null))
             .isInstanceOf(NullPointerException.class);
     }
 }

@@ -23,7 +23,7 @@ public class Files {
             String directorNamePrefix = name + "-";
             Path path = createTempDirectory(directorNamePrefix);
             File result = path.toFile();
-            Runnable shutdown = new DeleteOnExitShutdownHook(path);
+            Runnable shutdown = new DeleteApplicationDirectoryOnExitHandler(path);
             getRuntime().addShutdownHook(new Thread(shutdown));
             return result;
         } catch (IOException cause) {
@@ -38,15 +38,13 @@ public class Files {
                     deleteDirectory(entry);
                 }
             } catch (IOException cause) {
-                cause.printStackTrace();
-                throw new IllegalArgumentException(format("Could not delete directory %s.", path), cause);
+                throw new IllegalArgumentException(format("Could not open directory stream for '%s'.", path), cause);
             }
         }
         try {
             delete(path);
         } catch (IOException cause) {
-            cause.printStackTrace();
-            throw new IllegalArgumentException(format("Could not delete file or directory %s.", path), cause);
+            throw new IllegalArgumentException(format("Could not delete file or directory '%s'.", path), cause);
         }
     }
 }

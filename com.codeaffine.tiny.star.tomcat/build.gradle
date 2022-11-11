@@ -35,7 +35,8 @@ dependencies {
             'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0'
     )
     testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+            platform('org.junit:junit-bom:5.9.1'),
+            'org.junit.jupiter:junit-jupiter'
     )
 }
 

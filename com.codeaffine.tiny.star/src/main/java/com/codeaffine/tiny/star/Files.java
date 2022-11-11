@@ -6,8 +6,6 @@ import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
 import static java.nio.file.Files.*;
 import static java.nio.file.Files.createTempDirectory;
-import static java.nio.file.Files.isDirectory;
-import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +21,7 @@ public class Files {
             String directorNamePrefix = name + "-";
             Path path = createTempDirectory(directorNamePrefix);
             File result = path.toFile();
-            Runnable shutdown = new DeleteApplicationDirectoryOnExitHandler(path);
+            Runnable shutdown = new DeleteWorkingDirectoryOnExitHandler(result);
             getRuntime().addShutdownHook(new Thread(shutdown));
             return result;
         } catch (IOException cause) {
@@ -31,20 +29,22 @@ public class Files {
         }
     }
 
-    public static void deleteDirectory(Path path) {
-        if (isDirectory(path, NOFOLLOW_LINKS)) {
-            try (DirectoryStream<Path> entries = newDirectoryStream(path)) {
-                for (Path entry : entries) {
-                    deleteDirectory(entry);
+    public static void deleteDirectory(File toDelete) {
+        if(toDelete.exists()) {
+            if (toDelete.isDirectory()) {
+                try (DirectoryStream<Path> children = newDirectoryStream(toDelete.toPath())) {
+                    for (Path child : children) {
+                        deleteDirectory(child.toFile());
+                    }
+                } catch (IOException cause) {
+                    throw new IllegalArgumentException(format("Could not open directory stream for '%s'.", toDelete), cause);
                 }
-            } catch (IOException cause) {
-                throw new IllegalArgumentException(format("Could not open directory stream for '%s'.", path), cause);
             }
-        }
-        try {
-            delete(path);
-        } catch (IOException cause) {
-            throw new IllegalArgumentException(format("Could not delete file or directory '%s'.", path), cause);
+            try {
+                delete(toDelete.toPath());
+            } catch (IOException cause) {
+                throw new IllegalArgumentException(format("Could not delete file or directory '%s'.", toDelete), cause);
+            }
         }
     }
 }

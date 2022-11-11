@@ -6,7 +6,6 @@ import static lombok.AccessLevel.PACKAGE;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Path;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -18,16 +17,16 @@ import lombok.RequiredArgsConstructor;
  * deletion of the temporary directory.
  */
 @RequiredArgsConstructor(access = PACKAGE)
-class DeleteApplicationDirectoryOnExitHandler implements Runnable {
+class DeleteWorkingDirectoryOnExitHandler implements Runnable {
 
     @NonNull
-    private final Path directoryToDelete;
+    private final File directoryToDelete;
     @NonNull
     private final String logManagerClass;
     @NonNull
     private final String shutdownMethod;
 
-    DeleteApplicationDirectoryOnExitHandler(Path directoryToDelete) {
+    DeleteWorkingDirectoryOnExitHandler(File directoryToDelete) {
         this(directoryToDelete, "org.apache.logging.log4j.LogManager", "shutdown");
     }
 

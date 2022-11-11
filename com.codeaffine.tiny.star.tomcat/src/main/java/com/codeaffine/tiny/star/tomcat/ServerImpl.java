@@ -4,8 +4,6 @@ import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPat
 import static lombok.AccessLevel.PACKAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import static java.nio.file.Files.createTempDirectory;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
@@ -14,7 +12,6 @@ import org.apache.catalina.startup.Tomcat;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.Files;
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import com.codeaffine.tiny.star.servlet.RwtServletContextListenerAdapter;
 import com.codeaffine.tiny.star.spi.Server;
@@ -70,14 +67,14 @@ class ServerImpl implements Server {
         Set<String> entrypointPaths = captureEntrypointPaths(applicationConfiguration);
         entrypointPaths.forEach(path -> context.addServletMappingDecoded(path + "/*", "rwtServlet"));
         RwtServletContextListenerAdapter rwtServletContextListenerAdapter = new RwtServletContextListenerAdapter();
-        context.addServletContainerInitializer((classes, servletContext) -> {
-            rwtServletContextListenerAdapter.contextInitialized(new ServletContextEvent(servletContext));
-        }, null);
+        context.addServletContainerInitializer(
+            (classes, servletContext) -> rwtServletContextListenerAdapter.contextInitialized(new ServletContextEvent(servletContext)),
+            null);
         context.addParameter("org.eclipse.rap.applicationConfiguration", applicationConfiguration.getClass().getName());
         try {
             tomcat.start();
         } catch (LifecycleException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         entrypointPaths.forEach(path -> logger.atInfo().log("Application Entrypoint URL:  http://{}:{}{}", host, port, path));
     }
@@ -88,7 +85,7 @@ class ServerImpl implements Server {
             tomcat.stop();
             tomcat.destroy();
         } catch (LifecycleException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

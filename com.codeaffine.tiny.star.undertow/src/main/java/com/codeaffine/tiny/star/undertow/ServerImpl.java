@@ -6,9 +6,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.codeaffine.tiny.star.EntrypointPathCaptor;
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import com.codeaffine.tiny.star.servlet.RwtServletContextListenerAdapter;
 import com.codeaffine.tiny.star.spi.Server;
@@ -23,8 +21,6 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletInfo;
 import jakarta.servlet.ServletException;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Set;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +37,7 @@ class ServerImpl implements Server {
     private final ApplicationConfiguration applicationConfiguration;
     @NonNull
     private final Logger logger;
+
     private Undertow server;
 
     ServerImpl(int port, String host, File workingDirectory, ApplicationConfiguration applicationConfiguration) {
@@ -66,14 +63,14 @@ class ServerImpl implements Server {
 
         manager.deploy();
 
-        HttpHandler servletHandler = null;
+        HttpHandler httpHandler;
         try {
-            servletHandler = manager.start();
+            httpHandler = manager.start();
         } catch (ServletException cause) {
             throw new IllegalStateException(cause);
         }
         PathHandler path = Handlers.path()
-            .addPrefixPath("/", servletHandler);
+            .addPrefixPath("/", httpHandler);
 
         server = Undertow.builder()
             .addHttpListener(port, host)

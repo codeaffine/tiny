@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import com.codeaffine.tiny.star.extrinsic.Log4j2OnProcessShutdownPreprocessor;
+
 import java.util.UUID;
 
 public class ApplicationLauncher extends AbstractEntryPoint implements ApplicationConfiguration {
@@ -20,6 +22,7 @@ public class ApplicationLauncher extends AbstractEntryPoint implements Applicati
     public static void main(String[] args) {
         newApplicationRunnerBuilder()
             .withApplicationConfiguration(new ApplicationLauncher())
+            .withDeleteWorkingDirectoryOnProcessShutdownPreprocessor(new Log4j2OnProcessShutdownPreprocessor())
             .build()
             .run();
     }

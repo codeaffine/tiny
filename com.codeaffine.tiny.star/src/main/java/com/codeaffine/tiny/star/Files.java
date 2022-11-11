@@ -2,48 +2,54 @@ package com.codeaffine.tiny.star;
 
 import static lombok.AccessLevel.PRIVATE;
 
-import static java.lang.Runtime.getRuntime;
 import static java.lang.String.format;
-import static java.nio.file.Files.*;
 import static java.nio.file.Files.createTempDirectory;
+import static java.nio.file.Files.delete;
+import static java.nio.file.Files.newDirectoryStream;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor(access = PRIVATE)
-public class Files {
+class Files {
 
-    public static File createTemporayDirectory(String name) {
+    static File createTemporayDirectory(@NonNull String directoryNamePrefix) throws IllegalArgumentException {
+        if(directoryNamePrefix.isEmpty()) {
+            throw new IllegalArgumentException("directoryNamePrefix must not be empty");
+        }
         try {
-            String directorNamePrefix = name + "-";
-            Path path = createTempDirectory(directorNamePrefix);
-            File result = path.toFile();
-            Runnable shutdown = new DeleteWorkingDirectoryOnExitHandler(result);
-            getRuntime().addShutdownHook(new Thread(shutdown));
-            return result;
-        } catch (IOException cause) {
-            throw new IllegalArgumentException(cause);
+            return createTempDirectory(directoryNamePrefix + "-")
+                .toFile();
+        } catch (Exception cause) {
+            throw new IllegalArgumentException(format("unable to create temporay directory with filename prefix %s", directoryNamePrefix), cause);
         }
     }
 
-    public static void deleteDirectory(File toDelete) {
+    static void deleteDirectory(@NonNull File toDelete) {
+        try {
+            doDelete(toDelete);
+        } catch (IOException cause) {
+            throw new IllegalArgumentException(format("Could not delete file or directory '%s'.", toDelete), cause);
+        }
+    }
+
+    private static void doDelete(File toDelete) throws IOException {
         if(toDelete.exists()) {
             if (toDelete.isDirectory()) {
-                try (DirectoryStream<Path> children = newDirectoryStream(toDelete.toPath())) {
-                    for (Path child : children) {
-                        deleteDirectory(child.toFile());
-                    }
-                } catch (IOException cause) {
-                    throw new IllegalArgumentException(format("Could not open directory stream for '%s'.", toDelete), cause);
-                }
+                doDeleteDirectory(toDelete);
             }
-            try {
-                delete(toDelete.toPath());
-            } catch (IOException cause) {
-                throw new IllegalArgumentException(format("Could not delete file or directory '%s'.", toDelete), cause);
+            delete(toDelete.toPath());
+        }
+    }
+
+    private static void doDeleteDirectory(File toDelete) throws IOException {
+        try (DirectoryStream<Path> children = newDirectoryStream(toDelete.toPath())) {
+            for (Path child : children) {
+                deleteDirectory(child.toFile());
             }
         }
     }

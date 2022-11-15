@@ -1,6 +1,7 @@
 package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.Files.createTemporayDirectory;
+import static com.codeaffine.tiny.star.Files.deleteDirectory;
 import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
 import static lombok.Builder.Default;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -8,7 +9,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.isNull;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
 
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
@@ -17,8 +17,6 @@ import com.codeaffine.tiny.star.spi.Server;
 
 import java.io.File;
 import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
 import lombok.Builder;
 import lombok.Singular;
 
@@ -46,6 +44,8 @@ public class ApplicationRunner {
         = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN, true, Boolean.class);
     @Singular
     private List<Runnable> deleteWorkingDirectoryOnProcessShutdownPreprocessors;
+    @Singular
+    private List<Object> lifecycleListeners;
 
     public ApplicationInstance run() {
         long beginStartup = currentTimeMillis();
@@ -53,27 +53,17 @@ public class ApplicationRunner {
         System.setProperty("com.codeaffine.tiny.star.workingDirectory", applicationWorkingDirectory.getAbsolutePath());
         Server server = new DelegatingServerFactory().create(port, host, applicationWorkingDirectory, applicationConfiguration);
         Logger logger = getLogger(getClass());
-        ExecutorService executor = newSingleThreadExecutor();
-        executor.execute(() -> {
-            try(Scanner scanner = new Scanner(System.in)) {
-                String line = null;
-                while (!"q".equals(line)) {
-                    line = scanner.next();
-                }
-            }
-            long beginShutdown = currentTimeMillis();
-            logger.atInfo().log("stopping {}.", applicationConfiguration.getClass().getName());
-            server.stop();
-            executor.shutdown();
-            long endShutdown = currentTimeMillis();
-            logger.atInfo().log("{} stopped in {} ms.", applicationConfiguration.getClass().getName(), (endShutdown - beginShutdown));
-        });
-        logger.atInfo().log("starting {} on embedded {}.", applicationConfiguration.getClass().getName(), server.getName());
-        logger.atInfo().log("using server working directory: {}", applicationWorkingDirectory.getAbsolutePath());
-        server.start();
+
+        Runnable runnable = () -> terminate(server, applicationWorkingDirectory);
+        ApplicationInstanceImpl applicationInstance = new ApplicationInstanceImpl(applicationConfiguration.getClass().getName(), server::start, server::stop);
+        lifecycleListeners.forEach(applicationInstance::registerLifecycleListener);
+
+        logger.atInfo().log("Starting {} instance with embedded {}.", applicationConfiguration.getClass().getName(), server.getName());
+        logger.atInfo().log("Application working directory: {}", applicationWorkingDirectory.getAbsolutePath());
+        applicationInstance.start();
         long endStartup = currentTimeMillis();
-        logger.atInfo().log("starting {} took {} ms.", applicationConfiguration.getClass().getName(), (endStartup - beginStartup));
-        return new ApplicationInstanceImpl(server, applicationWorkingDirectory, deleteWorkingDirectoryOnShutdown);
+        logger.atInfo().log("Starting instance of {} took {} ms.", applicationConfiguration.getClass().getName(), (endStartup - beginStartup));
+        return applicationInstance;
     }
 
     private File prepareWorkingDirectory() {
@@ -86,5 +76,12 @@ public class ApplicationRunner {
             getRuntime().addShutdownHook(new Thread(shutdown));
         }
         return result;
+    }
+
+    private void terminate(Server server, File applicationWorkingDirectory) {
+        server.stop();
+        if (deleteWorkingDirectoryOnShutdown) {
+            deleteDirectory(applicationWorkingDirectory);
+        }
     }
 }

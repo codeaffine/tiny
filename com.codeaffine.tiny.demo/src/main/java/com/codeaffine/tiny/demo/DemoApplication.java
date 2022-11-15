@@ -11,25 +11,27 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import com.codeaffine.tiny.star.CommandLineInterface;
 import com.codeaffine.tiny.star.extrinsic.Log4j2OnProcessShutdownPreprocessor;
 
 import java.util.UUID;
 
-public class ApplicationLauncher extends AbstractEntryPoint implements ApplicationConfiguration {
+public class DemoApplication extends AbstractEntryPoint implements ApplicationConfiguration {
 
     private static final String TEXT = "Hello World!\n\nGive me something unique:";
 
     public static void main(String[] args) {
         newApplicationRunnerBuilder()
-            .withApplicationConfiguration(new ApplicationLauncher())
+            .withApplicationConfiguration(new DemoApplication())
             .withDeleteWorkingDirectoryOnProcessShutdownPreprocessor(new Log4j2OnProcessShutdownPreprocessor())
+            .withLifecycleListener(new CommandLineInterface())
             .build()
             .run();
     }
 
     @Override
     public void configure(Application application) {
-        application.addEntryPoint("/ui", ApplicationLauncher.class, null);
+        application.addEntryPoint("/ui", DemoApplication.class, null);
     }
 
     @Override

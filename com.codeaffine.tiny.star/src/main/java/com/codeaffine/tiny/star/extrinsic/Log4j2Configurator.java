@@ -15,7 +15,6 @@ import static java.lang.Thread.currentThread;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
 import com.codeaffine.tiny.star.ApplicationRunner;
@@ -30,7 +29,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = PACKAGE)
-public class Log4j2Configurator implements Runnable {
+class Log4j2Configurator implements Runnable {
 
     static final String CONFIGURATION_FILE_NAME_SUFFIX = "-log4j2.xml";
 
@@ -38,7 +37,7 @@ public class Log4j2Configurator implements Runnable {
     private static final String RECONFIGURE_METHOD = "reconfigure";
 
     @NonNull
-    private final ApplicationConfiguration configuration;
+    private final ClassLoader applicationClassLoader;
     @NonNull
     private final String applicationName;
     @NonNull
@@ -50,8 +49,8 @@ public class Log4j2Configurator implements Runnable {
     @NonNull
     private final Logger logger;
 
-    public Log4j2Configurator(ApplicationConfiguration configuration, String applicationName) {
-        this(configuration, applicationName, LOG4J_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, ClassLoader::getSystemResource, getLogger(Log4j2Configurator.class));
+    Log4j2Configurator(ClassLoader appLoader, String appName) {
+        this(appLoader, appName, LOG4J_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, ClassLoader::getSystemResource, getLogger(Log4j2Configurator.class));
     }
 
     @Override
@@ -92,7 +91,6 @@ public class Log4j2Configurator implements Runnable {
         }
         if (isNull(result)) {
             logger.debug(LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER, configurationFileName);
-            ClassLoader applicationClassLoader = configuration.getClass().getClassLoader();
             result = applicationClassLoader.getResource(configurationFileName);
         }
         if(isNull(result)) {

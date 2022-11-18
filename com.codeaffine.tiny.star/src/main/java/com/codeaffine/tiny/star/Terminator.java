@@ -7,7 +7,6 @@ import static lombok.AccessLevel.PACKAGE;
 import com.codeaffine.tiny.star.spi.Server;
 
 import java.io.File;
-import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ class Terminator implements Runnable {
     @NonNull
     private final Server server;
     @NonNull
-    private final List<Runnable> deleteWorkingDirectoryOnProcessShutdownPreprocessors;
+    private final LoggingFrameworkControl loggingFrameworkControl;
     private final boolean deleteWorkingDirectoryOnShutdown;
 
     @Getter
@@ -38,10 +37,10 @@ class Terminator implements Runnable {
     void deleteWorkingDirectory() {
         if (deleteWorkingDirectoryOnShutdown) {
             if (isShutdownHookExecution()) {
-                deleteWorkingDirectoryOnProcessShutdownPreprocessors.forEach(Terminator::saveRun);
+                saveRun(loggingFrameworkControl::halt);
                 deleteDirectory(applicationWorkingDirectory);
             } else {
-                if(deleteWorkingDirectoryOnProcessShutdownPreprocessors.isEmpty()) {
+                if(!loggingFrameworkControl.isUsingWorkingDirectory()) {
                     deleteDirectory(applicationWorkingDirectory);
                 }
             }
@@ -52,7 +51,6 @@ class Terminator implements Runnable {
         try {
             runnable.run();
         } catch (Exception cause) {
-            System.err.printf("Warning: Could not execute preprocessor %s.", runnable.getClass().getName()); // NOSONAR
             cause.printStackTrace();
         }
     }

@@ -3,6 +3,10 @@ package com.codeaffine.tiny.star;
 import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
 import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
 import static com.codeaffine.tiny.star.IoUtils.findFreePort;
+import static com.codeaffine.tiny.star.LoggingFrameworkControl.*;
+import static com.codeaffine.tiny.star.Messages.INFO_SERVER_USAGE;
+import static com.codeaffine.tiny.star.Messages.INFO_STARTUP_CONFIRMATION;
+import static com.codeaffine.tiny.star.Messages.INFO_WORKING_DIRECTORY;
 import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
 import static com.codeaffine.tiny.star.common.Metric.measureDuration;
 import static lombok.Builder.Default;
@@ -14,12 +18,13 @@ import static java.util.Objects.isNull;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.extrinsic.Log4j2Configurator;
+import com.codeaffine.tiny.star.extrinsic.DelegatingLoggingFramewerkControlFactory;
 import com.codeaffine.tiny.star.spi.Server;
 
 import java.io.File;
 import java.util.List;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Singular;
 
 @Builder(
@@ -37,6 +42,7 @@ public class ApplicationRunner {
     public static final boolean DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = true;
     public static final String SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY = "com.codeaffine.tiny.star.workingDirectory";
 
+    @NonNull
     private ApplicationConfiguration applicationConfiguration;
     @Default
     private final String host = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class);
@@ -50,27 +56,29 @@ public class ApplicationRunner {
                                                 DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
                                                 Boolean.class);
     @Singular
-    private List<Runnable> deleteWorkingDirectoryOnProcessShutdownPreprocessors;
-    @Singular
     private List<Object> lifecycleListeners;
+    @Default @NonNull
+    private LoggingFrameworkControlFactory loggingFrameworkControlFactory = new DelegatingLoggingFramewerkControlFactory();
     private Logger logger;
 
     public ApplicationInstance run() {
         return measureDuration(this::doRun)
-            .report((value, duration) -> logger.info(Messages.INFO_STARTUP_CONFIRMATION, applicationConfiguration.getClass().getName(), duration));
+            .report((value, duration) -> logger.info(INFO_STARTUP_CONFIRMATION, applicationConfiguration.getClass().getName(), duration));
     }
 
     private ApplicationInstanceImpl doRun() {
         File applicationWorkingDirectory = prepareWorkingDirectory();
-        new Log4j2Configurator(applicationConfiguration, applicationConfiguration.getClass().getName()).run();
+        ClassLoader applicationClassLoader = applicationConfiguration.getClass().getClassLoader();
+        LoggingFrameworkControl loggingFrameworkControl = loggingFrameworkControlFactory.create(applicationClassLoader);
+        loggingFrameworkControl.configure(applicationClassLoader, applicationConfiguration.getClass().getName());
         logger = isNull(logger) ? getLogger(ApplicationRunner.class) : logger;
         Server server = new DelegatingServerFactory().create(port, host, applicationWorkingDirectory, applicationConfiguration);
-        Terminator terminator = newTerminator(applicationWorkingDirectory, server);
+        Terminator terminator = newTerminator(applicationWorkingDirectory, server, loggingFrameworkControl);
         ApplicationInstanceImpl result = new ApplicationInstanceImpl(applicationConfiguration.getClass().getName(), server::start, terminator);
         getRuntime().addShutdownHook(new Thread(() -> runShutdownHookHandler(terminator, result)));
         lifecycleListeners.forEach(result::registerLifecycleListener);
-        logger.info(Messages.INFO_SERVER_USAGE, applicationConfiguration.getClass().getName(), server.getName());
-        logger.info(Messages.INFO_WORKING_DIRECTORY, applicationWorkingDirectory.getAbsolutePath());
+        logger.info(INFO_SERVER_USAGE, applicationConfiguration.getClass().getName(), server.getName());
+        logger.info(INFO_WORKING_DIRECTORY, applicationWorkingDirectory.getAbsolutePath());
         result.start();
         return result;
     }
@@ -84,8 +92,8 @@ public class ApplicationRunner {
         return result;
     }
 
-    private Terminator newTerminator(File applicationWorkingDirectory, Server server) {
-        return new Terminator(applicationWorkingDirectory, server, deleteWorkingDirectoryOnProcessShutdownPreprocessors, deleteWorkingDirectoryOnShutdown); // NOSONAR: false positive, Terminator has methods that are not static
+    private Terminator newTerminator(File applicationWorkingDirectory, Server server, @NonNull LoggingFrameworkControl loggingFrameworkControl) {
+        return new Terminator(applicationWorkingDirectory, server,  loggingFrameworkControl, deleteWorkingDirectoryOnShutdown); // NOSONAR: false positive, Terminator has methods that are not static
     }
 
     private static void runShutdownHookHandler(Terminator terminator, ApplicationInstanceImpl result) {

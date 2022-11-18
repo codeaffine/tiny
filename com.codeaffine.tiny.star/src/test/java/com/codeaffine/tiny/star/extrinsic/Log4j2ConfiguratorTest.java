@@ -79,7 +79,7 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void run() {
-        Log4j2Configurator configurator = new Log4j2Configurator(configuration, APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
 
         configurator.run();
 
@@ -93,7 +93,7 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfContextClassLoaderIsNotSet() {
-        Log4j2Configurator configurator = new Log4j2Configurator(configuration, APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD,r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD,r -> null, logger);
         currentThread().setContextClassLoader(null);
 
         configurator.run();
@@ -108,7 +108,7 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfContextClassLoaderCannotFindResource() {
-        Log4j2Configurator configurator = new Log4j2Configurator(configuration, APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
         currentThread().setContextClassLoader(mock(ClassLoader.class));
 
         configurator.run();
@@ -125,7 +125,7 @@ class Log4j2ConfiguratorTest {
     @Test
     void runIfApplicationClassLoaderCannotFindResource()  {
         URL resource = getClass().getClassLoader().getResource(expectedLog4j2ConfigurationFileName());
-        Log4j2Configurator configurator = new Log4j2Configurator(configuration, GLOBAL, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> resource, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), GLOBAL, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> resource, logger);
 
         configurator.run();
 
@@ -141,7 +141,7 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfNoClassLoaderCanFindResource()  {
-        Log4j2Configurator configurator = new Log4j2Configurator(configuration, GLOBAL, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), GLOBAL, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> null, logger);
 
         configurator.run();
 
@@ -157,7 +157,7 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfReconfigurationCallThrowException() {
-        Log4j2Configurator configurator = new Log4j2Configurator(configuration, APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
         RuntimeException expected = new RuntimeException(ERROR_MESSAGE);
         FakeConfigurator.problemHolder.set(expected);
 
@@ -169,7 +169,7 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfLog4J2CannotBeDetected() {
-        Log4j2Configurator configurator = new Log4j2Configurator(configuration, GLOBAL, UNKNOWN_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), GLOBAL, UNKNOWN_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
 
         configurator.run();
 
@@ -185,15 +185,21 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void constructWithNullAsApplicationNameArgument() {
-        assertThatThrownBy(() -> new Log4j2Configurator(configuration, null))
+        ClassLoader appLoader = getAppLoader();
+
+        assertThatThrownBy(() -> new Log4j2Configurator(appLoader, null))
             .isInstanceOf(NullPointerException.class);
     }
-    
+
     private static String expectedLog4j2ConfigurationFileName() {
         return expectedLog4j2ConfigurationFileName(APPLICATION_NAME);
     }
 
     private static String expectedLog4j2ConfigurationFileName(String applicationName) {
         return applicationName + CONFIGURATION_FILE_NAME_SUFFIX;
+    }
+
+    private ClassLoader getAppLoader() {
+        return configuration.getClass().getClassLoader();
     }
 }

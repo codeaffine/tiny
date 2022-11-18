@@ -10,14 +10,14 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = PACKAGE)
-public class Log4j2ShutdownPreprocessor implements Runnable {
+class Log4j2ShutdownPreprocessor implements Runnable {
 
     @NonNull
     private final String logManagerClass;
     @NonNull
     private final String shutdownMethod;
 
-    public Log4j2ShutdownPreprocessor() {
+    Log4j2ShutdownPreprocessor() {
         this("org.apache.logging.log4j.LogManager", "shutdown");
     }
 

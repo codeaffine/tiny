@@ -2,12 +2,19 @@ package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.ApplicationInstance.Started;
 import static com.codeaffine.tiny.star.ApplicationInstance.Starting;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.HALTED;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.STARTING;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.STOPPING;
 import static com.codeaffine.tiny.star.ApplicationInstance.Stopped;
 import static com.codeaffine.tiny.star.ApplicationInstance.Stopping;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.*;
+import static com.codeaffine.tiny.star.Messages.INFO_SHUTDOWN_CONFIRMATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
@@ -60,6 +67,26 @@ class ApplicationInstanceImplTest {
         void stopped();
     }
 
+    static class StartingStateCaptor {
+
+        State captured;
+
+        @Starting
+        void captureState(ApplicationInstance applicationInstance) {
+            captured = applicationInstance.getState();
+        }
+    }
+
+    static class StoppingStateCaptor {
+
+        State captured;
+
+        @Stopping
+        void captureState(ApplicationInstance applicationInstance) {
+            captured = applicationInstance.getState();
+        }
+    }
+
     @BeforeEach
     void setUp() {
         terminator = mock(Runnable.class);
@@ -81,8 +108,16 @@ class ApplicationInstanceImplTest {
 
     @Test
     void start() {
-        applicationInstance.start();
+        StartingStateCaptor startingStateCaptor = new StartingStateCaptor();
+        applicationInstance.registerLifecycleListener(startingStateCaptor);
 
+        State beforeState = applicationInstance.getState();
+        applicationInstance.start();
+        State afterState = applicationInstance.getState();
+
+        assertThat(beforeState).isSameAs(HALTED);
+        assertThat(startingStateCaptor.captured).isSameAs(STARTING);
+        assertThat(afterState).isSameAs(RUNNING);
         verifyStartProcedure();
     }
 
@@ -91,7 +126,9 @@ class ApplicationInstanceImplTest {
         applicationInstance.start();
         reset(starter, lifecycleConsumingListener, parameterlessListener);
 
+        State beforeState = applicationInstance.getState();
         applicationInstance.start();
+        State afterState = applicationInstance.getState();
 
         verify(lifecycleConsumingListener, never()).starting(applicationInstance);
         verify(parameterlessListener, never()).starting();
@@ -99,6 +136,9 @@ class ApplicationInstanceImplTest {
         verify(lifecycleConsumingListener, never()).started(applicationInstance);
         verify(parameterlessListener, never()).started();
         verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_HALTED);
+        assertThat(afterState)
+            .isSameAs(beforeState)
+            .isSameAs(RUNNING);
     }
 
     @Test
@@ -204,17 +244,27 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stop() {
+        StoppingStateCaptor stoppingStateCaptor = new StoppingStateCaptor();
+        applicationInstance.registerLifecycleListener(stoppingStateCaptor);
         applicationInstance.start();
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
 
+        State beforeState = applicationInstance.getState();
         applicationInstance.stop();
+        State afterState = applicationInstance.getState();
 
+        assertThat(beforeState).isSameAs(RUNNING);
+        assertThat(stoppingStateCaptor.captured).isSameAs(STOPPING);
+        assertThat(afterState).isSameAs(HALTED);
         verifyStopProcedure();
+        verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationInstance.getName()), anyLong());
     }
 
     @Test
     void stopIfHalted() {
+        State beforeState = applicationInstance.getState();
         applicationInstance.stop();
+        State afterState = applicationInstance.getState();
 
         verify(lifecycleConsumingListener, never()).stopping(applicationInstance);
         verify(parameterlessListener, never()).stopping();
@@ -222,6 +272,9 @@ class ApplicationInstanceImplTest {
         verify(lifecycleConsumingListener, never()).stopped(applicationInstance);
         verify(parameterlessListener, never()).stopped();
         verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_RUNNING);
+        assertThat(beforeState)
+            .isSameAs(afterState)
+            .isSameAs(HALTED);
     }
 
     @Test

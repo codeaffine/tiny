@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 
 public interface ApplicationInstance {
 
+    enum State { STARTING, RUNNING, STOPPING, HALTED }
+
     @Target({ METHOD })
     @Retention(RUNTIME)
     @interface Starting {}
@@ -23,4 +25,5 @@ public interface ApplicationInstance {
 
     String getName();
     void stop();
+    State getState();
 }

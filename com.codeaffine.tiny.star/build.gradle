@@ -33,10 +33,12 @@ dependencies {
             'org.junit.jupiter:junit-jupiter',
             'org.assertj:assertj-core:3.23.1',
             'org.mockito:mockito-core:4.8.1',
-            'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0'
+            'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0',
     )
     testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+            'org.junit.jupiter:junit-jupiter-engine:5.9.1',
+            'org.apache.logging.log4j:log4j-core:2.19.0',
+            'org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0',
     )
 }
 

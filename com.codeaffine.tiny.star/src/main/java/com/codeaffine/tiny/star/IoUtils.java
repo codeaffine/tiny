@@ -9,13 +9,22 @@ import static java.nio.file.Files.newDirectoryStream;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = PRIVATE)
-class Files {
+class IoUtils {
+
+    static int findFreePort() {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        } catch (IOException e) {
+            return -1;
+        }
+    }
 
     static File createTemporayDirectory(@NonNull String directoryNamePrefix) throws IllegalArgumentException {
         if(directoryNamePrefix.isEmpty()) {

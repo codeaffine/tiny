@@ -16,4 +16,8 @@ class Messages {
     static final String ENFORCING_APPLICATION_TERMINATION = "Enforcing application shutdown.";
     static final String DEBUG_APPLICATION_NOT_HALTED = "Application is not halted.";
     static final String DEBUG_APPLICATION_NOT_RUNNING = "Application is not running.";
+    static final String INFO_SHUTDOWN_CONFIRMATION = "Stopping instance of {} took {} ms.";
+    static final String INFO_STARTUP_CONFIRMATION = "Starting instance of {} took {} ms.";
+    static final String INFO_SERVER_USAGE = "Starting {} instance with embedded {}.";
+    static final String INFO_WORKING_DIRECTORY = "Application working directory: {}";
 }

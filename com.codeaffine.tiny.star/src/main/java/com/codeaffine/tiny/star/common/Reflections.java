@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.common;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -7,9 +7,9 @@ import java.util.function.Function;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = PRIVATE)
-class Reflections {
+public class Reflections {
 
-    static <T extends RuntimeException> RuntimeException extractExceptionToReport(Exception exception, Function<Throwable, T> runtimeExceptionFactory) {
+    public static <T extends RuntimeException> RuntimeException extractExceptionToReport(Exception exception, Function<Throwable, T> runtimeExceptionFactory) {
         RuntimeException result;
         if(exception instanceof RuntimeException runtimeException) {
             result = runtimeException;

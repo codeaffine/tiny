@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.Files.createTemporayDirectory;
+import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
 import static com.codeaffine.tiny.star.FilesTestHelper.fakeFileThatCannotBeDeleted;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.File;
 import java.util.UUID;
 
-class FilesTest {
+class IoUtilsTest {
 
     private String directoryNamePrefix;
     private File tmpDir;
@@ -30,7 +30,14 @@ class FilesTest {
 
     @AfterEach
     void tearDown() {
-        Files.deleteDirectory(new File(tmpDir, directoryNamePrefix));
+        IoUtils.deleteDirectory(new File(tmpDir, directoryNamePrefix));
+    }
+
+    @Test
+    void findFreePort() {
+        int actual = IoUtils.findFreePort();
+
+        assertThat(actual).isNotNegative();
     }
 
     @Test
@@ -70,7 +77,7 @@ class FilesTest {
         File child = new File(directoryToDelete, "child");
         boolean created = child.mkdirs();
 
-        Files.deleteDirectory(directoryToDelete);
+        IoUtils.deleteDirectory(directoryToDelete);
 
         assertThat(created).isTrue();
         assertThat(directoryToDelete).doesNotExist();
@@ -81,7 +88,7 @@ class FilesTest {
     void deleteDirectoryIfArgumentToDeleteCannotBeDeleted() {
         File unDeletableFile = fakeFileThatCannotBeDeleted();
 
-        Throwable actual = catchThrowable(() -> Files.deleteDirectory(unDeletableFile));
+        Throwable actual = catchThrowable(() -> IoUtils.deleteDirectory(unDeletableFile));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -90,7 +97,7 @@ class FilesTest {
 
     @Test
     void deleteDirectoryWithNullAsDirectoryArgument() {
-        assertThatThrownBy(() -> Files.deleteDirectory(null))
+        assertThatThrownBy(() -> IoUtils.deleteDirectory(null))
             .isInstanceOf(NullPointerException.class);
     }
 }

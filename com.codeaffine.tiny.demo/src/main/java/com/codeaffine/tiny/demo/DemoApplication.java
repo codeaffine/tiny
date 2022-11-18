@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.codeaffine.tiny.star.CommandLineInterface;
-import com.codeaffine.tiny.star.extrinsic.Log4j2OnProcessShutdownPreprocessor;
+import com.codeaffine.tiny.star.extrinsic.Log4j2ShutdownPreprocessor;
 
 import java.util.UUID;
 
@@ -23,7 +23,7 @@ public class DemoApplication extends AbstractEntryPoint implements ApplicationCo
     public static void main(String[] args) {
         newApplicationRunnerBuilder()
             .withApplicationConfiguration(new DemoApplication())
-            .withDeleteWorkingDirectoryOnProcessShutdownPreprocessor(new Log4j2OnProcessShutdownPreprocessor())
+            .withDeleteWorkingDirectoryOnProcessShutdownPreprocessor(new Log4j2ShutdownPreprocessor())
             .withLifecycleListener(new CommandLineInterface())
             .build()
             .run();

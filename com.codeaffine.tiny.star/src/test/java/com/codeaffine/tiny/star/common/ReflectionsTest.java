@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.common;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,9 +1,9 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationInstanceImpl.State.HALTED;
-import static com.codeaffine.tiny.star.ApplicationInstanceImpl.State.RUNNING;
-import static com.codeaffine.tiny.star.ApplicationInstanceImpl.State.STARTING;
-import static com.codeaffine.tiny.star.ApplicationInstanceImpl.State.STOPPING;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.HALTED;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.STARTING;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.STOPPING;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.StopMode.ENFORCED;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.StopMode.NORMAL;
 import static com.codeaffine.tiny.star.Messages.DEBUG_APPLICATION_NOT_HALTED;
@@ -13,7 +13,8 @@ import static com.codeaffine.tiny.star.Messages.ERROR_NOTIFYING_STARTED_LISTENER
 import static com.codeaffine.tiny.star.Messages.ERROR_NOTIFYING_STOPPED_LISTENER;
 import static com.codeaffine.tiny.star.Messages.ERROR_NOTIFYING_STOPPING_LISTENER;
 import static com.codeaffine.tiny.star.Messages.ERROR_TERMINATING_APPLICATION;
-import static com.codeaffine.tiny.star.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.star.common.Metric.measureDuration;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.slf4j.Logger;
@@ -34,7 +35,6 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     private final String name;
 
     enum StopMode { NORMAL, ENFORCED }
-    enum State { STARTING, RUNNING, STOPPING, HALTED }
 
     static class LifecycleException extends RuntimeException {
         LifecycleException(String message) { super(message); }
@@ -91,13 +91,19 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     }
 
     @Override
+    public State getState() {
+        return state.get();
+    }
+
+    @Override
     public void stop() {
         stop(NORMAL);
     }
 
     void stop(StopMode stopMode) {
         if(state.compareAndSet(RUNNING, STOPPING)) {
-            doStop(stopMode);
+            measureDuration(() -> doStop(stopMode))
+                .report(duration -> logger.info(Messages.INFO_SHUTDOWN_CONFIRMATION, getName(), duration));
         } else {
             logger.debug(DEBUG_APPLICATION_NOT_RUNNING);
         }

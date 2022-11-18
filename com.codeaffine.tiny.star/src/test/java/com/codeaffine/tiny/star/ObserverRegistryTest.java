@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;

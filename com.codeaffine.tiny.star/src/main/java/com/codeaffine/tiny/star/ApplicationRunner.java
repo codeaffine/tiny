@@ -1,18 +1,20 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.Files.createTemporayDirectory;
-import static com.codeaffine.tiny.star.Files.deleteDirectory;
+import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
+import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
+import static com.codeaffine.tiny.star.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
+import static com.codeaffine.tiny.star.common.Metric.measureDuration;
 import static lombok.Builder.Default;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import static java.lang.Runtime.getRuntime;
-import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.isNull;
 
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
+import com.codeaffine.tiny.star.extrinsic.Log4j2Configurator;
 import com.codeaffine.tiny.star.spi.Server;
 
 import java.io.File;
@@ -27,43 +29,50 @@ import lombok.Singular;
 public class ApplicationRunner {
 
     public static final String ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION = ServerConfigurationReader.ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION;
+    public static final String CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = "delete-working-directory-on-shutdown";
     public static final String CONFIGURATION_ATTRIBUTE_HOST = "host";
     public static final String CONFIGURATION_ATTRIBUTE_PORT = "port";
     public static final String CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY = "working-directory";
-    public static final String CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = "delete-working-directory-on-shutdown";
+    public static final String DEFAULT_HOST = "localhost";
+    public static final boolean DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = true;
+    public static final String SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY = "com.codeaffine.tiny.star.workingDirectory";
 
     private ApplicationConfiguration applicationConfiguration;
     @Default
-    private final String host = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, "localhost", String.class);
+    private final String host = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class);
     @Default
-    private final int port = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, 8080, Integer.class);
+    private final int port = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class);
     @Default
     private final File workingDirectory = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new);
     @Default
     private final boolean deleteWorkingDirectoryOnShutdown
-        = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN, true, Boolean.class);
+        = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
+                                                DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
+                                                Boolean.class);
     @Singular
     private List<Runnable> deleteWorkingDirectoryOnProcessShutdownPreprocessors;
     @Singular
     private List<Object> lifecycleListeners;
+    private Logger logger;
 
     public ApplicationInstance run() {
-        long beginStartup = currentTimeMillis();
+        return measureDuration(this::doRun)
+            .report((value, duration) -> logger.info(Messages.INFO_STARTUP_CONFIRMATION, applicationConfiguration.getClass().getName(), duration));
+    }
+
+    private ApplicationInstanceImpl doRun() {
         File applicationWorkingDirectory = prepareWorkingDirectory();
-        System.setProperty("com.codeaffine.tiny.star.workingDirectory", applicationWorkingDirectory.getAbsolutePath());
+        new Log4j2Configurator(applicationConfiguration, applicationConfiguration.getClass().getName()).run();
+        logger = isNull(logger) ? getLogger(ApplicationRunner.class) : logger;
         Server server = new DelegatingServerFactory().create(port, host, applicationWorkingDirectory, applicationConfiguration);
-        Logger logger = getLogger(getClass());
-
-        Runnable runnable = () -> terminate(server, applicationWorkingDirectory);
-        ApplicationInstanceImpl applicationInstance = new ApplicationInstanceImpl(applicationConfiguration.getClass().getName(), server::start, server::stop);
-        lifecycleListeners.forEach(applicationInstance::registerLifecycleListener);
-
-        logger.atInfo().log("Starting {} instance with embedded {}.", applicationConfiguration.getClass().getName(), server.getName());
-        logger.atInfo().log("Application working directory: {}", applicationWorkingDirectory.getAbsolutePath());
-        applicationInstance.start();
-        long endStartup = currentTimeMillis();
-        logger.atInfo().log("Starting instance of {} took {} ms.", applicationConfiguration.getClass().getName(), (endStartup - beginStartup));
-        return applicationInstance;
+        Terminator terminator = newTerminator(applicationWorkingDirectory, server);
+        ApplicationInstanceImpl result = new ApplicationInstanceImpl(applicationConfiguration.getClass().getName(), server::start, terminator);
+        getRuntime().addShutdownHook(new Thread(() -> runShutdownHookHandler(terminator, result)));
+        lifecycleListeners.forEach(result::registerLifecycleListener);
+        logger.info(Messages.INFO_SERVER_USAGE, applicationConfiguration.getClass().getName(), server.getName());
+        logger.info(Messages.INFO_WORKING_DIRECTORY, applicationWorkingDirectory.getAbsolutePath());
+        result.start();
+        return result;
     }
 
     private File prepareWorkingDirectory() {
@@ -71,17 +80,20 @@ public class ApplicationRunner {
         if(isNull(workingDirectory)) {
             result = createTemporayDirectory(applicationConfiguration.getClass().getName());
         }
-        if(deleteWorkingDirectoryOnShutdown) {
-            Runnable shutdown = new DeleteWorkingDirectoryOnProcessShutdownHandler(result, deleteWorkingDirectoryOnProcessShutdownPreprocessors);
-            getRuntime().addShutdownHook(new Thread(shutdown));
-        }
+        System.setProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY, result.getAbsolutePath());
         return result;
     }
 
-    private void terminate(Server server, File applicationWorkingDirectory) {
-        server.stop();
-        if (deleteWorkingDirectoryOnShutdown) {
-            deleteDirectory(applicationWorkingDirectory);
+    private Terminator newTerminator(File applicationWorkingDirectory, Server server) {
+        return new Terminator(applicationWorkingDirectory, server, deleteWorkingDirectoryOnProcessShutdownPreprocessors, deleteWorkingDirectoryOnShutdown); // NOSONAR: false positive, Terminator has methods that are not static
+    }
+
+    private static void runShutdownHookHandler(Terminator terminator, ApplicationInstanceImpl result) {
+        terminator.setShutdownHookExecution(true);
+        if(RUNNING == result.getState()) {
+            result.stop();
+        } else {
+            terminator.deleteWorkingDirectory();
         }
     }
 }

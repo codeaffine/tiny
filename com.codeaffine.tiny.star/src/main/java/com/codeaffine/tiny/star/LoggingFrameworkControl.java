@@ -2,13 +2,11 @@ package com.codeaffine.tiny.star;
 
 public interface LoggingFrameworkControl {
 
-    interface LoggingFrameworkControlFactory {
-        LoggingFrameworkControl create(ClassLoader applicationClassLoader);
+    default void configure(ClassLoader applicationClassLoader, String applicationName) {}
+
+    default void halt() {}
+
+    default boolean isUsingWorkingDirectory() {
+        return false;
     }
-
-    void configure(ClassLoader applicationClassLoader, String applicationName);
-
-    void halt();
-
-    boolean isUsingWorkingDirectory();
 }

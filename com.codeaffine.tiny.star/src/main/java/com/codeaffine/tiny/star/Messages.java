@@ -20,4 +20,6 @@ class Messages {
     static final String INFO_STARTUP_CONFIRMATION = "Starting instance of {} took {} ms.";
     static final String INFO_SERVER_USAGE = "Starting {} instance with embedded {}.";
     static final String INFO_WORKING_DIRECTORY = "Application working directory: {}";
+    static final String ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST = "Given working directory %s does not exist.";
+    static final String ERROR_GIVEN_WORKING_DIRECTORY_FILE_IS_NOT_A_DIRECTORY = "Given working directory file %s is not a directory.";
 }

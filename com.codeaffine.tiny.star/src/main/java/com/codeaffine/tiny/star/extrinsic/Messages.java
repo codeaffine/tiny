@@ -14,4 +14,5 @@ class Messages {
     static final String LOG_LOG4J2_CONFIGURATION_NOT_FOUND = "Unable to find Log4j2 configuration {} so keep current configuration.";
     static final String LOG_LOG4J2_RECONFIGURATION_SUCESSFUL = "Log4j2 reconfiguration to {} successfully finished.";
     static final String ERROR_UNABLE_TO_CONFIGURE_LOG4J2 = "Unable to configure log4j2";
+    static final String ERROR_MORE_THAN_ONE_SLF4J_SERVICE_PROVIDER_DETECTED = "Expected one Slf4j service provider at most on classpath but detected %s.";
 }

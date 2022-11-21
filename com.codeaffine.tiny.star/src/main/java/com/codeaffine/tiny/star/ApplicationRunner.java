@@ -3,7 +3,6 @@ package com.codeaffine.tiny.star;
 import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
 import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
 import static com.codeaffine.tiny.star.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.LoggingFrameworkControl.*;
 import static com.codeaffine.tiny.star.Messages.INFO_SERVER_USAGE;
 import static com.codeaffine.tiny.star.Messages.INFO_STARTUP_CONFIRMATION;
 import static com.codeaffine.tiny.star.Messages.INFO_WORKING_DIRECTORY;
@@ -13,12 +12,13 @@ import static lombok.Builder.Default;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import static java.lang.Runtime.getRuntime;
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.extrinsic.DelegatingLoggingFramewerkControlFactory;
+import com.codeaffine.tiny.star.extrinsic.DelegatingLoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.Server;
 
 import java.io.File;
@@ -57,8 +57,7 @@ public class ApplicationRunner {
                                                 Boolean.class);
     @Singular
     private List<Object> lifecycleListeners;
-    @Default @NonNull
-    private LoggingFrameworkControlFactory loggingFrameworkControlFactory = new DelegatingLoggingFramewerkControlFactory();
+    private LoggingFrameworkControl loggingFrameworkControl;
     private Logger logger;
 
     public ApplicationInstance run() {
@@ -69,7 +68,7 @@ public class ApplicationRunner {
     private ApplicationInstanceImpl doRun() {
         File applicationWorkingDirectory = prepareWorkingDirectory();
         ClassLoader applicationClassLoader = applicationConfiguration.getClass().getClassLoader();
-        LoggingFrameworkControl loggingFrameworkControl = loggingFrameworkControlFactory.create(applicationClassLoader);
+        loggingFrameworkControl = isNull(loggingFrameworkControl) ? new DelegatingLoggingFrameworkControl(applicationClassLoader) : loggingFrameworkControl;
         loggingFrameworkControl.configure(applicationClassLoader, applicationConfiguration.getClass().getName());
         logger = isNull(logger) ? getLogger(ApplicationRunner.class) : logger;
         Server server = new DelegatingServerFactory().create(port, host, applicationWorkingDirectory, applicationConfiguration);
@@ -87,6 +86,10 @@ public class ApplicationRunner {
         File result = workingDirectory;
         if(isNull(workingDirectory)) {
             result = createTemporayDirectory(applicationConfiguration.getClass().getName());
+        } else if(!result.exists()) {
+            throw new IllegalArgumentException(format(Messages.ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST, result.getAbsolutePath()));
+        } else if(!result.isDirectory()) {
+            throw new IllegalArgumentException(format(Messages.ERROR_GIVEN_WORKING_DIRECTORY_FILE_IS_NOT_A_DIRECTORY, result.getAbsolutePath()));
         }
         System.setProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY, result.getAbsolutePath());
         return result;

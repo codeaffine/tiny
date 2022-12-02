@@ -1,0 +1,3 @@
+com.codeaffine.tiny.star.cli.TestCliCommandProvider
+com.codeaffine.tiny.star.cli.TestCliCommandProviderWithServiceConfigurationError
+com.codeaffine.tiny.star.cli.TestCliCommandProviderWithRuntimeException

@@ -32,7 +32,7 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     private final Runnable starter;
     private final Logger logger;
     @Getter
-    private final String name;
+    private final String identifier;
 
     enum StopMode { NORMAL, ENFORCED }
 
@@ -45,13 +45,13 @@ class ApplicationInstanceImpl implements ApplicationInstance {
         this(name, starter, terminator, getLogger(ApplicationInstanceImpl.class));
     }
 
-    ApplicationInstanceImpl(@NonNull String name, @NonNull Runnable starter, @NonNull Runnable terminator, @NonNull Logger logger) {
+    ApplicationInstanceImpl(@NonNull String identifier, @NonNull Runnable starter, @NonNull Runnable terminator, @NonNull Logger logger) {
         this.observerRegistry = new ObserverRegistry<>(this, ApplicationInstance.class, Starting.class, Started.class, Stopping.class, Stopped.class);
         this.state = new AtomicReference<>(HALTED);
         this.terminator = terminator;
         this.starter = starter;
         this.logger = logger;
-        this.name = name;
+        this.identifier = identifier;
     }
 
     void registerLifecycleListener(Object lifecycleListener) {
@@ -103,7 +103,7 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     void stop(StopMode stopMode) {
         if(state.compareAndSet(RUNNING, STOPPING)) {
             measureDuration(() -> doStop(stopMode))
-                .report(duration -> logger.info(Messages.INFO_SHUTDOWN_CONFIRMATION, getName(), duration));
+                .report(duration -> logger.info(Messages.INFO_SHUTDOWN_CONFIRMATION, getIdentifier(), duration));
         } else {
             logger.debug(DEBUG_APPLICATION_NOT_RUNNING);
         }

@@ -4,31 +4,29 @@ import static com.codeaffine.tiny.star.ApplicationRunner.newApplicationRunnerBui
 
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.application.Application;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import com.codeaffine.tiny.star.CommandLineInterface;
+import com.codeaffine.tiny.star.cli.CommandLineInterface;
 
 import java.util.UUID;
 
-public class DemoApplication extends AbstractEntryPoint implements ApplicationConfiguration {
+public class DemoApplication extends AbstractEntryPoint {
 
     private static final String TEXT = "Hello World!\n\nGive me something unique:";
 
     public static void main(String[] args) {
-        newApplicationRunnerBuilder()
-            .withApplicationConfiguration(new DemoApplication())
+        newApplicationRunnerBuilder(DemoApplication::configure)
             .withLifecycleListener(new CommandLineInterface())
+            .withApplicationIdentifier(DemoApplication.class.getName())
             .build()
             .run();
     }
 
-    @Override
-    public void configure(Application application) {
+    static void configure(Application application) {
         application.addEntryPoint("/ui", DemoApplication.class, null);
     }
 

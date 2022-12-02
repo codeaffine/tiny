@@ -16,7 +16,7 @@ import lombok.experimental.Delegate;
 public class DelegatingLoggingFrameworkControl implements LoggingFrameworkControl {
 
     static final Map<String, LoggingFrameworkControl> SUPPORTED_LOGGING_FRAMEWORKS = of(
-        "org.apache.logging.slf4j.SLF4JServiceProvider", new Log4j2LoggingFrameworkControlImpl()
+        "org.apache.logging.slf4j.SLF4JServiceProvider", new Log4j2LoggingFrameworkControl()
     );
 
     @Delegate

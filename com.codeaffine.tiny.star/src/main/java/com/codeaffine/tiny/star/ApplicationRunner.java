@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
+import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
 import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
 import static com.codeaffine.tiny.star.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.Messages.INFO_SERVER_USAGE;
@@ -23,12 +23,13 @@ import com.codeaffine.tiny.star.spi.Server;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 
 @Builder(
-    builderMethodName = "newApplicationRunnerBuilder",
+    builderMethodName = "newDefaultApplicationRunnerBuilder",
     setterPrefix = "with"
 )
 public class ApplicationRunner {
@@ -42,8 +43,10 @@ public class ApplicationRunner {
     public static final boolean DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = true;
     public static final String SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY = "com.codeaffine.tiny.star.workingDirectory";
 
+    private static final String ILLEGAL_FILENAME_CHARACTERS = "[^a-zA-Z0-9.\\-]";
+
     @NonNull
-    private ApplicationConfiguration applicationConfiguration;
+    private final ApplicationConfiguration applicationConfiguration;
     @Default
     private final String host = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class);
     @Default
@@ -58,25 +61,35 @@ public class ApplicationRunner {
     @Singular
     private List<Object> lifecycleListeners;
     private LoggingFrameworkControl loggingFrameworkControl;
-    private Logger logger;
+    private String applicationIdentifier;
 
-    public ApplicationInstance run() {
-        return measureDuration(this::doRun)
-            .report((value, duration) -> logger.info(INFO_STARTUP_CONFIRMATION, applicationConfiguration.getClass().getName(), duration));
+    public static ApplicationRunnerBuilder newApplicationRunnerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
+        return newDefaultApplicationRunnerBuilder()
+            .withApplicationConfiguration(applicationConfiguration);
     }
 
-    private ApplicationInstanceImpl doRun() {
+    public ApplicationInstance run() {
+        return runInternal(getLogger(getClass()));
+    }
+
+    ApplicationInstance runInternal(Logger logger) {
+        applicationIdentifier = isNull(applicationIdentifier) ? encode(applicationConfiguration.getClass().getName()) : applicationIdentifier;
+        return measureDuration(() -> doRun(() -> ensureLogger(logger)))
+            .report((value, duration) -> logger.info(INFO_STARTUP_CONFIRMATION, applicationIdentifier, duration));
+    }
+
+    private ApplicationInstanceImpl doRun(Supplier<Logger> loggerSupplier) {
+        Logger logger = loggerSupplier.get();
         File applicationWorkingDirectory = prepareWorkingDirectory();
         ClassLoader applicationClassLoader = applicationConfiguration.getClass().getClassLoader();
         loggingFrameworkControl = isNull(loggingFrameworkControl) ? new DelegatingLoggingFrameworkControl(applicationClassLoader) : loggingFrameworkControl;
-        loggingFrameworkControl.configure(applicationClassLoader, applicationConfiguration.getClass().getName());
-        logger = isNull(logger) ? getLogger(ApplicationRunner.class) : logger;
+        loggingFrameworkControl.configure(applicationClassLoader, applicationIdentifier);
         Server server = new DelegatingServerFactory().create(port, host, applicationWorkingDirectory, applicationConfiguration);
         Terminator terminator = newTerminator(applicationWorkingDirectory, server, loggingFrameworkControl);
-        ApplicationInstanceImpl result = new ApplicationInstanceImpl(applicationConfiguration.getClass().getName(), server::start, terminator);
-        getRuntime().addShutdownHook(new Thread(() -> runShutdownHookHandler(terminator, result)));
+        ApplicationInstanceImpl result = new ApplicationInstanceImpl(applicationIdentifier, server::start, terminator);
+        getRuntime().addShutdownHook(new Thread(() -> beforeProcessShutdown(terminator, result)));
         lifecycleListeners.forEach(result::registerLifecycleListener);
-        logger.info(INFO_SERVER_USAGE, applicationConfiguration.getClass().getName(), server.getName());
+        logger.info(INFO_SERVER_USAGE, applicationIdentifier, server.getName());
         logger.info(INFO_WORKING_DIRECTORY, applicationWorkingDirectory.getAbsolutePath());
         result.start();
         return result;
@@ -85,7 +98,7 @@ public class ApplicationRunner {
     private File prepareWorkingDirectory() {
         File result = workingDirectory;
         if(isNull(workingDirectory)) {
-            result = createTemporayDirectory(applicationConfiguration.getClass().getName());
+            result = createTemporayDirectory(applicationIdentifier);
         } else if(!result.exists()) {
             throw new IllegalArgumentException(format(Messages.ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST, result.getAbsolutePath()));
         } else if(!result.isDirectory()) {
@@ -99,12 +112,11 @@ public class ApplicationRunner {
         return new Terminator(applicationWorkingDirectory, server,  loggingFrameworkControl, deleteWorkingDirectoryOnShutdown); // NOSONAR: false positive, Terminator has methods that are not static
     }
 
-    private static void runShutdownHookHandler(Terminator terminator, ApplicationInstanceImpl result) {
-        terminator.setShutdownHookExecution(true);
-        if(RUNNING == result.getState()) {
-            result.stop();
-        } else {
-            terminator.deleteWorkingDirectory();
-        }
+    private static String encode(String name) {
+        return name.replaceAll(ILLEGAL_FILENAME_CHARACTERS, "_");
+    }
+
+    private static Logger ensureLogger(Logger logger) {
+        return isNull(logger) ? getLogger(ApplicationRunner.class) : logger;
     }
 }

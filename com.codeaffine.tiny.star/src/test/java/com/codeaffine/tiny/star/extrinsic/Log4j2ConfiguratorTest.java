@@ -79,9 +79,9 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void run() {
-        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
 
-        configurator.run();
+        configurator.run(getAppLoader(), APPLICATION_NAME);
 
         assertThat(reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
@@ -93,10 +93,10 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfContextClassLoaderIsNotSet() {
-        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD,r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD,r -> null, logger);
         currentThread().setContextClassLoader(null);
 
-        configurator.run();
+        configurator.run(getAppLoader(), APPLICATION_NAME);
 
         assertThat(reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
@@ -108,10 +108,10 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfContextClassLoaderCannotFindResource() {
-        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
         currentThread().setContextClassLoader(mock(ClassLoader.class));
 
-        configurator.run();
+        configurator.run(getAppLoader(), APPLICATION_NAME);
 
         assertThat(reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
@@ -125,9 +125,9 @@ class Log4j2ConfiguratorTest {
     @Test
     void runIfApplicationClassLoaderCannotFindResource()  {
         URL resource = getClass().getClassLoader().getResource(expectedLog4j2ConfigurationFileName());
-        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), GLOBAL, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> resource, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> resource, logger);
 
-        configurator.run();
+        configurator.run(getAppLoader(), GLOBAL);
 
         assertThat(reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
@@ -141,9 +141,9 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfNoClassLoaderCanFindResource()  {
-        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), GLOBAL, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD, any -> null, logger);
 
-        configurator.run();
+        configurator.run(getAppLoader(), GLOBAL);
 
         assertThat(reconfigureCalled).isFalse();
         InOrder order = inOrder(logger);
@@ -157,11 +157,11 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfReconfigurationCallThrowException() {
-        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), APPLICATION_NAME, CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
         RuntimeException expected = new RuntimeException(ERROR_MESSAGE);
         FakeConfigurator.problemHolder.set(expected);
 
-        Throwable actual = catchThrowable(configurator::run);
+        Throwable actual = catchThrowable(() -> configurator.run(getAppLoader(), APPLICATION_NAME));
 
         assertThat(reconfigureCalled).isFalse();
         assertThat(actual).isSameAs(expected);
@@ -169,25 +169,28 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfLog4J2CannotBeDetected() {
-        Log4j2Configurator configurator = new Log4j2Configurator(getAppLoader(), GLOBAL, UNKNOWN_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(UNKNOWN_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
 
-        configurator.run();
+        configurator.run(getAppLoader(), GLOBAL);
 
         assertThat(reconfigureCalled).isFalse();
         verify(logger, never()).debug(anyString(), eq(expectedLog4j2ConfigurationFileName(GLOBAL)));
     }
 
     @Test
-    void constructWithNullAsConfigurationArgument() {
-        assertThatThrownBy(() -> new Log4j2Configurator(null, APPLICATION_NAME))
+    void runWithNullAsConfigurationArgument() {
+        Log4j2Configurator configurator = new Log4j2Configurator();
+
+        assertThatThrownBy(() -> configurator.run(null, GLOBAL))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void constructWithNullAsApplicationNameArgument() {
+    void runWithNullAsApplicationNameArgument() {
         ClassLoader appLoader = getAppLoader();
+        Log4j2Configurator configurator = new Log4j2Configurator();
 
-        assertThatThrownBy(() -> new Log4j2Configurator(appLoader, null))
+        assertThatThrownBy(() -> configurator.run(appLoader, null))
             .isInstanceOf(NullPointerException.class);
     }
 

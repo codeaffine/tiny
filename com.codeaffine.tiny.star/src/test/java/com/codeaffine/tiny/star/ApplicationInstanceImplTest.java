@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 
 class ApplicationInstanceImplTest {
 
-    private static final String NAME = "name";
+    private static final String IDENTIFIER = "identifier";
 
     private LifecycleConsumerListener lifecycleConsumingListener;
     private ParameterlessListener parameterlessListener;
@@ -92,7 +92,7 @@ class ApplicationInstanceImplTest {
         terminator = mock(Runnable.class);
         starter = mock(Runnable.class);
         logger = mock(Logger.class);
-        applicationInstance = new ApplicationInstanceImpl(NAME, starter, terminator, logger);
+        applicationInstance = new ApplicationInstanceImpl(IDENTIFIER, starter, terminator, logger);
         lifecycleConsumingListener = mock(LifecycleConsumerListener.class);
         parameterlessListener = mock(ParameterlessListener.class);
         applicationInstance.registerLifecycleListener(lifecycleConsumingListener);
@@ -100,10 +100,10 @@ class ApplicationInstanceImplTest {
     }
 
     @Test
-    void getName() {
-        String actual = applicationInstance.getName();
+    void getIdentifier() {
+        String actual = applicationInstance.getIdentifier();
 
-        assertThat(actual).isEqualTo(NAME);
+        assertThat(actual).isEqualTo(IDENTIFIER);
     }
 
     @Test
@@ -257,7 +257,7 @@ class ApplicationInstanceImplTest {
         assertThat(stoppingStateCaptor.captured).isSameAs(STOPPING);
         assertThat(afterState).isSameAs(HALTED);
         verifyStopProcedure();
-        verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationInstance.getName()), anyLong());
+        verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationInstance.getIdentifier()), anyLong());
     }
 
     @Test

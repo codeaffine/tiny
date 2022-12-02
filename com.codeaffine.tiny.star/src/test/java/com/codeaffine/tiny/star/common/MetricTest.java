@@ -1,9 +1,8 @@
 package com.codeaffine.tiny.star.common;
 
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import static java.lang.Thread.sleep;
 
 import org.junit.jupiter.api.Test;
 
@@ -73,10 +72,6 @@ class MetricTest {
     }
 
     private static void simulateOperationDuration() {
-        try {
-            sleep(SIMULATED_OPERATION_DURATION_IN_MILLIS); //NOSONAR
-        } catch (InterruptedException shouldNotHappen) {
-            throw new IllegalStateException(shouldNotHappen);
-        }
+        sleepFor(SIMULATED_OPERATION_DURATION_IN_MILLIS);
     }
 }

@@ -13,7 +13,7 @@ import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
-import com.codeaffine.tiny.star.servlet.RwtServletContextListenerAdapter;
+import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.Server;
 
 import jakarta.servlet.ServletContextEvent;
@@ -66,11 +66,10 @@ class ServerImpl implements Server {
         tomcat.addServlet(contextPath, "rwtServlet", new RwtServletAdapter());
         Set<String> entrypointPaths = captureEntrypointPaths(applicationConfiguration);
         entrypointPaths.forEach(path -> context.addServletMappingDecoded(path + "/*", "rwtServlet"));
-        RwtServletContextListenerAdapter rwtServletContextListenerAdapter = new RwtServletContextListenerAdapter();
+        TinyStarServletContextListener tinyStarServletContextListener = new TinyStarServletContextListener(applicationConfiguration);
         context.addServletContainerInitializer(
-            (classes, servletContext) -> rwtServletContextListenerAdapter.contextInitialized(new ServletContextEvent(servletContext)),
+            (classes, servletContext) -> tinyStarServletContextListener.contextInitialized(new ServletContextEvent(servletContext)),
             null);
-        context.addParameter("org.eclipse.rap.applicationConfiguration", applicationConfiguration.getClass().getName());
         try {
             tomcat.start();
         } catch (LifecycleException e) {

@@ -23,7 +23,7 @@ public interface ApplicationInstance {
     @Retention(RUNTIME)
     @interface Stopped {}
 
-    String getName();
+    String getIdentifier();
     void stop();
     State getState();
 }

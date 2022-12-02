@@ -29,18 +29,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = PACKAGE)
-class Log4j2Configurator implements Runnable {
+class Log4j2Configurator {
 
     static final String CONFIGURATION_FILE_NAME_SUFFIX = "-log4j2.xml";
 
     private static final String LOG4J_CONFIGURATOR_CLASS = "org.apache.logging.log4j.core.config.Configurator";
     private static final String RECONFIGURE_METHOD = "reconfigure";
 
-    @NonNull
-    private final ClassLoader applicationClassLoader;
-    @NonNull
-    private final String applicationName;
-    @NonNull
     private final String configuratorClassName;
     @NonNull
     private final String reconfigureMethod;
@@ -49,17 +44,16 @@ class Log4j2Configurator implements Runnable {
     @NonNull
     private final Logger logger;
 
-    Log4j2Configurator(ClassLoader appLoader, String appName) {
-        this(appLoader, appName, LOG4J_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, ClassLoader::getSystemResource, getLogger(Log4j2Configurator.class));
+    Log4j2Configurator() {
+        this(LOG4J_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, ClassLoader::getSystemResource, getLogger(Log4j2Configurator.class));
     }
 
-    @Override
-    public void run() {
+    void run(@NonNull ClassLoader applicationClassLoader, @NonNull String applicationName) {
         Class<?> configuratorClass = loadConfiguratorClass();
         if(nonNull(configuratorClass)) {
             String configurationFileName = applicationName + CONFIGURATION_FILE_NAME_SUFFIX;
             logger.debug(LOG_LOG4J2_DETECTED, configurationFileName);
-            configure(configuratorClass, configurationFileName);
+            configure(configuratorClass, configurationFileName, applicationClassLoader);
         }
     }
 
@@ -72,8 +66,8 @@ class Log4j2Configurator implements Runnable {
         }
     }
 
-    private void configure(Class<?> configuratorClass, String configurationFileName) throws IllegalStateException {
-        URL resource = loadConfiguration(configurationFileName);
+    private void configure(Class<?> configuratorClass, String configurationFileName, ClassLoader applicationClassLoader) throws IllegalStateException {
+        URL resource = loadConfiguration(configurationFileName, applicationClassLoader);
         if(isNull(resource)) {
             logger.debug(LOG_LOG4J2_CONFIGURATION_NOT_FOUND, configurationFileName); // NOSONAR
         } else {
@@ -82,7 +76,7 @@ class Log4j2Configurator implements Runnable {
         }
     }
 
-    private URL loadConfiguration(String configurationFileName) {
+    private URL loadConfiguration(String configurationFileName, ClassLoader applicationClassLoader) {
         URL result = null;
         ClassLoader contextClassLoader = currentThread().getContextClassLoader();
         if (nonNull(contextClassLoader)) {

@@ -8,7 +8,7 @@ import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
-import com.codeaffine.tiny.star.servlet.RwtServletContextListenerAdapter;
+import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.Server;
 
 import io.undertow.Handlers;
@@ -52,8 +52,7 @@ class ServerImpl implements Server {
         DeploymentInfo servletBuilder = Servlets.deployment()
             .setClassLoader(applicationConfiguration.getClass().getClassLoader())
             .setContextPath("")
-            .addInitParameter("org.eclipse.rap.applicationConfiguration", applicationConfiguration.getClass().getName())
-            .addDeploymentCompleteListener(new RwtServletContextListenerAdapter())
+            .addDeploymentCompleteListener(new TinyStarServletContextListener(applicationConfiguration))
             .setDeploymentName("application.war")
             .addServlets(servletInfo)
             .setResourceManager(new FileResourceManager(workingDirectory, 1));

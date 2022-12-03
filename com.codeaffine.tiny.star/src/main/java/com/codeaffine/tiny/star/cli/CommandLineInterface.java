@@ -1,6 +1,7 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.ApplicationInstance.Started;
+import static com.codeaffine.tiny.star.ApplicationInstance.Starting;
+import static com.codeaffine.tiny.star.ApplicationInstance.Stopped;
 import static lombok.AccessLevel.PACKAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -12,7 +13,6 @@ import static java.util.stream.Collectors.toMap;
 import org.slf4j.Logger;
 
 import com.codeaffine.tiny.star.ApplicationInstance;
-import com.codeaffine.tiny.star.ApplicationInstance.Stopping;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
 import java.util.Map;
@@ -40,7 +40,7 @@ public class CommandLineInterface {
              getLogger(CommandLineInterface.class));
     }
 
-    @Stopping
+    @Stopped
     public void stopCli() {
         commandlineEngineHolder.updateAndGet(CommandLineInterface::doStop);
     }
@@ -52,7 +52,7 @@ public class CommandLineInterface {
         return null;
     }
 
-    @Started
+    @Starting
     public void startCli(ApplicationInstance applicationInstance) {
         commandlineEngineHolder.updateAndGet(engine -> doStart(engine, applicationInstance));
     }

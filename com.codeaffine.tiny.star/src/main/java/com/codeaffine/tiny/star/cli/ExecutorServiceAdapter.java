@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = PACKAGE)
 class ExecutorServiceAdapter {
 
-    static final int TIMEOUT_AWAITING_TERMINATION = 30_000;
+    static final int TIMEOUT_AWAITING_TERMINATION = 5000;
 
     @NonNull
     private final ExecutorService executorService;

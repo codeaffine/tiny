@@ -6,6 +6,7 @@ import static com.codeaffine.tiny.star.ApplicationInstance.State.STARTING;
 import static com.codeaffine.tiny.star.ApplicationInstance.State.STOPPING;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.StopMode.ENFORCED;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.StopMode.NORMAL;
+import static com.codeaffine.tiny.star.Texts.*;
 import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_HALTED;
 import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_RUNNING;
 import static com.codeaffine.tiny.star.Texts.ENFORCING_APPLICATION_TERMINATION;
@@ -13,8 +14,9 @@ import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STARTED_LISTENER;
 import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPED_LISTENER;
 import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPING_LISTENER;
 import static com.codeaffine.tiny.star.Texts.ERROR_TERMINATING_APPLICATION;
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.star.common.Metric.measureDuration;
+import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import org.slf4j.Logger;
@@ -25,6 +27,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 class ApplicationInstanceImpl implements ApplicationInstance {
+
+    private static final long OBSERVER_NOTIFICATION_TIMEOUT = 5000;
 
     private final ObserverRegistry<ApplicationInstance> observerRegistry;
     private final AtomicReference<State> state;
@@ -46,7 +50,12 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     }
 
     ApplicationInstanceImpl(@NonNull String identifier, @NonNull Runnable starter, @NonNull Runnable terminator, @NonNull Logger logger) {
-        this.observerRegistry = new ObserverRegistry<>(this, ApplicationInstance.class, Starting.class, Started.class, Stopping.class, Stopped.class);
+        this.observerRegistry = new ObserverRegistry<>(
+            this,
+            ApplicationInstance.class,
+            OBSERVER_NOTIFICATION_TIMEOUT,
+            Starting.class, Started.class, Stopping.class, Stopped.class
+        );
         this.state = new AtomicReference<>(HALTED);
         this.terminator = terminator;
         this.starter = starter;
@@ -72,7 +81,7 @@ class ApplicationInstanceImpl implements ApplicationInstance {
 
     private void doStart() {
         observerRegistry.notifyObservers(Starting.class, exception -> {
-            throw extractExceptionToReport(exception, LifecycleException::new);
+            throw extractExceptionToReport(exception, LifecycleException::new, FORWARD_RUNTIME_EXCEPTIONS);
         });
         starter.run();
         observerRegistry.notifyObservers(Started.class, exception -> {
@@ -82,7 +91,7 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     }
 
     private RuntimeException handleExceptionOnStartedListener(Exception exception) {
-        RuntimeException toRethrow = extractExceptionToReport(exception, LifecycleException::new);
+        RuntimeException toRethrow = extractExceptionToReport(exception, LifecycleException::new, FORWARD_RUNTIME_EXCEPTIONS);
         logger.error(ERROR_NOTIFYING_STARTED_LISTENER, toRethrow);
         logger.error(ENFORCING_APPLICATION_TERMINATION);
         state.set(RUNNING);
@@ -103,7 +112,7 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     void stop(StopMode stopMode) {
         if(state.compareAndSet(RUNNING, STOPPING)) {
             measureDuration(() -> doStop(stopMode))
-                .report(duration -> logger.info(Texts.INFO_SHUTDOWN_CONFIRMATION, getIdentifier(), duration));
+                .report(duration -> logger.info(INFO_SHUTDOWN_CONFIRMATION, getIdentifier(), duration));
         } else {
             logger.debug(DEBUG_APPLICATION_NOT_RUNNING);
         }
@@ -122,6 +131,6 @@ class ApplicationInstanceImpl implements ApplicationInstance {
 
     private void handleExceptionOnShutdown(AtomicBoolean soundShutdown, String logMessagePattern, Exception exception) {
         soundShutdown.set(false);
-        logger.error(logMessagePattern, extractExceptionToReport(exception, LifecycleException::new));
+        logger.error(logMessagePattern, extractExceptionToReport(exception, LifecycleException::new, FORWARD_RUNTIME_EXCEPTIONS));
     }
 }

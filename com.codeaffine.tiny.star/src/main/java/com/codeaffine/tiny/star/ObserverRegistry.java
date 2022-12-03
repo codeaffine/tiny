@@ -1,9 +1,13 @@
 package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.Texts.ERROR_INVALID_METHOD_SIGNATURE;
+import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.star.common.Threads.runAsyncAwaitingTermination;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -18,15 +22,21 @@ import lombok.NonNull;
 class ObserverRegistry<T> {
 
     private final Map<Class<? extends Annotation>, List<Observer>> observers;
+    private final long observerNotificationTimeout;
     private final Class<T> observedType;
     private final T observedInstance;
 
     record Observer(Object observer, Method method) {}
 
     @SafeVarargs
-    ObserverRegistry(@NonNull T observedInstance, @NonNull Class<T> observedType, @NonNull Class<? extends Annotation>... observerAnnotations) {
+    ObserverRegistry(
+        @NonNull T observedInstance,
+        @NonNull Class<T> observedType,
+        long observerNotificationTimeout,
+        @NonNull Class<? extends Annotation>... observerAnnotations) {
         this.observedInstance = observedInstance;
         this.observedType = observedType;
+        this.observerNotificationTimeout = observerNotificationTimeout;
         this.observers = new HashMap<>();
         stream(observerAnnotations).forEach(observerType -> observers.put(observerType, new CopyOnWriteArrayList<>()));
     }
@@ -66,16 +76,20 @@ class ObserverRegistry<T> {
 
     void notifyObservers(Class<? extends Annotation> observerType, Consumer<Exception> exceptionHandler) {
         observers.get(observerType)
-            .forEach(observer -> notifyObserver(observer, exceptionHandler));
+            .forEach(observer -> notifyObserverAsync(exceptionHandler, observer));
     }
 
-    private void notifyObserver(Observer observer, Consumer<Exception> exceptionHandler) {
+    private void notifyObserverAsync(Consumer<Exception> exceptionHandler, Observer observer) {
+        runAsyncAwaitingTermination(() -> notifyObserver(observer), exceptionHandler, observerNotificationTimeout, MILLISECONDS);
+    }
+
+    private void notifyObserver(Observer observer) {
         observer.method().setAccessible(true); // NOSONAR
         Class<?>[] parameterTypes = observer.method().getParameterTypes();
         try {
             doNotifyObserver(observer, parameterTypes);
         } catch (IllegalAccessException | InvocationTargetException cause) {
-            exceptionHandler.accept(cause);
+            throw extractExceptionToReport(cause, IllegalStateException::new, FORWARD_RUNTIME_EXCEPTIONS);
         }
     }
 

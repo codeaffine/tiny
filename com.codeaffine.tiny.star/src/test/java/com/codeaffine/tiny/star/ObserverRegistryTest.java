@@ -1,5 +1,6 @@
 package com.codeaffine.tiny.star;
 
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,9 +21,13 @@ import org.mockito.InOrder;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 class ObserverRegistryTest {
+
+    static final int OBSERVER_NOTIFICATION_TIMEOUT = 40;
+
 
     private ObservedConsumerListener observedConsumingListener;
     private ParameterlessListener parameterlessListener;
@@ -42,12 +47,19 @@ class ObserverRegistryTest {
         void eventFired();
     }
 
+    public static class SlowListener {
+        @ObserverAnnotation
+        public void eventFired() {
+            sleepFor( OBSERVER_NOTIFICATION_TIMEOUT * 2 );
+        }
+    }
+
     static class Observed {
 
         private final ObserverRegistry<Observed> observerRegistry;
 
         Observed() {
-            observerRegistry = new ObserverRegistry<>(this, Observed.class, ObserverAnnotation.class);
+            observerRegistry = new ObserverRegistry<>(this, Observed.class, OBSERVER_NOTIFICATION_TIMEOUT, ObserverAnnotation.class);
         }
 
         void registerObserver(Object lifecycleListener) {
@@ -94,6 +106,17 @@ class ObserverRegistryTest {
         assertThat(actual).isSameAs(expected);
     }
 
+    @Test
+    void notifyObserversIfListenerExecutionExceedsTimeout() {
+        observed.registerObserver(new SlowListener());
+
+        Throwable actual = catchThrowable(() -> observed.fireEvent());
+
+        assertThat(actual)
+            .isInstanceOf(IllegalStateException.class)
+            .hasCauseInstanceOf(TimeoutException.class);
+    }
+
     @ParameterizedTest
     @MethodSource("provideObserversWithIllegalSignature")
     void registerObserverWithIllegalSignature(Object listenerWithIllegalMethodSignature) {
@@ -119,19 +142,19 @@ class ObserverRegistryTest {
 
     @Test
     void constructWithNullAsArgumentNameArgument() {
-        assertThatThrownBy(() -> new ObserverRegistry<>(null, Observed.class, ObserverAnnotation.class))
+        assertThatThrownBy(() -> new ObserverRegistry<>(null, Observed.class, OBSERVER_NOTIFICATION_TIMEOUT, ObserverAnnotation.class))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsArgumentTypeArgument() {
-        assertThatThrownBy(() -> new ObserverRegistry<>(observed, null, ObserverAnnotation.class))
+        assertThatThrownBy(() -> new ObserverRegistry<>(observed, null, OBSERVER_NOTIFICATION_TIMEOUT, ObserverAnnotation.class))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsAnnotationTypeArgument() {
-        assertThatThrownBy(() -> new ObserverRegistry<>(observed, Observed.class, (Class<? extends Annotation>[]) null))
+        assertThatThrownBy(() -> new ObserverRegistry<>(observed, Observed.class, OBSERVER_NOTIFICATION_TIMEOUT, (Class<? extends Annotation>[]) null))
             .isInstanceOf(NullPointerException.class);
     }
 

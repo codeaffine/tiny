@@ -56,7 +56,7 @@ class CommandLineInterfaceTest {
     @AfterEach
     void tearDown() throws InterruptedException {
         commandLineInterface.stopCli();
-        boolean isTerminated = executor.awaitTermination(100, MILLISECONDS);
+        boolean isTerminated = executor.awaitTermination(ExecutorServiceAdapter.TIMEOUT_AWAITING_TERMINATION, MILLISECONDS);
         assertThat(isTerminated).isTrue();
     }
 

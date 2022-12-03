@@ -82,10 +82,13 @@ public class CommandLineInterface {
     }
 
     private static void printHelpOnStartup(ApplicationInstance applicationInstance, Map<String, CliCommand> codeToCommandMap, Logger logger) {
-        codeToCommandMap.values().forEach(command -> {
-            if(command.printHelpOnStartup()) {
-                logger.info(command.getDescription(command.getCode(), applicationInstance));
-            }
-        });
+        codeToCommandMap.values()
+            .forEach(command -> printHelpOnStartup(applicationInstance, command, logger));
+    }
+
+    private static void printHelpOnStartup(ApplicationInstance applicationInstance, CliCommand command, Logger logger) {
+        if(command.printHelpOnStartup()) {
+            logger.info(command.getDescription(command, applicationInstance));
+        }
     }
 }

@@ -9,7 +9,7 @@ import static com.codeaffine.tiny.star.ApplicationInstance.State.STOPPING;
 import static com.codeaffine.tiny.star.ApplicationInstance.Stopped;
 import static com.codeaffine.tiny.star.ApplicationInstance.Stopping;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.*;
-import static com.codeaffine.tiny.star.Messages.INFO_SHUTDOWN_CONFIRMATION;
+import static com.codeaffine.tiny.star.Texts.INFO_SHUTDOWN_CONFIRMATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -135,7 +135,7 @@ class ApplicationInstanceImplTest {
         verify(starter, never()).run();
         verify(lifecycleConsumingListener, never()).started(applicationInstance);
         verify(parameterlessListener, never()).started();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_HALTED);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_HALTED);
         assertThat(afterState)
             .isSameAs(beforeState)
             .isSameAs(RUNNING);
@@ -148,7 +148,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.start();
 
         verifyStartProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_HALTED);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_HALTED);
     }
 
     @Test
@@ -158,7 +158,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.start();
 
         verifyStartProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_HALTED);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_HALTED);
     }
 
     @Test
@@ -170,7 +170,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.stop();
 
         verifyStopProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_HALTED);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_HALTED);
     }
 
     @Test
@@ -182,7 +182,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.stop();
 
         verifyStopProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_HALTED);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_HALTED);
     }
 
     @Test
@@ -215,8 +215,8 @@ class ApplicationInstanceImplTest {
         order.verify(lifecycleConsumingListener).stopped(applicationInstance);
         order.verify(parameterlessListener).stopped();
         assertThat(actual).isSameAs(expected);
-        verify(logger).error(Messages.ERROR_NOTIFYING_STARTED_LISTENER, expected);
-        verify(logger).error(Messages.ENFORCING_APPLICATION_TERMINATION);
+        verify(logger).error(Texts.ERROR_NOTIFYING_STARTED_LISTENER, expected);
+        verify(logger).error(Texts.ENFORCING_APPLICATION_TERMINATION);
     }
 
     @Test
@@ -233,13 +233,13 @@ class ApplicationInstanceImplTest {
         order.verify(starter).run();
         order.verify(lifecycleConsumingListener).started(applicationInstance);
         order.verify(lifecycleConsumingListener).stopping(applicationInstance);
-        order.verify(logger).error(Messages.ERROR_NOTIFYING_STOPPING_LISTENER, expected);
+        order.verify(logger).error(Texts.ERROR_NOTIFYING_STOPPING_LISTENER, expected);
         order.verify(terminator).run();
         order.verify(lifecycleConsumingListener).stopped(applicationInstance);
         order.verify(parameterlessListener).stopped();
         assertThat(actual).isSameAs(expected);
-        verify(logger).error(Messages.ERROR_NOTIFYING_STARTED_LISTENER, expected);
-        verify(logger).error(Messages.ENFORCING_APPLICATION_TERMINATION);
+        verify(logger).error(Texts.ERROR_NOTIFYING_STARTED_LISTENER, expected);
+        verify(logger).error(Texts.ENFORCING_APPLICATION_TERMINATION);
     }
 
     @Test
@@ -271,7 +271,7 @@ class ApplicationInstanceImplTest {
         verify(terminator, never()).run();
         verify(lifecycleConsumingListener, never()).stopped(applicationInstance);
         verify(parameterlessListener, never()).stopped();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_RUNNING);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_RUNNING);
         assertThat(beforeState)
             .isSameAs(afterState)
             .isSameAs(HALTED);
@@ -286,7 +286,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.stop();
 
         verifyStopProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_RUNNING);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_RUNNING);
     }
 
     @Test
@@ -298,7 +298,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.stop();
 
         verifyStopProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_RUNNING);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_RUNNING);
     }
 
     @Test
@@ -308,7 +308,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.start();
 
         verifyStartProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_RUNNING);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_RUNNING);
     }
 
     @Test
@@ -318,7 +318,7 @@ class ApplicationInstanceImplTest {
         applicationInstance.start();
 
         verifyStartProcedure();
-        verify(logger).debug(Messages.DEBUG_APPLICATION_NOT_RUNNING);
+        verify(logger).debug(Texts.DEBUG_APPLICATION_NOT_RUNNING);
     }
 
     @Test
@@ -332,14 +332,14 @@ class ApplicationInstanceImplTest {
 
         InOrder order = inOrder(terminator, lifecycleConsumingListener, parameterlessListener, logger);
         order.verify(lifecycleConsumingListener).stopping(applicationInstance);
-        order.verify(logger).error(Messages.ERROR_NOTIFYING_STOPPING_LISTENER, expected);
+        order.verify(logger).error(Texts.ERROR_NOTIFYING_STOPPING_LISTENER, expected);
         order.verify(terminator).run();
         order.verify(lifecycleConsumingListener).stopped(applicationInstance);
         order.verify(parameterlessListener).stopped();
         order.verifyNoMoreInteractions();
         assertThat(actual)
             .isInstanceOf(LifecycleException.class)
-            .hasMessage(Messages.ERROR_TERMINATING_APPLICATION);
+            .hasMessage(Texts.ERROR_TERMINATING_APPLICATION);
     }
 
     @Test
@@ -356,11 +356,11 @@ class ApplicationInstanceImplTest {
         order.verify(parameterlessListener).stopping();
         order.verify(terminator).run();
         order.verify(lifecycleConsumingListener).stopped(applicationInstance);
-        order.verify(logger).error(Messages.ERROR_NOTIFYING_STOPPED_LISTENER, expected);
+        order.verify(logger).error(Texts.ERROR_NOTIFYING_STOPPED_LISTENER, expected);
         order.verifyNoMoreInteractions();
         assertThat(actual)
             .isInstanceOf(LifecycleException.class)
-            .hasMessage(Messages.ERROR_TERMINATING_APPLICATION);
+            .hasMessage(Texts.ERROR_TERMINATING_APPLICATION);
     }
 
     @ParameterizedTest

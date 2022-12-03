@@ -5,7 +5,7 @@ import static lombok.AccessLevel.PRIVATE;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = PRIVATE)
-class Messages {
+class Texts {
 
     static final String ERROR_INVALID_METHOD_SIGNATURE = "Invalid method signature: %s.%s(...). "
         + "%s listeners methods have either no parameter or a single parameter of type %s.";

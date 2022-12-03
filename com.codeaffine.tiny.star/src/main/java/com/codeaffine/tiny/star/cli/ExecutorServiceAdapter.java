@@ -1,6 +1,7 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.cli.Messages.ERROR_AWAITING_SHUT_DOWN_CLI;
+import static com.codeaffine.tiny.star.cli.Texts.*;
+import static com.codeaffine.tiny.star.cli.Texts.ERROR_AWAITING_SHUT_DOWN_CLI;
 import static lombok.AccessLevel.PACKAGE;
 
 import static java.lang.Thread.currentThread;
@@ -13,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = PACKAGE)
 class ExecutorServiceAdapter {
 
-    static final int TIMEOUT_AWAITING_TERMINATION = 100;
+    static final int TIMEOUT_AWAITING_TERMINATION = 30_000;
 
     @NonNull
     private final ExecutorService executorService;
@@ -30,7 +31,7 @@ class ExecutorServiceAdapter {
     }
 
     void stop() {
-        shutdownHandler = new Thread(this::handleExecutorServiceShutdown, "Shutdown Handler Command Line Interface");
+        shutdownHandler = new Thread(this::handleExecutorServiceShutdown, SHUTDOWN_THREAD_NAME);
         shutdownHandler.start();
     }
 
@@ -43,7 +44,7 @@ class ExecutorServiceAdapter {
             }
         } catch (InterruptedException cause) {
             currentThread().interrupt();
-            throw new IllegalStateException(Messages.ERROR_SHUTING_DOWN_CLI, cause);
+            throw new IllegalStateException(ERROR_SHUTTING_DOWN_CLI, cause);
         }
     }
 }

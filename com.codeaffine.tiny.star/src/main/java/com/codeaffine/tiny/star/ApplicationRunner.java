@@ -3,9 +3,9 @@ package com.codeaffine.tiny.star;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
 import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
 import static com.codeaffine.tiny.star.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.Messages.INFO_SERVER_USAGE;
-import static com.codeaffine.tiny.star.Messages.INFO_STARTUP_CONFIRMATION;
-import static com.codeaffine.tiny.star.Messages.INFO_WORKING_DIRECTORY;
+import static com.codeaffine.tiny.star.Texts.INFO_SERVER_USAGE;
+import static com.codeaffine.tiny.star.Texts.INFO_STARTUP_CONFIRMATION;
+import static com.codeaffine.tiny.star.Texts.INFO_WORKING_DIRECTORY;
 import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
 import static com.codeaffine.tiny.star.common.Metric.measureDuration;
 import static lombok.Builder.Default;
@@ -100,9 +100,9 @@ public class ApplicationRunner {
         if(isNull(workingDirectory)) {
             result = createTemporayDirectory(applicationIdentifier);
         } else if(!result.exists()) {
-            throw new IllegalArgumentException(format(Messages.ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST, result.getAbsolutePath()));
+            throw new IllegalArgumentException(format(Texts.ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST, result.getAbsolutePath()));
         } else if(!result.isDirectory()) {
-            throw new IllegalArgumentException(format(Messages.ERROR_GIVEN_WORKING_DIRECTORY_FILE_IS_NOT_A_DIRECTORY, result.getAbsolutePath()));
+            throw new IllegalArgumentException(format(Texts.ERROR_GIVEN_WORKING_DIRECTORY_FILE_IS_NOT_A_DIRECTORY, result.getAbsolutePath()));
         }
         System.setProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY, result.getAbsolutePath());
         return result;

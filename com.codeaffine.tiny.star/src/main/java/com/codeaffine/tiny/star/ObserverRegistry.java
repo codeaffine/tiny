@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.Messages.ERROR_INVALID_METHOD_SIGNATURE;
+import static com.codeaffine.tiny.star.Texts.ERROR_INVALID_METHOD_SIGNATURE;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;

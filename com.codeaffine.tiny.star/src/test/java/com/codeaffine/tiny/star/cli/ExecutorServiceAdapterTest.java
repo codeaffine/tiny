@@ -2,8 +2,8 @@ package com.codeaffine.tiny.star.cli;
 
 import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.*;
 import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static com.codeaffine.tiny.star.cli.Messages.ERROR_AWAITING_SHUT_DOWN_CLI;
-import static com.codeaffine.tiny.star.cli.Messages.ERROR_SHUTING_DOWN_CLI;
+import static com.codeaffine.tiny.star.cli.Texts.ERROR_AWAITING_SHUT_DOWN_CLI;
+import static com.codeaffine.tiny.star.cli.Texts.ERROR_SHUTTING_DOWN_CLI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
@@ -111,7 +111,7 @@ class ExecutorServiceAdapterTest {
         executor.shutdownHandler.interrupt();
         sleepFor(MILLIS_IN_WHICH_SERVER_IS_EXPECTED_TO_BE_HALTED);
 
-        assertThat(systemErrCaptor.getLog()).contains(ERROR_SHUTING_DOWN_CLI);
+        assertThat(systemErrCaptor.getLog()).contains(ERROR_SHUTTING_DOWN_CLI);
     }
 
     @Test

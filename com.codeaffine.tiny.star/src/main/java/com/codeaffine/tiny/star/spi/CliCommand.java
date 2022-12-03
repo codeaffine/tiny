@@ -8,7 +8,7 @@ public interface CliCommand {
     }
     String getCode();
     String getName();
-    String getDescription(String code, ApplicationInstance applicationInstance);
+    String getDescription(CliCommand command, ApplicationInstance applicationInstance);
     default boolean printHelpOnStartup() {
         return false;
     }

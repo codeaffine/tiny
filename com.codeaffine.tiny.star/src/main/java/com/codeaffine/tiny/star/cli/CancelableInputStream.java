@@ -29,7 +29,7 @@ class CancelableInputStream extends InputStream {
     private volatile boolean canceled;
 
     interface Excludes {
-        int read(byte[] buffer, int off, int end); // ignore warning: Lombok method generation exclusion hint
+        int read(byte[] buffer, int off, int end) throws IOException;
         void close();
     }
 

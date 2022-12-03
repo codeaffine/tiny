@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star.extrinsic;
 
-import static com.codeaffine.tiny.star.extrinsic.Messages.ERROR_MORE_THAN_ONE_SLF4J_SERVICE_PROVIDER_DETECTED;
+import static com.codeaffine.tiny.star.extrinsic.Texts.ERROR_MORE_THAN_ONE_SLF4J_SERVICE_PROVIDER_DETECTED;
 
 import static java.lang.String.format;
 import static java.util.Map.Entry;

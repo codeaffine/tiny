@@ -2,9 +2,9 @@ package com.codeaffine.tiny.star.cli;
 
 import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static com.codeaffine.tiny.star.cli.CancelableInputStream.*;
-import static com.codeaffine.tiny.star.cli.Messages.DEBUG_DISPATCHING_COMMAND;
-import static com.codeaffine.tiny.star.cli.Messages.DEBUG_END_SCANNING_FOR_COMMANDS;
-import static com.codeaffine.tiny.star.cli.Messages.DEBUG_START_SCANNING_FOR_COMMANDS;
+import static com.codeaffine.tiny.star.cli.Texts.DEBUG_DISPATCHING_COMMAND;
+import static com.codeaffine.tiny.star.cli.Texts.DEBUG_END_SCANNING_FOR_COMMANDS;
+import static com.codeaffine.tiny.star.cli.Texts.DEBUG_START_SCANNING_FOR_COMMANDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;

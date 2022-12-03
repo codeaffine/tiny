@@ -1,5 +1,7 @@
 package com.codeaffine.tiny.star.cli;
 
+import static com.codeaffine.tiny.star.cli.Texts.*;
+
 import static java.lang.String.format;
 
 import com.codeaffine.tiny.star.ApplicationInstance;
@@ -14,21 +16,21 @@ class QuitCommand implements CliCommand {
 
     @Override
     public String getName() {
-        return "Quit";
+        return QUIT_NAME;
     }
 
     @Override
-    public String getDescription(String code, ApplicationInstance applicationInstance) {
-        return format("Type %s to stop %s instance.", code, applicationInstance.getIdentifier());
-    }
-
-    @Override
-    public boolean printHelpOnStartup() {
-        return true;
+    public String getDescription(CliCommand command, ApplicationInstance applicationInstance) {
+        return format(QUIT_DESCRIPTION, command.getCode(), applicationInstance.getIdentifier());
     }
 
     @Override
     public void execute(ApplicationInstance applicationInstance) {
         applicationInstance.stop();
+    }
+
+    @Override
+    public boolean printHelpOnStartup() {
+        return true;
     }
 }

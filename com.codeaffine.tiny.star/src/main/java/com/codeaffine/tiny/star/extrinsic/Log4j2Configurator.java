@@ -1,13 +1,13 @@
 package com.codeaffine.tiny.star.extrinsic;
 
 import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.extrinsic.Messages.ERROR_UNABLE_TO_CONFIGURE_LOG4J2;
-import static com.codeaffine.tiny.star.extrinsic.Messages.LOG_LOG4J2_CONFIGURATION_NOT_FOUND;
-import static com.codeaffine.tiny.star.extrinsic.Messages.LOG_LOG4J2_DETECTED;
-import static com.codeaffine.tiny.star.extrinsic.Messages.LOG_LOG4J2_RECONFIGURATION_SUCESSFUL;
-import static com.codeaffine.tiny.star.extrinsic.Messages.LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER;
-import static com.codeaffine.tiny.star.extrinsic.Messages.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER;
-import static com.codeaffine.tiny.star.extrinsic.Messages.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_SYSTEM_CLASS_LOADER;
+import static com.codeaffine.tiny.star.extrinsic.Texts.ERROR_UNABLE_TO_CONFIGURE_LOG4J2;
+import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_CONFIGURATION_NOT_FOUND;
+import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_DETECTED;
+import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_RECONFIGURATION_SUCESSFUL;
+import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER;
+import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER;
+import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_SYSTEM_CLASS_LOADER;
 import static lombok.AccessLevel.PACKAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 

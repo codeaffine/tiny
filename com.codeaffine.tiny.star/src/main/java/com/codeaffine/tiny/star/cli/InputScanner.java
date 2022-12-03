@@ -1,8 +1,8 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.cli.Messages.DEBUG_DISPATCHING_COMMAND;
-import static com.codeaffine.tiny.star.cli.Messages.DEBUG_END_SCANNING_FOR_COMMANDS;
-import static com.codeaffine.tiny.star.cli.Messages.DEBUG_START_SCANNING_FOR_COMMANDS;
+import static com.codeaffine.tiny.star.cli.Texts.DEBUG_DISPATCHING_COMMAND;
+import static com.codeaffine.tiny.star.cli.Texts.DEBUG_END_SCANNING_FOR_COMMANDS;
+import static com.codeaffine.tiny.star.cli.Texts.DEBUG_START_SCANNING_FOR_COMMANDS;
 import static lombok.AccessLevel.PACKAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 

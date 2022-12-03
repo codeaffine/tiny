@@ -1,12 +1,14 @@
 package com.codeaffine.tiny.star.cli;
 
+import static java.lang.String.format;
+
 import com.codeaffine.tiny.star.ApplicationInstance;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
 class TestCliCommand implements CliCommand {
 
+    static final String COMMAND = "Command";
     static final String CODE = "c";
-    static final String HELP_TEXT = "help text";
 
     @Override
     public String getCode() {
@@ -15,21 +17,26 @@ class TestCliCommand implements CliCommand {
 
     @Override
     public String getName() {
-        return "Command";
+        return COMMAND;
     }
 
     @Override
-    public String getDescription(String code, ApplicationInstance applicationInstance) {
-        return HELP_TEXT;
+    public String getDescription(CliCommand command, ApplicationInstance applicationInstance) {
+        return format("%s %s", command.getCode(), applicationInstance.getIdentifier());
+    }
+
+    @Override
+    public void execute(ApplicationInstance applicationInstance) {
+        applicationInstance.stop();
+    }
+
+    @Override
+    public boolean isHelpCommand() {
+        return true;
     }
 
     @Override
     public boolean printHelpOnStartup() {
         return true;
-    }
-
-    @Override
-    public void execute(ApplicationInstance applicationInstance) {
-
     }
 }

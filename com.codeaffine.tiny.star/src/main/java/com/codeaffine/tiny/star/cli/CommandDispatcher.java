@@ -1,5 +1,6 @@
 package com.codeaffine.tiny.star.cli;
 
+import static com.codeaffine.tiny.star.cli.Texts.STD_OUT_UNKNOWN_COMMAND;
 import static lombok.AccessLevel.PACKAGE;
 
 import static java.util.stream.Collectors.joining;
@@ -27,7 +28,7 @@ class CommandDispatcher {
             executor.execute(() -> cliCommand.execute(applicationInstance));
         } else {
             String helpCommandCodes = extractHelpCommandCodes();
-            System.out.printf("Unknown command [%s]. Type [%s] for help.%n", commandCode, helpCommandCodes); // NOSONAR
+            System.out.printf(STD_OUT_UNKNOWN_COMMAND, commandCode, helpCommandCodes); // NOSONAR
         }
     }
 

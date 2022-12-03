@@ -25,8 +25,8 @@ public class DelegatingCliCommandProvider implements CliCommandProvider {
     private static void loadAndAdd(Iterator<CliCommandProvider> providers, Set<CliCommand> result) {
         try {
             doLoadAndAdd(providers, result);
-        } catch(Exception | ServiceConfigurationError serviceConfigurationError) {
-            serviceConfigurationError.printStackTrace();
+        } catch(Exception | ServiceConfigurationError cause) {
+            cause.printStackTrace();
         }
     }
 

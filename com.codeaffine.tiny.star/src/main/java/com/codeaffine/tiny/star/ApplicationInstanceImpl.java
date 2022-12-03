@@ -6,13 +6,13 @@ import static com.codeaffine.tiny.star.ApplicationInstance.State.STARTING;
 import static com.codeaffine.tiny.star.ApplicationInstance.State.STOPPING;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.StopMode.ENFORCED;
 import static com.codeaffine.tiny.star.ApplicationInstanceImpl.StopMode.NORMAL;
-import static com.codeaffine.tiny.star.Messages.DEBUG_APPLICATION_NOT_HALTED;
-import static com.codeaffine.tiny.star.Messages.DEBUG_APPLICATION_NOT_RUNNING;
-import static com.codeaffine.tiny.star.Messages.ENFORCING_APPLICATION_TERMINATION;
-import static com.codeaffine.tiny.star.Messages.ERROR_NOTIFYING_STARTED_LISTENER;
-import static com.codeaffine.tiny.star.Messages.ERROR_NOTIFYING_STOPPED_LISTENER;
-import static com.codeaffine.tiny.star.Messages.ERROR_NOTIFYING_STOPPING_LISTENER;
-import static com.codeaffine.tiny.star.Messages.ERROR_TERMINATING_APPLICATION;
+import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_HALTED;
+import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_RUNNING;
+import static com.codeaffine.tiny.star.Texts.ENFORCING_APPLICATION_TERMINATION;
+import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STARTED_LISTENER;
+import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPED_LISTENER;
+import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPING_LISTENER;
+import static com.codeaffine.tiny.star.Texts.ERROR_TERMINATING_APPLICATION;
 import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.star.common.Metric.measureDuration;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -103,7 +103,7 @@ class ApplicationInstanceImpl implements ApplicationInstance {
     void stop(StopMode stopMode) {
         if(state.compareAndSet(RUNNING, STOPPING)) {
             measureDuration(() -> doStop(stopMode))
-                .report(duration -> logger.info(Messages.INFO_SHUTDOWN_CONFIRMATION, getIdentifier(), duration));
+                .report(duration -> logger.info(Texts.INFO_SHUTDOWN_CONFIRMATION, getIdentifier(), duration));
         } else {
             logger.debug(DEBUG_APPLICATION_NOT_RUNNING);
         }

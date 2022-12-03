@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 
 import com.codeaffine.tiny.star.ApplicationInstance;
 import com.codeaffine.tiny.star.SystemInSupplier;
-import com.codeaffine.tiny.star.spi.CliCommand;
 
 import java.io.IOException;
 import java.util.Set;
@@ -38,45 +37,8 @@ class CommandLineInterfaceTest {
     private CommandLineInterface commandLineInterface;
     private ApplicationInstance applicationInstance;
     private ExecutorService executor;
-    private TestCommand command;
+    private TestCliCommand command;
     private Logger logger;
-
-    static class TestCommand implements CliCommand {
-
-        static final String COMMAND = "Command";
-        static final String CODE = "c";
-
-        @Override
-        public String getCode() {
-            return CODE;
-        }
-
-        @Override
-        public String getName() {
-            return COMMAND;
-        }
-
-        @Override
-        public String getDescription(String code, ApplicationInstance applicationInstance) {
-            return format("%s %s", code, applicationInstance.getIdentifier());
-        }
-
-        @Override
-        public void execute(ApplicationInstance applicationInstance) {
-            System.out.println("executed");
-            applicationInstance.stop();
-        }
-
-        @Override
-        public boolean isHelpCommand() {
-            return true;
-        }
-
-        @Override
-        public boolean printHelpOnStartup() {
-            return true;
-        }
-    }
 
     @BeforeEach
     void setUp() {
@@ -88,7 +50,7 @@ class CommandLineInterfaceTest {
             return new ExecutorServiceAdapter(executor);
         };
         commandLineInterface = new CommandLineInterface(commandProvider, executorServiceAdapterFactory, new AtomicReference<>(), logger);
-        command = new TestCommand();
+        command = new TestCliCommand();
     }
 
     @AfterEach
@@ -104,7 +66,7 @@ class CommandLineInterfaceTest {
 
         commandLineInterface.startCli(applicationInstance);
 
-        verify(logger).info(command.getDescription(command.getCode(), applicationInstance));
+        verify(logger).info(command.getDescription(command, applicationInstance));
     }
 
     @Test
@@ -114,7 +76,7 @@ class CommandLineInterfaceTest {
         commandLineInterface.startCli(applicationInstance);
         commandLineInterface.startCli(applicationInstance);
 
-        verify(logger).info(command.getDescription(command.getCode(), applicationInstance));
+        verify(logger).info(command.getDescription(command, applicationInstance));
     }
 
     @Test
@@ -140,7 +102,7 @@ class CommandLineInterfaceTest {
         systemInSupplier.getSupplierOutputStream().write(format("%s%n", command.getCode()).getBytes());
 
         verify(applicationInstance, never()).stop();
-        verify(logger).info(command.getDescription(command.getCode(), applicationInstance));
+        verify(logger).info(command.getDescription(command, applicationInstance));
     }
 
     @Test
@@ -156,7 +118,7 @@ class CommandLineInterfaceTest {
 
         assertThat(actual).isNull();
         verify(applicationInstance, never()).stop();
-        verify(logger).info(command.getDescription(command.getCode(), applicationInstance));
+        verify(logger).info(command.getDescription(command, applicationInstance));
     }
 
     @Test
@@ -169,10 +131,10 @@ class CommandLineInterfaceTest {
         boolean isTerminated = executor.awaitTermination(100, MILLISECONDS);
         commandLineInterface.startCli(applicationInstance);
 
-        verify(logger, times(2)).info(command.getDescription(command.getCode(), applicationInstance));
+        verify(logger, times(2)).info(command.getDescription(command, applicationInstance));
     }
 
-    private void stubDelegatingCliCommandProvider(TestCommand ... commands) {
+    private void stubDelegatingCliCommandProvider(TestCliCommand... commands) {
         when(commandProvider.getCliCommands()).thenReturn(Set.of(commands));
     }
 

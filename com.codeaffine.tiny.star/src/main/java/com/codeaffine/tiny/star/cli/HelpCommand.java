@@ -1,17 +1,16 @@
 package com.codeaffine.tiny.star.cli;
 
+import static com.codeaffine.tiny.star.cli.Texts.HELP_DESCRIPTION;
+import static com.codeaffine.tiny.star.cli.Texts.HELP_NAME;
+import static com.codeaffine.tiny.star.cli.Texts.STD_OUT_AVAILABLE_COMMANDS_DESCRIPTION;
 import static lombok.AccessLevel.PACKAGE;
-import static org.slf4j.LoggerFactory.getLogger;
 
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 
-import org.slf4j.Logger;
-
 import com.codeaffine.tiny.star.ApplicationInstance;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
-import java.util.Comparator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -20,11 +19,9 @@ class HelpCommand implements CliCommand {
 
     @NonNull
     private final DelegatingCliCommandProvider commandProvider;
-    @NonNull
-    private final Logger logger;
 
     HelpCommand() {
-        this(new DelegatingCliCommandProvider(), getLogger(HelpCommand.class));
+        this(new DelegatingCliCommandProvider());
     }
 
     @Override
@@ -34,23 +31,12 @@ class HelpCommand implements CliCommand {
 
     @Override
     public String getName() {
-        return "Help";
+        return HELP_NAME;
     }
 
     @Override
-    public String getDescription(String code, ApplicationInstance applicationInstance) {
-        return format("Type %s to show a description of available commands.", code);
-    }
-
-    @Override
-    public void execute(ApplicationInstance applicationInstance) {
-        System.out.println("Available commands:\n(name [keycode]: description)\n"); // NOSONAR: answers to help requests are intentionally written to stdout
-        commandProvider.getCliCommands()
-            .stream()
-            .sorted(comparing(CliCommand::getName))
-            .forEach(command -> {
-                System.out.printf("%s [%s]%n  %s%n",command.getName(), command.getCode(), command.getDescription(command.getCode(), applicationInstance)); // NOSONAR: answers to help requests are intentionally written to stdout
-            });
+    public String getDescription(CliCommand command, ApplicationInstance applicationInstance) {
+        return format(HELP_DESCRIPTION, command.getCode());
     }
 
     @Override
@@ -61,5 +47,25 @@ class HelpCommand implements CliCommand {
     @Override
     public boolean isHelpCommand() {
         return true;
+    }
+
+    @Override
+    public void execute(ApplicationInstance applicationInstance) {
+        printHelpHeader();
+        commandProvider.getCliCommands()
+            .stream()
+            .sorted(comparing(CliCommand::getName))
+            .forEach(command -> printCommandSection(applicationInstance, command));
+    }
+
+    private static void printHelpHeader() {
+        System.out.println(STD_OUT_AVAILABLE_COMMANDS_DESCRIPTION); // NOSONAR: answers to help requests are intentionally written to stdout
+    }
+
+    private static void printCommandSection(ApplicationInstance applicationInstance, CliCommand command) {
+        String name = command.getName();
+        String code = command.getCode();
+        String description = command.getDescription(command, applicationInstance);
+        System.out.printf("%s [%s]%n  %s%n", name, code, description); // NOSONAR: answers to help requests are intentionally written to stdout
     }
 }

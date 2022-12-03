@@ -6,9 +6,9 @@ import static com.codeaffine.tiny.star.ApplicationRunner.SYSTEM_PROPERTY_APPLICA
 import static com.codeaffine.tiny.star.ApplicationRunner.newApplicationRunnerBuilder;
 import static com.codeaffine.tiny.star.ApplicationRunnerTestContext.CURRENT_SERVER;
 import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
-import static com.codeaffine.tiny.star.Messages.INFO_SERVER_USAGE;
-import static com.codeaffine.tiny.star.Messages.INFO_STARTUP_CONFIRMATION;
-import static com.codeaffine.tiny.star.Messages.INFO_WORKING_DIRECTORY;
+import static com.codeaffine.tiny.star.Texts.INFO_SERVER_USAGE;
+import static com.codeaffine.tiny.star.Texts.INFO_STARTUP_CONFIRMATION;
+import static com.codeaffine.tiny.star.Texts.INFO_WORKING_DIRECTORY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;

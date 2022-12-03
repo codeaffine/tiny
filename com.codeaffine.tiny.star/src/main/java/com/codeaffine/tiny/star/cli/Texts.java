@@ -19,4 +19,7 @@ class Texts {
     static final String QUIT_NAME = "Quit";
     static final String HELP_DESCRIPTION = "Type %s to show a description of available commands.";
     static final String HELP_NAME = "Help";
+    static final String STATE_DESCRIPTION = "Type %s to show the state information of the %s application instance.";
+    static final String STATE_NAME = "State";
+    static final String STD_OUT_STATE_INFO = "State of application instance %s: %s%n";
 }

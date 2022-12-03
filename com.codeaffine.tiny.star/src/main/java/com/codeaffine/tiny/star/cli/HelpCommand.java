@@ -66,6 +66,6 @@ class HelpCommand implements CliCommand {
         String name = command.getName();
         String code = command.getCode();
         String description = command.getDescription(command, applicationInstance);
-        System.out.printf("%s [%s]%n  %s%n", name, code, description); // NOSONAR: answers to help requests are intentionally written to stdout
+        System.out.printf("%s [%s]:%n  %s%n", name, code, description); // NOSONAR: answers to help requests are intentionally written to stdout
     }
 }

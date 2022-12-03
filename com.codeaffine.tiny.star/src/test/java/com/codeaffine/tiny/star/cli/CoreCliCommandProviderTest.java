@@ -19,6 +19,6 @@ class CoreCliCommandProviderTest implements CliCommandProviderContract<CoreCliCo
     public void assertProvidedCliCommands(AbstractCollectionAssert<?, Collection<? extends CliCommand>, CliCommand, ObjectAssert<CliCommand>> cliCommands) {
         cliCommands
             .map(command -> command.getClass().getName())
-            .containsExactlyInAnyOrder(QuitCommand.class.getName(), HelpCommand.class.getName());
+            .containsExactlyInAnyOrder(QuitCommand.class.getName(), HelpCommand.class.getName(), StateCommand.class.getName());
     }
 }

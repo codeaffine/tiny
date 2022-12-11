@@ -5,7 +5,7 @@ import static lombok.AccessLevel.PACKAGE;
 
 import static java.util.stream.Collectors.joining;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
 import java.util.Map;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 class CommandDispatcher {
 
     @NonNull
-    private final ApplicationInstance applicationInstance;
+    private final ApplicationServer applicationServer;
     @NonNull
     private final Map<String, CliCommand> codeToCommandMap;
     @NonNull
@@ -25,7 +25,7 @@ class CommandDispatcher {
     void dispatchCommand(String commandCode) {
         if (codeToCommandMap.containsKey(commandCode)) {
             CliCommand cliCommand = codeToCommandMap.get(commandCode);
-            executor.execute(() -> cliCommand.execute(applicationInstance));
+            executor.execute(() -> cliCommand.execute(applicationServer));
         } else {
             String helpCommandCodes = extractHelpCommandCodes();
             System.out.printf(STD_OUT_UNKNOWN_COMMAND, commandCode, helpCommandCodes); // NOSONAR

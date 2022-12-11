@@ -2,7 +2,7 @@ package com.codeaffine.tiny.star.cli;
 
 import static java.lang.String.format;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
 class TestCliCommand implements CliCommand {
@@ -21,13 +21,13 @@ class TestCliCommand implements CliCommand {
     }
 
     @Override
-    public String getDescription(CliCommand command, ApplicationInstance applicationInstance) {
-        return format("%s %s", command.getCode(), applicationInstance.getIdentifier());
+    public String getDescription(CliCommand command, ApplicationServer applicationServer) {
+        return format("%s %s", command.getCode(), applicationServer.getIdentifier());
     }
 
     @Override
-    public void execute(ApplicationInstance applicationInstance) {
-        applicationInstance.stop();
+    public void execute(ApplicationServer applicationServer) {
+        applicationServer.stop();
     }
 
     @Override

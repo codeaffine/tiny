@@ -1,10 +1,11 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.cli.Texts.*;
+import static com.codeaffine.tiny.star.cli.Texts.QUIT_DESCRIPTION;
+import static com.codeaffine.tiny.star.cli.Texts.QUIT_NAME;
 
 import static java.lang.String.format;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
 class QuitCommand implements CliCommand {
@@ -20,12 +21,12 @@ class QuitCommand implements CliCommand {
     }
 
     @Override
-    public String getDescription(CliCommand command, ApplicationInstance applicationInstance) {
+    public String getDescription(CliCommand command, ApplicationServer applicationInstance) {
         return format(QUIT_DESCRIPTION, command.getCode(), applicationInstance.getIdentifier());
     }
 
     @Override
-    public void execute(ApplicationInstance applicationInstance) {
+    public void execute(ApplicationServer applicationInstance) {
         applicationInstance.stop();
     }
 

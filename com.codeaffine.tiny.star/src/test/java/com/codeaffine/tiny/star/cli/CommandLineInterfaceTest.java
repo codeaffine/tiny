@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.SystemInSupplier;
 
 import java.io.IOException;
@@ -35,14 +35,14 @@ class CommandLineInterfaceTest {
 
     private DelegatingCliCommandProvider commandProvider;
     private CommandLineInterface commandLineInterface;
-    private ApplicationInstance applicationInstance;
+    private ApplicationServer applicationServer;
     private ExecutorService executor;
     private TestCliCommand command;
     private Logger logger;
 
     @BeforeEach
     void setUp() {
-        applicationInstance = stubApplicationInstance();
+        applicationServer = stubApplicationInstance();
         commandProvider = mock(DelegatingCliCommandProvider.class);
         logger = mock(Logger.class);
         Supplier<ExecutorServiceAdapter> executorServiceAdapterFactory = () -> {
@@ -64,19 +64,19 @@ class CommandLineInterfaceTest {
     void startCli() {
         stubDelegatingCliCommandProvider(command);
 
-        commandLineInterface.startCli(applicationInstance);
+        commandLineInterface.startCli(applicationServer);
 
-        verify(logger).info(command.getDescription(command, applicationInstance));
+        verify(logger).info(command.getDescription(command, applicationServer));
     }
 
     @Test
     void startCliMoreThanOnce() {
         stubDelegatingCliCommandProvider(command);
 
-        commandLineInterface.startCli(applicationInstance);
-        commandLineInterface.startCli(applicationInstance);
+        commandLineInterface.startCli(applicationServer);
+        commandLineInterface.startCli(applicationServer);
 
-        verify(logger).info(command.getDescription(command, applicationInstance));
+        verify(logger).info(command.getDescription(command, applicationServer));
     }
 
     @Test
@@ -84,11 +84,11 @@ class CommandLineInterfaceTest {
     void handleCommandRequest(SystemInSupplier systemInSupplier) throws IOException {
         stubDelegatingCliCommandProvider(command);
 
-        commandLineInterface.startCli(applicationInstance);
+        commandLineInterface.startCli(applicationServer);
         systemInSupplier.getSupplierOutputStream().write(format("%s%n", command.getCode()).getBytes());
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
 
-        verify(applicationInstance).stop();
+        verify(applicationServer).stop();
     }
 
     @Test
@@ -96,13 +96,13 @@ class CommandLineInterfaceTest {
     void stopCli(SystemInSupplier systemInSupplier) throws IOException {
         stubDelegatingCliCommandProvider(command);
 
-        commandLineInterface.startCli(applicationInstance);
+        commandLineInterface.startCli(applicationServer);
         commandLineInterface.stopCli();
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         systemInSupplier.getSupplierOutputStream().write(format("%s%n", command.getCode()).getBytes());
 
-        verify(applicationInstance, never()).stop();
-        verify(logger).info(command.getDescription(command, applicationInstance));
+        verify(applicationServer, never()).stop();
+        verify(logger).info(command.getDescription(command, applicationServer));
     }
 
     @Test
@@ -110,36 +110,36 @@ class CommandLineInterfaceTest {
     void stopCliMoreThanOnce(SystemInSupplier systemInSupplier) throws IOException {
         stubDelegatingCliCommandProvider(command);
 
-        commandLineInterface.startCli(applicationInstance);
+        commandLineInterface.startCli(applicationServer);
         commandLineInterface.stopCli();
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         Throwable actual = catchThrowable(() -> commandLineInterface.stopCli());
         systemInSupplier.getSupplierOutputStream().write(format("%s%n", command.getCode()).getBytes());
 
         assertThat(actual).isNull();
-        verify(applicationInstance, never()).stop();
-        verify(logger).info(command.getDescription(command, applicationInstance));
+        verify(applicationServer, never()).stop();
+        verify(logger).info(command.getDescription(command, applicationServer));
     }
 
     @Test
     void restartCli() throws InterruptedException {
         stubDelegatingCliCommandProvider(command);
 
-        commandLineInterface.startCli(applicationInstance);
+        commandLineInterface.startCli(applicationServer);
         commandLineInterface.stopCli();
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         boolean isTerminated = executor.awaitTermination(100, MILLISECONDS);
-        commandLineInterface.startCli(applicationInstance);
+        commandLineInterface.startCli(applicationServer);
 
-        verify(logger, times(2)).info(command.getDescription(command, applicationInstance));
+        verify(logger, times(2)).info(command.getDescription(command, applicationServer));
     }
 
     private void stubDelegatingCliCommandProvider(TestCliCommand... commands) {
         when(commandProvider.getCliCommands()).thenReturn(Set.of(commands));
     }
 
-    private static ApplicationInstance stubApplicationInstance() {
-        ApplicationInstance result = mock(ApplicationInstance.class);
+    private static ApplicationServer stubApplicationInstance() {
+        ApplicationServer result = mock(ApplicationServer.class);
         when(result.getIdentifier()).thenReturn(APPLICATION_IDENTIFIER);
         return result;
     }

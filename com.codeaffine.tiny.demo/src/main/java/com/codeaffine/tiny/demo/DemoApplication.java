@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.demo;
 
-import static com.codeaffine.tiny.star.ApplicationRunner.newApplicationRunnerBuilder;
+import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.application.Application;
@@ -19,11 +19,11 @@ public class DemoApplication extends AbstractEntryPoint {
     private static final String TEXT = "Hello World!\n\nGive me something unique:";
 
     public static void main(String[] args) {
-        newApplicationRunnerBuilder(DemoApplication::configure)
+        newApplicationServerBuilder(DemoApplication::configure)
             .withLifecycleListener(new CommandLineInterface())
             .withApplicationIdentifier(DemoApplication.class.getName())
             .build()
-            .run();
+            .start();
     }
 
     static void configure(Application application) {

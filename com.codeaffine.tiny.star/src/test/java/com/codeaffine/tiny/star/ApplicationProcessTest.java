@@ -1,21 +1,25 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationInstance.Started;
-import static com.codeaffine.tiny.star.ApplicationInstance.Starting;
-import static com.codeaffine.tiny.star.ApplicationInstance.State.HALTED;
-import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
-import static com.codeaffine.tiny.star.ApplicationInstance.State.STARTING;
-import static com.codeaffine.tiny.star.ApplicationInstance.State.STOPPING;
-import static com.codeaffine.tiny.star.ApplicationInstance.Stopped;
-import static com.codeaffine.tiny.star.ApplicationInstance.Stopping;
-import static com.codeaffine.tiny.star.ApplicationInstanceImpl.*;
-import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.star.Texts.INFO_SHUTDOWN_CONFIRMATION;
+import static com.codeaffine.tiny.star.ApplicationProcess.LifecycleException;
+import static com.codeaffine.tiny.star.ApplicationServer.Started;
+import static com.codeaffine.tiny.star.ApplicationServer.Starting;
+import static com.codeaffine.tiny.star.ApplicationServer.State;
+import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
+import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
+import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
+import static com.codeaffine.tiny.star.ApplicationServer.State.STOPPING;
+import static com.codeaffine.tiny.star.ApplicationServer.Stopped;
+import static com.codeaffine.tiny.star.ApplicationServer.Stopping;
+import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_HALTED;
+import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_RUNNING;
+import static com.codeaffine.tiny.star.Texts.ENFORCING_APPLICATION_TERMINATION;
+import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STARTED_LISTENER;
+import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPED_LISTENER;
+import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPING_LISTENER;
+import static com.codeaffine.tiny.star.Texts.ERROR_TERMINATING_APPLICATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
@@ -23,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,26 +40,27 @@ import org.slf4j.Logger;
 
 import java.util.stream.Stream;
 
-class ApplicationInstanceImplTest {
+class ApplicationProcessTest {
 
     private static final String IDENTIFIER = "identifier";
 
     private LifecycleConsumerListener lifecycleConsumingListener;
     private ParameterlessListener parameterlessListener;
-    private ApplicationInstanceImpl applicationInstance;
+    private ApplicationProcess applicationProcess;
+    private ApplicationServer applicationServer;
     private Runnable terminator;
     private Runnable starter;
     private Logger logger;
 
     interface LifecycleConsumerListener {
         @Starting
-        void starting(ApplicationInstance applicationInstance);
+        void starting(ApplicationServer applicationServer);
         @Started
-        void started(ApplicationInstance applicationInstance);
+        void started(ApplicationServer applicationServer);
         @Stopping
-        void stopping(ApplicationInstance applicationInstance);
+        void stopping(ApplicationServer applicationServer);
         @Stopped
-        void stopped(ApplicationInstance applicationInstance);
+        void stopped(ApplicationServer applicationServer);
     }
 
     interface ParameterlessListener {
@@ -68,73 +74,51 @@ class ApplicationInstanceImplTest {
         void stopped();
     }
 
-    static class StartingStateCaptor {
-
-        State captured;
-
-        @Starting
-        void captureState(ApplicationInstance applicationInstance) {
-            captured = applicationInstance.getState();
-        }
-    }
-
-    static class StoppingStateCaptor {
-
-        State captured;
-
-        @Stopping
-        void captureState(ApplicationInstance applicationInstance) {
-            captured = applicationInstance.getState();
-        }
-    }
-
     @BeforeEach
     void setUp() {
         terminator = mock(Runnable.class);
         starter = mock(Runnable.class);
         logger = mock(Logger.class);
-        applicationInstance = new ApplicationInstanceImpl(IDENTIFIER, starter, terminator, logger);
+        applicationServer = stubApplicationServer();
+        applicationProcess = new ApplicationProcess(applicationServer, starter, terminator, logger);
+        stubApplicationServerGetState();
         lifecycleConsumingListener = mock(LifecycleConsumerListener.class);
         parameterlessListener = mock(ParameterlessListener.class);
-        applicationInstance.registerLifecycleListener(lifecycleConsumingListener);
-        applicationInstance.registerLifecycleListener(parameterlessListener);
-    }
-
-    @Test
-    void getIdentifier() {
-        String actual = applicationInstance.getIdentifier();
-
-        assertThat(actual).isEqualTo(IDENTIFIER);
+        applicationProcess.registerLifecycleListener(lifecycleConsumingListener);
+        applicationProcess.registerLifecycleListener(parameterlessListener);
     }
 
     @Test
     void start() {
-        StartingStateCaptor startingStateCaptor = new StartingStateCaptor();
-        applicationInstance.registerLifecycleListener(startingStateCaptor);
+        StateCaptor stateCaptor = new StateCaptor();
+        applicationProcess.registerLifecycleListener(stateCaptor);
 
-        State beforeState = applicationInstance.getState();
-        applicationInstance.start();
-        State afterState = applicationInstance.getState();
+        State beforeState = applicationProcess.getState();
+        applicationProcess.start();
+        State afterState = applicationProcess.getState();
 
         assertThat(beforeState).isSameAs(HALTED);
-        assertThat(startingStateCaptor.captured).isSameAs(STARTING);
         assertThat(afterState).isSameAs(RUNNING);
+        assertThat(stateCaptor.getHalted()).isNull();
+        assertThat(stateCaptor.getStarting()).isSameAs(STARTING);
+        assertThat(stateCaptor.getStarted()).isSameAs(STARTING);
+        assertThat(stateCaptor.getStopping()).isNull();
         verifyStartProcedure();
     }
 
     @Test
     void startIfRunning() {
-        applicationInstance.start();
+        applicationProcess.start();
         reset(starter, lifecycleConsumingListener, parameterlessListener);
 
-        State beforeState = applicationInstance.getState();
-        applicationInstance.start();
-        State afterState = applicationInstance.getState();
+        State beforeState = applicationProcess.getState();
+        applicationProcess.start();
+        State afterState = applicationProcess.getState();
 
-        verify(lifecycleConsumingListener, never()).starting(applicationInstance);
+        verify(lifecycleConsumingListener, never()).starting(applicationServer);
         verify(parameterlessListener, never()).starting();
         verify(starter, never()).run();
-        verify(lifecycleConsumingListener, never()).started(applicationInstance);
+        verify(lifecycleConsumingListener, never()).started(applicationServer);
         verify(parameterlessListener, never()).started();
         verify(logger).debug(DEBUG_APPLICATION_NOT_HALTED);
         assertThat(afterState)
@@ -144,9 +128,9 @@ class ApplicationInstanceImplTest {
 
     @Test
     void startOnStarting() {
-        startOn().starting(applicationInstance);
+        startOn().starting(applicationServer);
 
-        applicationInstance.start();
+        applicationProcess.start();
 
         verifyStartProcedure();
         verify(logger).debug(DEBUG_APPLICATION_NOT_HALTED);
@@ -154,9 +138,9 @@ class ApplicationInstanceImplTest {
 
     @Test
     void startOnStarted() {
-        startOn().started(applicationInstance);
+        startOn().started(applicationServer);
 
-        applicationInstance.start();
+        applicationProcess.start();
 
         verifyStartProcedure();
         verify(logger).debug(DEBUG_APPLICATION_NOT_HALTED);
@@ -164,11 +148,11 @@ class ApplicationInstanceImplTest {
 
     @Test
     void startOnStopping() {
-        applicationInstance.start();
+        applicationProcess.start();
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
-        startOn().stopping(applicationInstance);
+        startOn().stopping(applicationServer);
 
-        applicationInstance.stop();
+        applicationProcess.stop();
 
         verifyStopProcedure();
         verify(logger).debug(DEBUG_APPLICATION_NOT_HALTED);
@@ -176,14 +160,14 @@ class ApplicationInstanceImplTest {
 
     @Test
     void startOnStopped() {
-        applicationInstance.start();
+        applicationProcess.start();
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
-        startOn().stopped(applicationInstance);
+        startOn().stopped(applicationServer);
 
-        applicationInstance.stop();
+        applicationProcess.stop();
 
         verifyStopProcedure();
-        verify(logger).debug(DEBUG_APPLICATION_NOT_HALTED);
+        verify(logger, never()).debug(DEBUG_APPLICATION_NOT_HALTED);
     }
 
     @Test
@@ -191,9 +175,9 @@ class ApplicationInstanceImplTest {
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).starting();
 
-        Throwable actual = catchThrowable(() -> applicationInstance.start());
+        Throwable actual = catchThrowable(() -> applicationProcess.start());
 
-        verify(lifecycleConsumingListener).starting(applicationInstance);
+        verify(lifecycleConsumingListener).starting(applicationServer);
         verify(starter, never()).run();
         assertThat(actual).isSameAs(expected);
     }
@@ -203,17 +187,17 @@ class ApplicationInstanceImplTest {
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).started();
 
-        Throwable actual = catchThrowable(() -> applicationInstance.start());
+        Throwable actual = catchThrowable(() -> applicationProcess.start());
 
         InOrder order = inOrder(starter, terminator, lifecycleConsumingListener, parameterlessListener);
-        order.verify(lifecycleConsumingListener).starting(applicationInstance);
+        order.verify(lifecycleConsumingListener).starting(applicationServer);
         order.verify(parameterlessListener).starting();
         order.verify(starter).run();
-        order.verify(lifecycleConsumingListener).started(applicationInstance);
-        order.verify(lifecycleConsumingListener).stopping(applicationInstance);
+        order.verify(lifecycleConsumingListener).started(applicationServer);
+        order.verify(lifecycleConsumingListener).stopping(applicationServer);
         order.verify(parameterlessListener).stopping();
         order.verify(terminator).run();
-        order.verify(lifecycleConsumingListener).stopped(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopped(applicationServer);
         order.verify(parameterlessListener).stopped();
         assertThat(actual).isSameAs(expected);
         verify(logger).error(ERROR_NOTIFYING_STARTED_LISTENER, expected);
@@ -226,17 +210,17 @@ class ApplicationInstanceImplTest {
         throwGivenExceptionOnListenerMethod(expected).started();
         throwGivenExceptionOnListenerMethod(expected).stopping();
 
-        Throwable actual = catchThrowable(() -> applicationInstance.start());
+        Throwable actual = catchThrowable(() -> applicationProcess.start());
 
         InOrder order = inOrder(starter, terminator, lifecycleConsumingListener, parameterlessListener, logger);
-        order.verify(lifecycleConsumingListener).starting(applicationInstance);
+        order.verify(lifecycleConsumingListener).starting(applicationServer);
         order.verify(parameterlessListener).starting();
         order.verify(starter).run();
-        order.verify(lifecycleConsumingListener).started(applicationInstance);
-        order.verify(lifecycleConsumingListener).stopping(applicationInstance);
+        order.verify(lifecycleConsumingListener).started(applicationServer);
+        order.verify(lifecycleConsumingListener).stopping(applicationServer);
         order.verify(logger).error(ERROR_NOTIFYING_STOPPING_LISTENER, expected);
         order.verify(terminator).run();
-        order.verify(lifecycleConsumingListener).stopped(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopped(applicationServer);
         order.verify(parameterlessListener).stopped();
         verify(logger).error(ERROR_NOTIFYING_STARTED_LISTENER, expected);
         verify(logger).error(ENFORCING_APPLICATION_TERMINATION);
@@ -245,32 +229,34 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stop() {
-        StoppingStateCaptor stoppingStateCaptor = new StoppingStateCaptor();
-        applicationInstance.registerLifecycleListener(stoppingStateCaptor);
-        applicationInstance.start();
+        StateCaptor stateCaptor = new StateCaptor();
+        applicationProcess.start();
+        applicationProcess.registerLifecycleListener(stateCaptor);
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
 
-        State beforeState = applicationInstance.getState();
-        applicationInstance.stop();
-        State afterState = applicationInstance.getState();
+        State beforeState = applicationProcess.getState();
+        applicationProcess.stop();
+        State afterState = applicationProcess.getState();
 
         assertThat(beforeState).isSameAs(RUNNING);
-        assertThat(stoppingStateCaptor.captured).isSameAs(STOPPING);
+        assertThat(stateCaptor.getStarted()).isNull();
+        assertThat(stateCaptor.getStopping()).isSameAs(STOPPING);
+        assertThat(stateCaptor.getHalted()).isSameAs(HALTED);
+        assertThat(stateCaptor.getStarting()).isNull();
         assertThat(afterState).isSameAs(HALTED);
         verifyStopProcedure();
-        verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationInstance.getIdentifier()), anyLong());
     }
 
     @Test
     void stopIfHalted() {
-        State beforeState = applicationInstance.getState();
-        applicationInstance.stop();
-        State afterState = applicationInstance.getState();
+        State beforeState = applicationProcess.getState();
+        applicationProcess.stop();
+        State afterState = applicationProcess.getState();
 
-        verify(lifecycleConsumingListener, never()).stopping(applicationInstance);
+        verify(lifecycleConsumingListener, never()).stopping(applicationServer);
         verify(parameterlessListener, never()).stopping();
         verify(terminator, never()).run();
-        verify(lifecycleConsumingListener, never()).stopped(applicationInstance);
+        verify(lifecycleConsumingListener, never()).stopped(applicationServer);
         verify(parameterlessListener, never()).stopped();
         verify(logger).debug(DEBUG_APPLICATION_NOT_RUNNING);
         assertThat(beforeState)
@@ -280,11 +266,11 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stopOnStopping() {
-        applicationInstance.start();
+        applicationProcess.start();
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
-        stopOn().stopping(applicationInstance);
+        stopOn().stopping(applicationServer);
 
-        applicationInstance.stop();
+        applicationProcess.stop();
 
         verifyStopProcedure();
         verify(logger).debug(DEBUG_APPLICATION_NOT_RUNNING);
@@ -292,11 +278,11 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stopOnStopped() {
-        applicationInstance.start();
+        applicationProcess.start();
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
-        stopOn().stopped(applicationInstance);
+        stopOn().stopped(applicationServer);
 
-        applicationInstance.stop();
+        applicationProcess.stop();
 
         verifyStopProcedure();
         verify(logger).debug(DEBUG_APPLICATION_NOT_RUNNING);
@@ -304,9 +290,9 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stopOnStarting() {
-        stopOn().starting(applicationInstance);
+        stopOn().starting(applicationServer);
 
-        applicationInstance.start();
+        applicationProcess.start();
 
         verifyStartProcedure();
         verify(logger).debug(DEBUG_APPLICATION_NOT_RUNNING);
@@ -314,9 +300,9 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stopOnStarted() {
-        stopOn().started(applicationInstance);
+        stopOn().started(applicationServer);
 
-        applicationInstance.start();
+        applicationProcess.start();
 
         verifyStartProcedure();
         verify(logger).debug(DEBUG_APPLICATION_NOT_RUNNING);
@@ -324,18 +310,18 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stopWithStoppingListenerThrowingException() {
-        applicationInstance.start();
+        applicationProcess.start();
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).stopping();
 
-        Throwable actual = catchThrowable(() -> applicationInstance.stop());
+        Throwable actual = catchThrowable(() -> applicationProcess.stop());
 
         InOrder order = inOrder(terminator, lifecycleConsumingListener, parameterlessListener, logger);
-        order.verify(lifecycleConsumingListener).stopping(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopping(applicationServer);
         order.verify(logger).error(ERROR_NOTIFYING_STOPPING_LISTENER, expected);
         order.verify(terminator).run();
-        order.verify(lifecycleConsumingListener).stopped(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopped(applicationServer);
         order.verify(parameterlessListener).stopped();
         order.verifyNoMoreInteractions();
         assertThat(actual)
@@ -345,18 +331,18 @@ class ApplicationInstanceImplTest {
 
     @Test
     void stopWithStoppedListenerThrowingException() {
-        applicationInstance.start();
+        applicationProcess.start();
         reset(terminator, lifecycleConsumingListener, parameterlessListener);
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).stopped();
 
-        Throwable actual = catchThrowable(() -> applicationInstance.stop());
+        Throwable actual = catchThrowable(() -> applicationProcess.stop());
 
         InOrder order = inOrder(terminator, lifecycleConsumingListener, parameterlessListener, logger);
-        order.verify(lifecycleConsumingListener).stopping(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopping(applicationServer);
         order.verify(parameterlessListener).stopping();
         order.verify(terminator).run();
-        order.verify(lifecycleConsumingListener).stopped(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopped(applicationServer);
         order.verify(logger).error(ERROR_NOTIFYING_STOPPED_LISTENER, expected);
         order.verifyNoMoreInteractions();
         assertThat(actual)
@@ -367,20 +353,20 @@ class ApplicationInstanceImplTest {
     @ParameterizedTest
     @MethodSource("provideLifecycleListenersWithIllegalSignature")
     void registerLifecycleListenerWithIllegalSignature(Object listenerWithIllegalMethodSignature) {
-        Throwable actual = catchThrowable(() -> applicationInstance.registerLifecycleListener(listenerWithIllegalMethodSignature));
+        Throwable actual = catchThrowable(() -> applicationProcess.registerLifecycleListener(listenerWithIllegalMethodSignature));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining(listenerWithIllegalMethodSignature.getClass().getName())
             .hasMessageContaining("starting")
-            .hasMessageContaining(ApplicationInstanceImpl.class.getName());
+            .hasMessageContaining(ApplicationProcess.class.getName());
     }
 
     @Test
     void deregisterLifecycleListener() {
-        applicationInstance.deregisterLifecycleListener(lifecycleConsumingListener);
+        applicationProcess.deregisterLifecycleListener(lifecycleConsumingListener);
 
-        applicationInstance.start();
+        applicationProcess.start();
 
         InOrder order = inOrder(lifecycleConsumingListener, parameterlessListener);
         order.verify(parameterlessListener).starting();
@@ -390,44 +376,44 @@ class ApplicationInstanceImplTest {
 
     @Test
     void constructWithNullAsNameArgument() {
-        assertThatThrownBy(() -> new ApplicationInstanceImpl(null, starter, terminator, logger))
+        assertThatThrownBy(() -> new ApplicationProcess(null, starter, terminator, logger))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsStarterArgument() {
-        assertThatThrownBy(() -> new ApplicationInstanceImpl("name", null, terminator, logger))
+        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, null, terminator, logger))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsTerminatorArgument() {
-        assertThatThrownBy(() -> new ApplicationInstanceImpl("name", starter, null, logger))
+        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, starter, null, logger))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsLoggerArgument() {
-        assertThatThrownBy(() -> new ApplicationInstanceImpl("name", starter, terminator, null))
+        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, starter, terminator, null))
             .isInstanceOf(NullPointerException.class);
     }
 
     private void verifyStartProcedure() {
         InOrder order = inOrder(starter, lifecycleConsumingListener, parameterlessListener);
-        order.verify(lifecycleConsumingListener).starting(applicationInstance);
+        order.verify(lifecycleConsumingListener).starting(applicationServer);
         order.verify(parameterlessListener).starting();
         order.verify(starter).run();
-        order.verify(lifecycleConsumingListener).started(applicationInstance);
+        order.verify(lifecycleConsumingListener).started(applicationServer);
         order.verify(parameterlessListener).started();
         order.verifyNoMoreInteractions();
     }
 
     private void verifyStopProcedure() {
         InOrder order = inOrder(terminator, lifecycleConsumingListener, parameterlessListener);
-        order.verify(lifecycleConsumingListener).stopping(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopping(applicationServer);
         order.verify(parameterlessListener).stopping();
         order.verify(terminator).run();
-        order.verify(lifecycleConsumingListener).stopped(applicationInstance);
+        order.verify(lifecycleConsumingListener).stopped(applicationServer);
         order.verify(parameterlessListener).stopped();
         order.verifyNoMoreInteractions();
     }
@@ -441,7 +427,7 @@ class ApplicationInstanceImplTest {
             },
             new Object() {
                 @Starting
-                void starting(ApplicationInstanceImpl applicationInstanceImpl, String parameter) {
+                void starting(ApplicationProcess applicationProcess, String parameter) {
                 }
             }
         );
@@ -457,7 +443,7 @@ class ApplicationInstanceImplTest {
     }
 
     private Void triggerStart(InvocationOnMock invocation) {
-        applicationInstance.start();
+        applicationProcess.start();
         return null;
     }
 
@@ -467,7 +453,17 @@ class ApplicationInstanceImplTest {
     }
 
     private Void triggerStop(InvocationOnMock invocation) {
-        applicationInstance.stop();
+        applicationProcess.stop();
         return null;
+    }
+
+    private static ApplicationServer stubApplicationServer() {
+        ApplicationServer result = mock(ApplicationServer.class);
+        when(result.getIdentifier()).thenReturn(IDENTIFIER);
+        return result;
+    }
+
+    private void stubApplicationServerGetState() {
+        when(applicationServer.getState()).thenAnswer((Answer<State>) invocation -> applicationProcess.getState());
     }
 }

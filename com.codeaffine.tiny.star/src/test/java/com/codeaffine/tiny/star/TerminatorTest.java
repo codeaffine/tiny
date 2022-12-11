@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationRunner.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
+import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
 import static com.codeaffine.tiny.star.FilesTestHelper.fakeFileThatCannotBeDeleted;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,6 +43,7 @@ class TerminatorTest {
     private Server server;
     @TempDir
     private File workingDirectory;
+    private Runnable shutDownHookRemover;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -50,6 +51,7 @@ class TerminatorTest {
         loggingFrameworkControl = mock(LoggingFrameworkControl.class);
         childOfDirectoryToDelete = new File(workingDirectory, "child");
         childOfDirectoryToDeleteHasBeenCreated = childOfDirectoryToDelete.createNewFile();
+        shutDownHookRemover = mock(Runnable.class);
     }
 
     @AfterEach
@@ -60,7 +62,7 @@ class TerminatorTest {
     @Test
     void run() {
         System.setProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY, workingDirectory.getAbsolutePath());
-        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
+        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
 
         terminator.run();
 
@@ -70,13 +72,14 @@ class TerminatorTest {
         assertThat(System.getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
         verify(server).stop();
         verify(loggingFrameworkControl, never()).halt();
+        verify(shutDownHookRemover).run();
     }
 
     @Test
     void runIfLoggingFrameworkIsUsingWorkingDirectory() {
         System.setProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY, workingDirectory.getAbsolutePath());
         stubLoggingFrameworkToUseWorkingDirectory();
-        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
+        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
 
         terminator.run();
 
@@ -90,7 +93,7 @@ class TerminatorTest {
 
     @Test
     void runWithKeepWorkingDirectory() {
-        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, KEEP_WORKING_DIRECTORY_ON_SHUTDOWN);
+        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, KEEP_WORKING_DIRECTORY_ON_SHUTDOWN);
 
         terminator.run();
 
@@ -106,7 +109,7 @@ class TerminatorTest {
     @ExtendWith(SystemErrCaptor.class)
     void runIfConstructorArgumentDirectoryToDeleteCannotBeDeleted(SystemErrCaptor systemErrCaptor) {
         File unDeletableFile = fakeFileThatCannotBeDeleted();
-        Terminator terminator = new Terminator(unDeletableFile, server, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
+        Terminator terminator = new Terminator(unDeletableFile, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
 
         Throwable actual = catchThrowable(terminator::run);
 
@@ -119,7 +122,7 @@ class TerminatorTest {
     @Test
     void runOnShutdownHook() {
         AtomicBoolean directoryExistenceOnPreprocessorExecution = captorWorkingDirectoryExistenceOnLoggingFrameworkControlHalt();
-        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
+        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
         terminator.setShutdownHookExecution(true);
 
         terminator.run();
@@ -138,7 +141,7 @@ class TerminatorTest {
     @ExtendWith(SystemErrCaptor.class)
     void runOnShutdownHookWithLoggingFrameworkControlErrorOnHalt(SystemErrCaptor systemErrCaptor) {
         stubLoggingFrameworkControlWithErrorOnHalt();
-        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
+        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
         terminator.setShutdownHookExecution(true);
 
         terminator.run();
@@ -151,7 +154,7 @@ class TerminatorTest {
     void deleteWorkingDirectory() {
         System.setProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY, workingDirectory.getAbsolutePath());
         AtomicBoolean directoryExistenceOnPreprocessorExecution = captorWorkingDirectoryExistenceOnLoggingFrameworkControlHalt();
-        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
+        Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
         terminator.setShutdownHookExecution(true);
 
         terminator.deleteWorkingDirectory();
@@ -166,19 +169,19 @@ class TerminatorTest {
 
     @Test
     void constructWithNullAsApplicationWorkingDirectoryArgument() {
-        assertThatThrownBy(() -> new Terminator(null, server, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN))
+        assertThatThrownBy(() -> new Terminator(null, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsServerArgument() {
-        assertThatThrownBy(() -> new Terminator(workingDirectory, null, loggingFrameworkControl, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN))
+        assertThatThrownBy(() -> new Terminator(workingDirectory, null, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsDeleteWorkingDirectoryOnProcessShutdownPreprocessorsArgument() {
-        assertThatThrownBy(() -> new Terminator(workingDirectory, server, null, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN))
+        assertThatThrownBy(() -> new Terminator(workingDirectory, server, null, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN))
             .isInstanceOf(NullPointerException.class);
     }
 

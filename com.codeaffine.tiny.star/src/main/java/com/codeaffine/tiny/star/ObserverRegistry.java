@@ -33,7 +33,8 @@ class ObserverRegistry<T> {
         @NonNull T observedInstance,
         @NonNull Class<T> observedType,
         long observerNotificationTimeout,
-        @NonNull Class<? extends Annotation>... observerAnnotations) {
+        @NonNull Class<? extends Annotation>... observerAnnotations)
+    {
         this.observedInstance = observedInstance;
         this.observedType = observedType;
         this.observerNotificationTimeout = observerNotificationTimeout;

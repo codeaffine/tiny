@@ -2,7 +2,7 @@ package com.codeaffine.tiny.star.extrinsic;
 
 import static lombok.AccessLevel.PACKAGE;
 
-import com.codeaffine.tiny.star.ApplicationRunner;
+import com.codeaffine.tiny.star.ApplicationServer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +24,7 @@ class Log4j2ShutdownPreprocessor implements Runnable {
     @Override
     public void run() {
         try {
-            ClassLoader classLoader = ApplicationRunner.class.getClassLoader();
+            ClassLoader classLoader = ApplicationServer.class.getClassLoader();
             Class<?> clazz = classLoader.loadClass(logManagerClass);
             Method method = clazz.getMethod(shutdownMethod);
             method.invoke(null);

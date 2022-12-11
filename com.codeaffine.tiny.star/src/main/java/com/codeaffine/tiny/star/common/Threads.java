@@ -39,4 +39,12 @@ public final class Threads {
             exceptionHandler.accept(extractExceptionToReport(cause, IllegalStateException::new, FORWARD_RUNTIME_EXCEPTIONS));
         }
     }
+
+    public static void saveRun(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (Exception cause) {
+            cause.printStackTrace();
+        }
+    }
 }

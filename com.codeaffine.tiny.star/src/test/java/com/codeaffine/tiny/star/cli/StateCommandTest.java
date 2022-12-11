@@ -7,7 +7,7 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.SystemPrintStreamCaptor;
 import com.codeaffine.tiny.star.spi.CliCommand;
 import com.codeaffine.tiny.star.spi.CliCommandContract;
@@ -22,14 +22,14 @@ class StateCommandTest implements CliCommandContract<StateCommand> {
     @Test
     @ExtendWith(SystemPrintStreamCaptor.SystemOutCaptor.class)
     void execute(SystemPrintStreamCaptor.SystemOutCaptor systemOutCaptor) {
-        ApplicationInstance applicationInstance = CliCommandContract.stubApplicationInstance();
+        ApplicationServer applicationServer = CliCommandContract.stubApplicationServer();
         StateCommand actual = create();
 
-        actual.execute(applicationInstance);
+        actual.execute(applicationServer);
 
         assertThat(systemOutCaptor.getLog())
-            .contains(applicationInstance.getState().name())
-            .contains(applicationInstance.getIdentifier());
+            .contains(applicationServer.getState().name())
+            .contains(applicationServer.getIdentifier());
     }
 
     @Override
@@ -48,10 +48,10 @@ class StateCommandTest implements CliCommandContract<StateCommand> {
 
     @Test
     void getDescriptionWithNullAsCommandArgument() {
-        ApplicationInstance applicationInstance = CliCommandContract.stubApplicationInstance();
+        ApplicationServer applicationServer = CliCommandContract.stubApplicationServer();
         StateCommand actual = create();
 
-        assertThatThrownBy(() -> actual.getDescription(null, applicationInstance))
+        assertThatThrownBy(() -> actual.getDescription(null, applicationServer))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -64,9 +64,9 @@ class StateCommandTest implements CliCommandContract<StateCommand> {
     }
 
     @Override
-    public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationInstance applicationInstance) {
+    public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer applicationServer) {
         description
             .contains(command.getCode())
-            .contains(applicationInstance.getIdentifier());
+            .contains(applicationServer.getIdentifier());
     }
 }

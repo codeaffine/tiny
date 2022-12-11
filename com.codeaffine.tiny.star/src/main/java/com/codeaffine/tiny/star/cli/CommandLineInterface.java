@@ -1,7 +1,7 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.ApplicationInstance.Starting;
-import static com.codeaffine.tiny.star.ApplicationInstance.Stopped;
+import static com.codeaffine.tiny.star.ApplicationServer.Starting;
+import static com.codeaffine.tiny.star.ApplicationServer.Stopped;
 import static lombok.AccessLevel.PACKAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.toMap;
 
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
 import java.util.Map;
@@ -53,24 +53,24 @@ public class CommandLineInterface {
     }
 
     @Starting
-    public void startCli(ApplicationInstance applicationInstance) {
-        commandlineEngineHolder.updateAndGet(engine -> doStart(engine, applicationInstance));
+    public void startCli(ApplicationServer applicationServer) {
+        commandlineEngineHolder.updateAndGet(engine -> doStart(engine, applicationServer));
     }
 
-    private Engine doStart(Engine engine, ApplicationInstance applicationInstance) {
+    private Engine doStart(Engine engine, ApplicationServer applicationServer) {
         if(nonNull(engine)) {
             return engine;
         }
         Map<String, CliCommand> codeToCommandMap = loadCodeToCommandMap();
-        printHelpOnStartup(applicationInstance, codeToCommandMap, logger);
-        Engine result = createEngine(applicationInstance, codeToCommandMap);
+        printHelpOnStartup(applicationServer, codeToCommandMap, logger);
+        Engine result = createEngine(applicationServer, codeToCommandMap);
         result.start();
         return result;
     }
 
-    private Engine createEngine(ApplicationInstance applicationInstance, Map<String, CliCommand> codeToCommandMap) {
+    private Engine createEngine(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap) {
         ExecutorServiceAdapter executor = executorFactory.get();
-        CommandDispatcher commandDispatcher = new CommandDispatcher(applicationInstance, codeToCommandMap, executor);
+        CommandDispatcher commandDispatcher = new CommandDispatcher(applicationServer, codeToCommandMap, executor);
         InputScanner inputScanner = new InputScanner(commandDispatcher);
         return new Engine(executor, inputScanner);
     }
@@ -81,14 +81,14 @@ public class CommandLineInterface {
             .collect(toMap(CliCommand::getCode, identity()));
     }
 
-    private static void printHelpOnStartup(ApplicationInstance applicationInstance, Map<String, CliCommand> codeToCommandMap, Logger logger) {
+    private static void printHelpOnStartup(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap, Logger logger) {
         codeToCommandMap.values()
-            .forEach(command -> printHelpOnStartup(applicationInstance, command, logger));
+            .forEach(command -> printHelpOnStartup(applicationServer, command, logger));
     }
 
-    private static void printHelpOnStartup(ApplicationInstance applicationInstance, CliCommand command, Logger logger) {
+    private static void printHelpOnStartup(ApplicationServer applicationServer, CliCommand command, Logger logger) {
         if(command.printHelpOnStartup()) {
-            logger.info(command.getDescription(command, applicationInstance));
+            logger.info(command.getDescription(command, applicationServer));
         }
     }
 }

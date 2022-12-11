@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 import com.codeaffine.tiny.star.spi.CliCommandContract;
 
@@ -22,10 +22,10 @@ class QuitCommandTest implements CliCommandContract<QuitCommand> {
     }
 
     @Override
-    public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationInstance applicationInstance) {
+    public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer serverInstance) {
         description
             .contains(command.getCode())
-            .contains(applicationInstance.getIdentifier());
+            .contains(serverInstance.getIdentifier());
     }
     
     @Test
@@ -38,10 +38,10 @@ class QuitCommandTest implements CliCommandContract<QuitCommand> {
     
     @Test
     void getDescriptionWithNullAsCommandArgument() {
-        ApplicationInstance applicationInstance = CliCommandContract.stubApplicationInstance();
+        ApplicationServer serverInstance = CliCommandContract.stubApplicationServer();
         QuitCommand actual = create();
 
-        assertThatThrownBy(() -> actual.getDescription(null, applicationInstance))
+        assertThatThrownBy(() -> actual.getDescription(null, serverInstance))
             .isInstanceOf(NullPointerException.class);
     }
 

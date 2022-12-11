@@ -1,7 +1,8 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationRunner.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
+import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
 import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.common.Threads.saveRun;
 import static lombok.AccessLevel.PACKAGE;
 
 import com.codeaffine.tiny.star.spi.Server;
@@ -21,6 +22,8 @@ class Terminator implements Runnable {
     private final Server server;
     @NonNull
     private final LoggingFrameworkControl loggingFrameworkControl;
+    @NonNull
+    private final Runnable shutdownHookRemover;
     private final boolean deleteWorkingDirectoryOnShutdown;
 
     @Getter
@@ -32,6 +35,7 @@ class Terminator implements Runnable {
         server.stop();
         System.getProperties().remove(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY);
         deleteWorkingDirectory();
+        shutdownHookRemover.run();
     }
 
     void deleteWorkingDirectory() {
@@ -44,14 +48,6 @@ class Terminator implements Runnable {
                     deleteDirectory(applicationWorkingDirectory);
                 }
             }
-        }
-    }
-
-    private static void saveRun(Runnable runnable) {
-        try {
-            runnable.run();
-        } catch (Exception cause) {
-            cause.printStackTrace();
         }
     }
 }

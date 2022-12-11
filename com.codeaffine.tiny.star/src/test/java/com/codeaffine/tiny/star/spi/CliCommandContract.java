@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star.spi;
 
-import static com.codeaffine.tiny.star.ApplicationInstance.State.RUNNING;
+import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 
 public interface CliCommandContract<T extends CliCommand> {
 
@@ -33,15 +33,15 @@ public interface CliCommandContract<T extends CliCommand> {
 
     @Test
     default void getDescription() {
-        ApplicationInstance applicationInstance = stubApplicationInstance();
+        ApplicationServer serverInstance = stubApplicationServer();
         T actual = create();
 
-        AbstractStringAssert<?> descriptionAssert = assertThat(actual.getDescription(actual, applicationInstance));
+        AbstractStringAssert<?> descriptionAssert = assertThat(actual.getDescription(actual, serverInstance));
         descriptionAssert.isNotEmpty();
-        assertDescription(descriptionAssert, actual, applicationInstance);
+        assertDescription(descriptionAssert, actual, serverInstance);
     }
 
-    default void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationInstance applicationInstance) {
+    default void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer applicationServer) {
         // subclasses may override
     }
 
@@ -49,7 +49,7 @@ public interface CliCommandContract<T extends CliCommand> {
     default void execute() {
         T actual = create();
 
-        assertThatNoException().isThrownBy(() -> actual.execute(stubApplicationInstance()));
+        assertThatNoException().isThrownBy(() -> actual.execute(stubApplicationServer()));
     }
 
     @Test
@@ -81,8 +81,8 @@ public interface CliCommandContract<T extends CliCommand> {
         return false;
     }
 
-    static ApplicationInstance stubApplicationInstance() {
-        ApplicationInstance result = mock(ApplicationInstance.class);
+    static ApplicationServer stubApplicationServer() {
+        ApplicationServer result = mock(ApplicationServer.class);
         when(result.getState()).thenReturn(RUNNING);
         when(result.getIdentifier()).thenReturn(APPLICATION_IDENTIFIER);
         return result;

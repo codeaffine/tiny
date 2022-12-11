@@ -1,18 +1,19 @@
 package com.codeaffine.tiny.star.common;
 
+import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
 import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.codeaffine.tiny.star.ThreadTestHelper;
-
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -92,6 +93,27 @@ class ThreadsTest {
     void runAsyncAwaitingTerminationWithNullAsTimeUnitArgument() {
         assertThatThrownBy(() -> Threads.runAsyncAwaitingTermination(() -> {}, e -> {}, TIMEOUT, null))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void saveRun() {
+        Runnable runnable = mock(Runnable.class);
+
+        Threads.saveRun(runnable);
+
+        verify(runnable).run();
+    }
+
+    @Test
+    @ExtendWith(SystemErrCaptor.class)
+    void saveRunWithRunnableArgumentThatThrowsRuntimeException(SystemErrCaptor systemErrCaptor) {
+        Runnable runnable = mock(Runnable.class);
+        RuntimeException expected = new RuntimeException("bad");
+        doThrow(expected).when(runnable).run();
+
+        Threads.saveRun(runnable);
+
+        assertThat(systemErrCaptor.getLog()).contains(expected.getMessage());
     }
 
     private static void runAsync(Runnable runnable) {

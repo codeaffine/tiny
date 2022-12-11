@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star.spi;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 
 public interface CliCommand {
     default String getId() {
@@ -8,12 +8,12 @@ public interface CliCommand {
     }
     String getCode();
     String getName();
-    String getDescription(CliCommand command, ApplicationInstance applicationInstance);
+    String getDescription(CliCommand command, ApplicationServer applicationServer);
     default boolean printHelpOnStartup() {
         return false;
     }
     default boolean isHelpCommand() {
         return false;
     }
-    void execute(ApplicationInstance applicationInstance);
+    void execute(ApplicationServer applicationServer);
 }

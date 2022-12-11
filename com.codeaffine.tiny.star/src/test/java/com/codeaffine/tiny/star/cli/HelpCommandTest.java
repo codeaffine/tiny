@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.codeaffine.tiny.star.ApplicationInstance;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 import com.codeaffine.tiny.star.spi.CliCommandContract;
 
@@ -28,17 +28,17 @@ class HelpCommandTest implements CliCommandContract<HelpCommand> {
     @Test
     @ExtendWith(SystemOutCaptor.class)
     void execute(SystemOutCaptor systemOutCaptor) {
-        ApplicationInstance applicationInstance = CliCommandContract.stubApplicationInstance();
+        ApplicationServer applicationServer = CliCommandContract.stubApplicationServer();
         TestCliCommand command = new TestCliCommand();
         stubCliCommandProvider(command);
         CliCommand actual = create();
 
-        actual.execute(applicationInstance);
+        actual.execute(applicationServer);
 
         assertThat(systemOutCaptor.getLog())
             .contains(command.getCode())
             .contains(command.getName())
-            .contains(command.getDescription(command, applicationInstance));
+            .contains(command.getDescription(command, applicationServer));
     }
 
     @Override
@@ -63,7 +63,7 @@ class HelpCommandTest implements CliCommandContract<HelpCommand> {
     }
 
     @Override
-    public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationInstance applicationInstance) {
+    public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer applicationServer) {
         description.contains(command.getCode());
     }
 

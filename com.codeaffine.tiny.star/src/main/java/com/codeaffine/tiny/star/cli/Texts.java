@@ -15,11 +15,11 @@ class Texts {
     static final String STD_OUT_UNKNOWN_COMMAND = "Unknown command [%s]. Type [%s] for help.%n";
     static final String STD_OUT_AVAILABLE_COMMANDS_DESCRIPTION = "Available commands:\n(name [keycode]: description)\n";
     static final String SHUTDOWN_THREAD_NAME = "Shutdown Handler of Command Line Interface";
-    static final String QUIT_DESCRIPTION = "Type %s to stop %s instance.";
+    static final String QUIT_DESCRIPTION = "Type %s to stop %s application server.";
     static final String QUIT_NAME = "Quit";
-    static final String HELP_DESCRIPTION = "Type %s to show a description of available commands.";
+    static final String HELP_DESCRIPTION = "Type %s to list available command descriptions.";
     static final String HELP_NAME = "Help";
-    static final String STATE_DESCRIPTION = "Type %s to show the state information of the %s application instance.";
+    static final String STATE_DESCRIPTION = "Type %s to show the state information of the %s application server.";
     static final String STATE_NAME = "State";
-    static final String STD_OUT_STATE_INFO = "State of application instance %s: %s%n";
+    static final String STD_OUT_STATE_INFO = "State of the application server %s: %s%n";
 }

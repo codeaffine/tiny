@@ -18,7 +18,7 @@ import static java.util.Objects.nonNull;
 
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.ApplicationRunner;
+import com.codeaffine.tiny.star.ApplicationServer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -59,7 +59,7 @@ class Log4j2Configurator {
     }
 
     private Class<?> loadConfiguratorClass() {
-        ClassLoader applicationLoader = ApplicationRunner.class.getClassLoader();
+        ClassLoader applicationLoader = ApplicationServer.class.getClassLoader();
         try {
             return applicationLoader.loadClass(configuratorClassName);
         } catch (Exception cause) {

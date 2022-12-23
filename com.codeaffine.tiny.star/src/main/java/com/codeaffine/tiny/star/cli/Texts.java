@@ -18,6 +18,8 @@ class Texts {
     static final String QUIT_DESCRIPTION = "Type %s to stop %s application server.";
     static final String QUIT_NAME = "Quit";
     static final String HELP_DESCRIPTION = "Type %s to list available command descriptions.";
+    static final String RUN_NAME = "run";
+    static final String RUN_DESCRIPTION = "Type %s to start %s application server.";
     static final String HELP_NAME = "Help";
     static final String STATE_DESCRIPTION = "Type %s to show the state information of the %s application server.";
     static final String STATE_NAME = "State";

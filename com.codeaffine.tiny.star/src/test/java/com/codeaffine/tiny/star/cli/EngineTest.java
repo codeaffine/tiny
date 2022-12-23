@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -13,12 +14,19 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.spi.CliCommand;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 class EngineTest {
 
     private static final int THREAD_SWITCH_TIME = 10;
+    private static final String CODE = "code";
 
+    private Map<String, CliCommand> codeToCommandMap;
     private ExecutorService executorService;
     private InputScanner scanner;
     private Engine engine;
@@ -27,7 +35,8 @@ class EngineTest {
     void setUp() {
         executorService = newSingleThreadExecutor();
         scanner = mock(InputScanner.class);
-        engine = new Engine(new ExecutorServiceAdapter(executorService), scanner);
+        codeToCommandMap = new HashMap<>();
+        engine = new Engine(new ExecutorServiceAdapter(executorService), scanner, codeToCommandMap);
     }
 
     @AfterEach
@@ -38,7 +47,7 @@ class EngineTest {
     }
     @Test
     void start() {
-        engine.start();
+        int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), Map.of(CODE, stubCliCommmand()));
         sleepFor(THREAD_SWITCH_TIME);
 
         verify(scanner).scanForCommandCode();
@@ -46,7 +55,11 @@ class EngineTest {
 
     @Test
     void stop() {
-        engine.stop();
+        Map<String, CliCommand> codeToCommandMap = Map.of(CODE, stubCliCommmand());
+        int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), codeToCommandMap);
+        sleepFor(THREAD_SWITCH_TIME);
+
+        engine.removeCliInstance(mock(ApplicationServer.class), cliInstanceId, codeToCommandMap);
         sleepFor(THREAD_SWITCH_TIME);
 
         verify(scanner).cancel();
@@ -55,7 +68,7 @@ class EngineTest {
 
     @Test
     void constructWithNullAsExecutorArgument() {
-        assertThatThrownBy(() -> new Engine(null, scanner))
+        assertThatThrownBy(() -> new Engine(null, scanner, codeToCommandMap))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -63,7 +76,13 @@ class EngineTest {
     void constructWithNullAsScannerArgument() {
         ExecutorServiceAdapter executor = new ExecutorServiceAdapter(executorService);
 
-        assertThatThrownBy(() -> new Engine(executor, null))
+        assertThatThrownBy(() -> new Engine(executor, null, codeToCommandMap))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    private static CliCommand stubCliCommmand() {
+        CliCommand result = mock(CliCommand.class);
+        when(result.getCode()).thenReturn(CODE);
+        return result;
     }
 }

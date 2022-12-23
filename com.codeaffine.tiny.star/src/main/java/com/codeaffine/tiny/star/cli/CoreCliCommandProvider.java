@@ -9,6 +9,6 @@ public class CoreCliCommandProvider implements CliCommandProvider {
 
     @Override
     public Set<CliCommand> getCliCommands() {
-        return Set.of(new QuitCommand(), new HelpCommand(), new StateCommand());
+        return Set.of(new QuitCommand(), new HelpCommand(), new StateCommand(), new RunCommand());
     }
 }

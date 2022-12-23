@@ -49,7 +49,8 @@ class CommandLineInterfaceTest {
             executor = newCachedThreadPool();
             return new ExecutorServiceAdapter(executor);
         };
-        commandLineInterface = new CommandLineInterface(commandProvider, executorServiceAdapterFactory, new AtomicReference<>(), logger);
+        CommandLineInterface.GLOBAL_ENGINE.set(new EngineFactory(executorServiceAdapterFactory).createEngine());
+        commandLineInterface = new CommandLineInterface(commandProvider, new AtomicReference<>(), logger);
         command = new TestCliCommand();
     }
 
@@ -57,6 +58,7 @@ class CommandLineInterfaceTest {
     void tearDown() throws InterruptedException {
         commandLineInterface.stopCli();
         boolean isTerminated = executor.awaitTermination(ExecutorServiceAdapter.TIMEOUT_AWAITING_TERMINATION, MILLISECONDS);
+        CommandLineInterface.GLOBAL_ENGINE.set(null);
         assertThat(isTerminated).isTrue();
     }
 

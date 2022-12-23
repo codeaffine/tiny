@@ -15,27 +15,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
 import java.util.Map;
 
 class CommandDispatcherTest {
 
-    private static final String CODE = "code";
     private static final String UNKNOWN_COMMAND_CODE = "unknown-command-code";
+    private static final String CODE = "code";
 
-    private ApplicationServer applicationServer;
+    private Map<String, CliCommand> codeToCommandMap;
     private ExecutorServiceAdapter executor;
     private CommandDispatcher dispatcher;
     private CliCommand command;
 
     @BeforeEach
     void setUp() {
-        applicationServer = mock(ApplicationServer.class);
         command = mock(CliCommand.class);
         executor = mock(ExecutorServiceAdapter.class);
-        dispatcher = new CommandDispatcher(applicationServer, Map.of(CODE, command), executor);
+        codeToCommandMap = Map.of(CODE, command);
+        dispatcher = new CommandDispatcher(codeToCommandMap, executor);
     }
 
     @Test
@@ -43,7 +42,7 @@ class CommandDispatcherTest {
         dispatcher.dispatchCommand(CODE);
 
         captureCommandAndExecute();
-        verify(command).execute(applicationServer);
+        verify(command).execute(null, codeToCommandMap);
     }
 
     @Test
@@ -65,16 +64,8 @@ class CommandDispatcherTest {
     }
 
     @Test
-    void constructWithNullAsApplicationInstanceArgument() {
-        Map<String, CliCommand> emptyCodeToCommandMap = emptyMap();
-
-        assertThatThrownBy(() -> new CommandDispatcher(null, emptyCodeToCommandMap, executor))
-            .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
     void constructWithNullAsCodeToCommandMapArgument() {
-        assertThatThrownBy(() -> new CommandDispatcher(applicationServer, null, executor))
+        assertThatThrownBy(() -> new CommandDispatcher(null, executor))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -82,7 +73,7 @@ class CommandDispatcherTest {
     void constructWithNullAsExecutorArgument() {
         Map<String, CliCommand> emptyCodeToCommandMap = emptyMap();
 
-        assertThatThrownBy(() -> new CommandDispatcher(applicationServer, emptyCodeToCommandMap, null))
+        assertThatThrownBy(() -> new CommandDispatcher(emptyCodeToCommandMap, null))
             .isInstanceOf(NullPointerException.class);
     }
 }

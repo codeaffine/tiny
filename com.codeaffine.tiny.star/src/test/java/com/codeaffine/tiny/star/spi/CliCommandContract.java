@@ -4,7 +4,10 @@ import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import static java.util.Collections.emptyMap;
 
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,7 @@ import com.codeaffine.tiny.star.ApplicationServer;
 public interface CliCommandContract<T extends CliCommand> {
 
     String APPLICATION_IDENTIFIER = "test-contract-application-identifier";
+    String CLI_INSTANCE_SUFFIX = "cliInstanceSuffix";
 
     T create();
 
@@ -34,29 +38,25 @@ public interface CliCommandContract<T extends CliCommand> {
     @Test
     default void getDescription() {
         ApplicationServer serverInstance = stubApplicationServer();
-        T actual = create();
+        T command = create();
 
-        AbstractStringAssert<?> descriptionAssert = assertThat(actual.getDescription(actual, serverInstance));
-        descriptionAssert.isNotEmpty();
-        assertDescription(descriptionAssert, actual, serverInstance);
+        T spy = spy(command);
+        when(spy.getCode()).thenReturn(command.getCode() + CLI_INSTANCE_SUFFIX);
+        String actual = command.getDescription(spy, serverInstance);
+
+        assertDescription(assertThat(actual), spy, serverInstance);
     }
 
     default void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer applicationServer) {
-        // subclasses may override
+        description.contains(command.getCode());
+        description.contains(APPLICATION_IDENTIFIER);
     }
 
     @Test
     default void execute() {
         T actual = create();
 
-        assertThatNoException().isThrownBy(() -> actual.execute(stubApplicationServer()));
-    }
-
-    @Test
-    default void getId() {
-        T actual = create();
-
-        assertThat(actual.getId()).isNotEmpty();
+        assertThatNoException().isThrownBy(() -> actual.execute(stubApplicationServer(), emptyMap()));
     }
 
     @Test

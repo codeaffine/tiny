@@ -11,18 +11,11 @@ import static java.util.Comparator.comparing;
 import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 
-import lombok.NonNull;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class HelpCommand implements CliCommand {
-
-    @NonNull
-    private final DelegatingCliCommandProvider commandProvider;
-
-    HelpCommand() {
-        this(new DelegatingCliCommandProvider());
-    }
 
     @Override
     public String getCode() {
@@ -50,9 +43,9 @@ class HelpCommand implements CliCommand {
     }
 
     @Override
-    public void execute(ApplicationServer applicationServer) {
+    public void execute(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap) {
         printHelpHeader();
-        commandProvider.getCliCommands()
+        codeToCommandMap.values()
             .stream()
             .sorted(comparing(CliCommand::getName))
             .forEach(command -> printCommandSection(applicationServer, command));

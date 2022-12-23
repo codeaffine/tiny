@@ -3,13 +3,11 @@ package com.codeaffine.tiny.star.cli;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.SystemPrintStreamCaptor;
-import com.codeaffine.tiny.star.spi.CliCommand;
 import com.codeaffine.tiny.star.spi.CliCommandContract;
 
 class StateCommandTest implements CliCommandContract<StateCommand> {
@@ -61,12 +59,5 @@ class StateCommandTest implements CliCommandContract<StateCommand> {
 
         assertThatThrownBy(() -> actual.getDescription(actual, null))
             .isInstanceOf(NullPointerException.class);
-    }
-
-    @Override
-    public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer applicationServer) {
-        description
-            .contains(command.getCode())
-            .contains(applicationServer.getIdentifier());
     }
 }

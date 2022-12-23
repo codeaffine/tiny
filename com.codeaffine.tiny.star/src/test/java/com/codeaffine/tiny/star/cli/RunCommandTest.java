@@ -9,40 +9,35 @@ import org.junit.jupiter.api.Test;
 import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommandContract;
 
-class QuitCommandTest implements CliCommandContract<QuitCommand> {
+class RunCommandTest implements CliCommandContract<RunCommand> {
 
     @Override
-    public QuitCommand create() {
-        return new QuitCommand();
-    }
-
-    @Override
-    public boolean isExpectedToPrintHelpOnStartup() {
-        return true;
+    public RunCommand create() {
+        return new RunCommand();
     }
 
     @Test
     void executeWithApplicationServerArgument() {
-        QuitCommand quitCommand = create();
+        RunCommand command = create();
         ApplicationServer applicationServer = mock(ApplicationServer.class);
 
-        quitCommand.execute(applicationServer);
+        command.execute(applicationServer);
 
-        verify(applicationServer).stop();
+        verify(applicationServer).start();
     }
 
     @Test
     void executeWithNullAsApplicationServerArgument() {
-        QuitCommand actual = create();
-        
+        RunCommand actual = create();
+
         assertThatThrownBy(() -> actual.execute(null))
             .isInstanceOf(NullPointerException.class);
     }
-    
+
     @Test
     void getDescriptionWithNullAsCommandArgument() {
         ApplicationServer serverInstance = CliCommandContract.stubApplicationServer();
-        QuitCommand actual = create();
+        RunCommand actual = create();
 
         assertThatThrownBy(() -> actual.getDescription(null, serverInstance))
             .isInstanceOf(NullPointerException.class);
@@ -50,7 +45,7 @@ class QuitCommandTest implements CliCommandContract<QuitCommand> {
 
     @Test
     void getDescriptionWithNullAsApplicationServerArgument() {
-        QuitCommand actual = create();
+        RunCommand actual = create();
 
         assertThatThrownBy(() -> actual.getDescription(actual, null))
             .isInstanceOf(NullPointerException.class);

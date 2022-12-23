@@ -5,8 +5,8 @@ import static com.codeaffine.tiny.star.ApplicationServer.Stopped;
 import static lombok.AccessLevel.PACKAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
@@ -17,43 +17,52 @@ import com.codeaffine.tiny.star.spi.CliCommand;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = PACKAGE)
 public class CommandLineInterface {
 
+    static final AtomicReference<Engine> GLOBAL_ENGINE = new AtomicReference<>();
+
     @NonNull
     private final DelegatingCliCommandProvider commandProvider;
-    @NonNull
-    private final Supplier<ExecutorServiceAdapter> executorFactory;
     @NonNull
     private final AtomicReference<Engine> commandlineEngineHolder;
     @NonNull
     private final Logger logger;
 
+    private Map<String, CliCommand> instanceCodeToCommandMap;
+    private ApplicationServer applicationServer;
+    private Integer instanceIdentifier;
+
     public CommandLineInterface() {
-        this(new DelegatingCliCommandProvider(),
-             () -> new ExecutorServiceAdapter(newCachedThreadPool()),
-             new AtomicReference<>(),
-             getLogger(CommandLineInterface.class));
+        this(new DelegatingCliCommandProvider(), new AtomicReference<>(), getLogger(CommandLineInterface.class));
     }
 
     @Stopped
     public void stopCli() {
-        commandlineEngineHolder.updateAndGet(CommandLineInterface::doStop);
+        commandlineEngineHolder.updateAndGet(this::doStop);
     }
 
-    private static Engine doStop(Engine engine) {
+    private Engine doStop(Engine engine) {
         if (nonNull(engine)) {
-            engine.stop();
+            engine.removeCliInstance(applicationServer, instanceIdentifier, instanceCodeToCommandMap);
+            GLOBAL_ENGINE.updateAndGet(CommandLineInterface::removeUnusedGlobalEngine);
+        }
+        return null;
+    }
+
+    private static Engine removeUnusedGlobalEngine(Engine globalEngine) {
+        if(globalEngine.isRunning()) {
+            return globalEngine;
         }
         return null;
     }
 
     @Starting
     public void startCli(ApplicationServer applicationServer) {
+        this.applicationServer = applicationServer;
         commandlineEngineHolder.updateAndGet(engine -> doStart(engine, applicationServer));
     }
 
@@ -61,18 +70,18 @@ public class CommandLineInterface {
         if(nonNull(engine)) {
             return engine;
         }
-        Map<String, CliCommand> codeToCommandMap = loadCodeToCommandMap();
-        printHelpOnStartup(applicationServer, codeToCommandMap, logger);
-        Engine result = createEngine(applicationServer, codeToCommandMap);
-        result.start();
+        Engine result = GLOBAL_ENGINE.updateAndGet(CommandLineInterface::ensureGlobalEngineExists);
+        instanceCodeToCommandMap = loadCodeToCommandMap();
+        instanceIdentifier = result.addCliInstance(applicationServer, instanceCodeToCommandMap);
+        printHelpOnStartup(applicationServer, logger);
         return result;
     }
 
-    private Engine createEngine(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap) {
-        ExecutorServiceAdapter executor = executorFactory.get();
-        CommandDispatcher commandDispatcher = new CommandDispatcher(applicationServer, codeToCommandMap, executor);
-        InputScanner inputScanner = new InputScanner(commandDispatcher);
-        return new Engine(executor, inputScanner);
+    private static Engine ensureGlobalEngineExists(Engine globalEngine) {
+        if (isNull(globalEngine)) {
+            return new EngineFactory().createEngine();
+        }
+        return globalEngine;
     }
 
     private Map<String, CliCommand> loadCodeToCommandMap() {
@@ -81,8 +90,8 @@ public class CommandLineInterface {
             .collect(toMap(CliCommand::getCode, identity()));
     }
 
-    private static void printHelpOnStartup(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap, Logger logger) {
-        codeToCommandMap.values()
+    private void printHelpOnStartup(ApplicationServer applicationServer, Logger logger) {
+        instanceCodeToCommandMap.values()
             .forEach(command -> printHelpOnStartup(applicationServer, command, logger));
     }
 

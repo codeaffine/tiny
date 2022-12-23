@@ -2,11 +2,8 @@ package com.codeaffine.tiny.star.cli;
 
 import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemOutCaptor;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import org.assertj.core.api.AbstractStringAssert;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -14,31 +11,27 @@ import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
 import com.codeaffine.tiny.star.spi.CliCommandContract;
 
-import java.util.Set;
+import java.util.Map;
 
 class HelpCommandTest implements CliCommandContract<HelpCommand> {
-
-    private DelegatingCliCommandProvider delegatingCliCommandProvider;
-
-    @BeforeEach
-    void setUp() {
-        delegatingCliCommandProvider = mock(DelegatingCliCommandProvider.class);
-    }
 
     @Test
     @ExtendWith(SystemOutCaptor.class)
     void execute(SystemOutCaptor systemOutCaptor) {
         ApplicationServer applicationServer = CliCommandContract.stubApplicationServer();
-        TestCliCommand command = new TestCliCommand();
-        stubCliCommandProvider(command);
-        CliCommand actual = create();
+        TestCliCommand testCommand = new TestCliCommand();
+        CliCommand helpCommand = create();
+        Map<String, CliCommand> codeToCommandMap = Map.of(testCommand.getCode(), testCommand, helpCommand.getCode(), helpCommand);
 
-        actual.execute(applicationServer);
+        helpCommand.execute(applicationServer, codeToCommandMap);
 
         assertThat(systemOutCaptor.getLog())
-            .contains(command.getCode())
-            .contains(command.getName())
-            .contains(command.getDescription(command, applicationServer));
+            .contains(testCommand.getCode())
+            .contains(testCommand.getName())
+            .contains(testCommand.getDescription(testCommand, applicationServer))
+            .contains(helpCommand.getCode())
+            .contains(helpCommand.getName())
+            .contains(helpCommand.getDescription(helpCommand, applicationServer));
     }
 
     @Override
@@ -49,7 +42,7 @@ class HelpCommandTest implements CliCommandContract<HelpCommand> {
 
     @Override
     public HelpCommand create() {
-        return new HelpCommand(delegatingCliCommandProvider);
+        return new HelpCommand();
     }
 
     @Override
@@ -65,9 +58,5 @@ class HelpCommandTest implements CliCommandContract<HelpCommand> {
     @Override
     public void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer applicationServer) {
         description.contains(command.getCode());
-    }
-
-    private void stubCliCommandProvider(TestCliCommand command) {
-        when(delegatingCliCommandProvider.getCliCommands()).thenReturn(Set.of(command));
     }
 }

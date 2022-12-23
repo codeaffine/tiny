@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.cli.CommandLineInterface;
 
 import java.util.UUID;
@@ -24,6 +25,14 @@ public class DemoApplication extends AbstractEntryPoint {
             .withApplicationIdentifier(DemoApplication.class.getName())
             .build()
             .start();
+
+        CommandLineInterface commandLineInterface = new CommandLineInterface();
+        ApplicationServer applicationServer = newApplicationServerBuilder(DemoApplication::configure)
+            .withPort(4455)
+            .withApplicationIdentifier(DemoApplication.class.getName())
+            .build()
+            .start();
+        commandLineInterface.startCli(applicationServer);
     }
 
     static void configure(Application application) {

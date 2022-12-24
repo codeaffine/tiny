@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.demo/tiny.com.codeaffine.tiny.demo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.demo/tiny.com.codeaffine.tiny.demo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.undertow/tiny.com.codeaffine.tiny.star.undertow.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.undertow/tiny.com.codeaffine.tiny.star.undertow.main.iml" />
+    </modules>
+  </component>
+</project>

@@ -26,12 +26,12 @@ class InputScanner {
     @NonNull
     private final Logger logger;
 
+    private volatile boolean stopping;
+    private CancelableInputStream cancelableInputStream;
+
     InputScanner(CommandDispatcher commandDispatcher) {
         this(commandDispatcher, getLogger(InputScanner.class));
     }
-
-    private volatile boolean stopping;
-    private CancelableInputStream cancelableInputStream;
 
     void cancel() {
         if (nonNull(cancelableInputStream)) {

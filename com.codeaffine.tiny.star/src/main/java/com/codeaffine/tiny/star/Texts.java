@@ -15,7 +15,7 @@ class Texts {
         |
         |  Launching: %s
         |
-        |  (c) 2022 CA Code Affine GmbH
+        |  (c) 2022-%s CA Code Affine GmbH
         |  All rights reserved.
         |  https://www.codeaffine.com
         +------------------------------------------------------------------------

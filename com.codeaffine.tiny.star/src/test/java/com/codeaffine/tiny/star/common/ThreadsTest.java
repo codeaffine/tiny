@@ -59,7 +59,8 @@ class ThreadsTest {
     }
 
     @Test
-    void runAsyncAwaitingTerminationGetsInterrupted() {
+    @ExtendWith(SystemErrCaptor.class)
+    void runAsyncAwaitingTerminationGetsInterrupted(SystemErrCaptor systemErrCaptor) {
         AtomicReference<Exception> exceptionCaptor = new AtomicReference<>();
         AtomicReference<Thread> threadCaptor = new AtomicReference<>();
         Runnable runnable = () -> sleepFor(TIMEOUT * 2);
@@ -75,6 +76,9 @@ class ThreadsTest {
         assertThat(exceptionCaptor.get())
             .isInstanceOf(IllegalStateException.class)
             .hasCauseInstanceOf(InterruptedException.class);
+        assertThat(systemErrCaptor.getLog())
+                .contains(InterruptedException.class.getName())
+                .contains("Threads.runAsyncAwaitingTermination");
     }
 
     @Test

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 class ExecutorServiceAdapterTest {
 
-    private static final int TEST_TIMEOUT_AWAITING_TERMINATION = 20;
+    private static final int TEST_TIMEOUT_AWAITING_TERMINATION = 40;
     private static final int MILLIS_IN_WHICH_SERVER_IS_EXPECTED_TO_BE_HALTED = TEST_TIMEOUT_AWAITING_TERMINATION * 2;
 
     private ExecutorServiceAdapter executor;

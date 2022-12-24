@@ -30,6 +30,7 @@ public final class Threads {
         try {
             future.get(timeout, timeUnit);
         } catch (InterruptedException cause) {
+            cause.printStackTrace();
             currentThread().interrupt();
             exceptionHandler.accept(extractExceptionToReport(cause, IllegalStateException::new));
         } catch (TimeoutException cause) {

@@ -62,7 +62,6 @@ public class CommandLineInterface {
 
     @Starting
     public void startCli(ApplicationServer applicationServer) {
-        this.applicationServer = applicationServer;
         commandlineEngineHolder.updateAndGet(engine -> doStart(engine, applicationServer));
     }
 
@@ -70,6 +69,7 @@ public class CommandLineInterface {
         if(nonNull(engine)) {
             return engine;
         }
+        this.applicationServer = applicationServer;
         Engine result = GLOBAL_ENGINE.updateAndGet(CommandLineInterface::ensureGlobalEngineExists);
         instanceCodeToCommandMap = loadCodeToCommandMap();
         instanceIdentifier = result.addCliInstance(applicationServer, instanceCodeToCommandMap);

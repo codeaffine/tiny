@@ -1,33 +1,28 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static com.codeaffine.tiny.star.cli.CancelableInputStream.SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static java.lang.String.format;
-import static java.util.concurrent.Executors.newCachedThreadPool;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
+import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.SystemInSupplier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.ApplicationServer;
-import com.codeaffine.tiny.star.SystemInSupplier;
-
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
+
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static com.codeaffine.tiny.star.cli.CancelableInputStream.SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS;
+import static com.codeaffine.tiny.star.cli.ExecutorServiceAdapter.TIMEOUT_AWAITING_TERMINATION;
+import static java.lang.String.format;
+import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.*;
 
 class CommandLineInterfaceTest {
 
@@ -57,9 +52,9 @@ class CommandLineInterfaceTest {
     @AfterEach
     void tearDown() throws InterruptedException {
         commandLineInterface.stopCli();
-        boolean isTerminated = executor.awaitTermination(ExecutorServiceAdapter.TIMEOUT_AWAITING_TERMINATION, MILLISECONDS);
-        CommandLineInterface.GLOBAL_ENGINE.set(null);
+        boolean isTerminated = executor.awaitTermination(TIMEOUT_AWAITING_TERMINATION, MILLISECONDS);
         assertThat(isTerminated).isTrue();
+        assertThat(CommandLineInterface.GLOBAL_ENGINE).hasValue(null);
     }
 
     @Test
@@ -113,6 +108,7 @@ class CommandLineInterfaceTest {
         stubDelegatingCliCommandProvider(command);
 
         commandLineInterface.startCli(applicationServer);
+        sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         commandLineInterface.stopCli();
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         Throwable actual = catchThrowable(() -> commandLineInterface.stopCli());
@@ -128,12 +124,14 @@ class CommandLineInterfaceTest {
         stubDelegatingCliCommandProvider(command);
 
         commandLineInterface.startCli(applicationServer);
+        sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         commandLineInterface.stopCli();
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         boolean isTerminated = executor.awaitTermination(100, MILLISECONDS);
         commandLineInterface.startCli(applicationServer);
 
         verify(logger, times(2)).info(command.getDescription(command, applicationServer));
+        assertThat(isTerminated).isTrue();
     }
 
     private void stubDelegatingCliCommandProvider(TestCliCommand... commands) {

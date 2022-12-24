@@ -36,9 +36,13 @@ class ExecutorServiceAdapter {
     }
 
     private void handleExecutorServiceShutdown() {
-        executorService.shutdownNow();
+        executorService.shutdown();
         try {
-            boolean terminated = executorService.awaitTermination(timeoutAwaitingTermination, MILLISECONDS);
+            boolean terminated = executorService.awaitTermination(timeoutAwaitingTermination / 2, MILLISECONDS);
+            if (!terminated) {
+                executorService.shutdownNow();
+            }
+            terminated = executorService.awaitTermination(timeoutAwaitingTermination / 2, MILLISECONDS);
             if (!terminated) {
                 throw new IllegalStateException(ERROR_AWAITING_SHUT_DOWN_CLI);
             }

@@ -1,23 +1,8 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
-import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.star.Texts.INFO_CREATION_CONFIRMATION;
-import static com.codeaffine.tiny.star.Texts.INFO_SHUTDOWN_CONFIRMATION;
-import static com.codeaffine.tiny.star.Texts.INFO_STARTUP_CONFIRMATION;
-import static com.codeaffine.tiny.star.common.Metric.measureDuration;
-import static lombok.Builder.Default;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import static java.lang.Boolean.TRUE;
-import static java.lang.String.format;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Singular;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
@@ -27,9 +12,21 @@ import java.lang.annotation.Target;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import lombok.Builder;
-import lombok.NonNull;
-import lombok.Singular;
+
+import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
+import static com.codeaffine.tiny.star.IoUtils.findFreePort;
+import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
+import static com.codeaffine.tiny.star.Texts.*;
+import static com.codeaffine.tiny.star.common.Metric.measureDuration;
+import static java.lang.Boolean.TRUE;
+import static java.lang.String.format;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.time.LocalDate.now;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static lombok.Builder.Default;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Builder(
     builderMethodName = "newDefaultApplicationServerBuilder",
@@ -65,7 +62,7 @@ public class ApplicationServer {
     @Default
     final Function<ApplicationServer, String> startInfoProvider
         =   TRUE.equals(readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
-          ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier())
+          ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier(), now().getYear())
           : null;
     @Singular
     final List<Object> lifecycleListeners;

@@ -1,6 +1,7 @@
 package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.Texts.ERROR_INVALID_METHOD_SIGNATURE;
+import static com.codeaffine.tiny.star.Texts.ERROR_LISTENER_NOTIFICATION;
 import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.star.common.Threads.runAsyncAwaitingTermination;
@@ -81,7 +82,19 @@ class ObserverRegistry<T> {
     }
 
     private void notifyObserverAsync(Consumer<Exception> exceptionHandler, Observer observer) {
-        runAsyncAwaitingTermination(() -> notifyObserver(observer), exceptionHandler, observerNotificationTimeout, MILLISECONDS);
+        Consumer<Exception> exceptionHandlerWrapper = exception -> applyObserverMethodToMessageToException(exceptionHandler, observer, exception);
+        runAsyncAwaitingTermination(() -> notifyObserver(observer), exceptionHandlerWrapper, observerNotificationTimeout, MILLISECONDS);
+    }
+
+    private static void applyObserverMethodToMessageToException(Consumer<Exception> exceptionHandler, Observer observer, Exception exception) {
+        Exception exceptionToHandle = exception;
+        if(exception instanceof IllegalStateException ise) {
+            String message = ise.getMessage();
+            String typeName = observer.observer.getClass().getName();
+            String methodName = observer.method.getName();
+            exceptionToHandle = new IllegalStateException(format(ERROR_LISTENER_NOTIFICATION, message, typeName, methodName), ise.getCause());
+        }
+        exceptionHandler.accept(exceptionToHandle);
     }
 
     private void notifyObserver(Observer observer) {

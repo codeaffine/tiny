@@ -95,9 +95,10 @@ public class CommandLineInterface {
             .forEach(command -> printHelpOnStartup(applicationServer, command, logger));
     }
 
-    private static void printHelpOnStartup(ApplicationServer applicationServer, CliCommand command, Logger logger) {
-        if(command.printHelpOnStartup()) {
-            logger.info(command.getDescription(command, applicationServer));
+    private void printHelpOnStartup(ApplicationServer applicationServer, CliCommand command, Logger logger) {
+        CliInstanceCommandAdapter commandAdapter = new CliInstanceCommandAdapter(applicationServer, command, instanceIdentifier);
+        if(commandAdapter.printHelpOnStartup()) {
+            logger.info(commandAdapter.getDescription(commandAdapter, applicationServer));
         }
     }
 }

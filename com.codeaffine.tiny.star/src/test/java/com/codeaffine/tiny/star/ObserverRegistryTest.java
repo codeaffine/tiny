@@ -114,7 +114,9 @@ class ObserverRegistryTest {
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)
-            .hasCauseInstanceOf(TimeoutException.class);
+            .hasCauseInstanceOf(TimeoutException.class)
+            .hasMessageContaining(SlowListener.class.getName())
+            .hasMessageContaining("eventFired");
     }
 
     @ParameterizedTest

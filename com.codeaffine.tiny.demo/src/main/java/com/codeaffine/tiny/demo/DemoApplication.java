@@ -1,7 +1,6 @@
 package com.codeaffine.tiny.demo;
 
-import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-
+import com.codeaffine.tiny.star.cli.CommandLineInterface;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.swt.SWT;
@@ -10,10 +9,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import com.codeaffine.tiny.star.ApplicationServer;
-import com.codeaffine.tiny.star.cli.CommandLineInterface;
-
 import java.util.UUID;
+
+import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 
 public class DemoApplication extends AbstractEntryPoint {
 
@@ -25,14 +23,6 @@ public class DemoApplication extends AbstractEntryPoint {
             .withApplicationIdentifier(DemoApplication.class.getName())
             .build()
             .start();
-
-        CommandLineInterface commandLineInterface = new CommandLineInterface();
-        ApplicationServer applicationServer = newApplicationServerBuilder(DemoApplication::configure)
-            .withPort(4455)
-            .withApplicationIdentifier(DemoApplication.class.getName())
-            .build()
-            .start();
-        commandLineInterface.startCli(applicationServer);
     }
 
     static void configure(Application application) {

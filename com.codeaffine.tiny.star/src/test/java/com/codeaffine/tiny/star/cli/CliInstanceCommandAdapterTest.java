@@ -22,6 +22,7 @@ class CliInstanceCommandAdapterTest {
 
     private static final int CLI_INSTANCE_NUMBER = 1;
     public static final String CODE = "C";
+    public static final int ZERO = 0;
 
     private ApplicationServer applicationServer;
     private CliCommand command;
@@ -42,8 +43,8 @@ class CliInstanceCommandAdapterTest {
     }
 
     @Test
-    void getCodeWithNullAsCliInstanceNumberArgument() {
-        CliInstanceCommandAdapter adapter = new CliInstanceCommandAdapter(applicationServer, command, null);
+    void getCodeWithZeroAsCliInstanceNumberArgument() {
+        CliInstanceCommandAdapter adapter = new CliInstanceCommandAdapter(applicationServer, command, ZERO);
 
         String actual = adapter.getCode();
 

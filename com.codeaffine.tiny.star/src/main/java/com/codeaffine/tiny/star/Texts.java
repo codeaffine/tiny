@@ -25,7 +25,8 @@ class Texts {
     static final String ERROR_NOTIFYING_STARTED_LISTENER = "Error while notifying started listener:";
     static final String ERROR_NOTIFYING_STOPPING_LISTENER = "Error while notifying stopping listener:";
     static final String ERROR_NOTIFYING_STOPPED_LISTENER = "Error while notifying stopped listener:";
-    static final String ERROR_TERMINATING_APPLICATION = "Problems occurred during application server shutdown. For details see log mesages.";
+    static final String ERROR_LISTENER_NOTIFICATION = "%s notifying %s#%s";
+    static final String ERROR_TERMINATING_APPLICATION = "Problems occurred during application server shutdown. For details see log messages.";
     static final String ENFORCING_APPLICATION_TERMINATION = "Enforcing application server shutdown.";
     static final String DEBUG_APPLICATION_NOT_HALTED = "Application process is not halted.";
     static final String DEBUG_APPLICATION_NOT_RUNNING = "Application process is not running.";

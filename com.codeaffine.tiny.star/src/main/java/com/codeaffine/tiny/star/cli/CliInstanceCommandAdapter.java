@@ -1,17 +1,15 @@
 package com.codeaffine.tiny.star.cli;
 
-import static lombok.AccessLevel.PACKAGE;
-
-import static java.util.Objects.nonNull;
-
 import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.CliCommand;
-
-import java.util.HashMap;
-import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class CliInstanceCommandAdapter implements CliCommand {
@@ -21,7 +19,7 @@ class CliInstanceCommandAdapter implements CliCommand {
     @NonNull
     @Delegate(excludes = Excludes.class)
     private final CliCommand delegate;
-    private final Integer cliInstanceNumber;
+    private final int cliInstanceNumber;
 
     interface Excludes {
         String getCode();
@@ -30,7 +28,7 @@ class CliInstanceCommandAdapter implements CliCommand {
 
     @Override
     public String getCode() {
-        if(nonNull(cliInstanceNumber)) {
+        if(cliInstanceNumber > 0) {
             return delegate.getCode() + cliInstanceNumber;
         }
         return delegate.getCode();

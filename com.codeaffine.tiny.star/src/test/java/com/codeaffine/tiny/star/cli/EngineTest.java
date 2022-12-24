@@ -51,6 +51,7 @@ class EngineTest {
         sleepFor(THREAD_SWITCH_TIME);
 
         verify(scanner).scanForCommandCode();
+        assertThat(cliInstanceId).isZero();
     }
 
     @Test

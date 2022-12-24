@@ -69,7 +69,6 @@ class Engine {
     }
 
     private static CliInstanceCommandAdapter adaptCliCommand(ApplicationServer applicationServer, CliCommand command, int cliInstanceIdentifier) {
-        Integer cliInstanceNumber = cliInstanceIdentifier == 0 ? null : cliInstanceIdentifier;
-        return new CliInstanceCommandAdapter(applicationServer, command, cliInstanceNumber);
+        return new CliInstanceCommandAdapter(applicationServer, command, cliInstanceIdentifier);
     }
 }

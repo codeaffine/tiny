@@ -1,17 +1,6 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import static java.lang.Thread.currentThread;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
+import com.codeaffine.tiny.star.common.Synchronizer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,8 +13,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static java.lang.Thread.currentThread;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class CancelableInputStreamTest {
 
@@ -40,26 +37,33 @@ class CancelableInputStreamTest {
 
     static class LockableInputStream extends ByteArrayInputStream {
 
-        private volatile boolean simulateAwaitingOfBytes;
+        private final Synchronizer synchronizer;
+
+        private boolean simulateAwaitingOfBytes;
 
         LockableInputStream(byte[] buf) {
             super(buf);
+            synchronizer = new Synchronizer();
         }
 
         @Override
-        public synchronized int available() {
+        public int available() {
+            return synchronizer.execute(this::doAvailable);
+        }
+
+        void simulateAwaitingOfBytes() {
+            synchronizer.execute(() -> simulateAwaitingOfBytes = true);
+        }
+
+        void endAwaitingOfBytesSimulation() {
+            synchronizer.execute(() -> simulateAwaitingOfBytes = false);
+        }
+
+        private int doAvailable() {
             if(simulateAwaitingOfBytes) {
                 return 0;
             }
             return super.available();
-        }
-
-        void simulateAwaitingOfBytes() {
-            simulateAwaitingOfBytes = true;
-        }
-
-        void endAwaitingOfBytesSimulation() {
-            simulateAwaitingOfBytes = false;
         }
     }
 
@@ -128,7 +132,6 @@ class CancelableInputStreamTest {
         inputStream = new CancelableInputStream(delegate, CANCEL_SIGNAL_STREAM, suspendTimeLongEnoughToReachInterruptCall);
         byte[] buffer = newEmptyByteArrayWithLengthOfContent();
         AtomicReference<Thread> threadCaptor = new AtomicReference<>();
-        AtomicInteger readResultCaptor = new AtomicInteger(Integer.MIN_VALUE);
         delegate.simulateAwaitingOfBytes();
 
         Future<Integer> actual = executor.submit(() -> readOnNextBytesAwaitingInput(() -> inputStream.read(buffer, 0, CONTENT.length()), threadCaptor));

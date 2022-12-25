@@ -1,19 +1,7 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.State;
-import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
-import static com.codeaffine.tiny.star.ShutdownHookHandler.RuntimeSupplier;
-import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.star.common.Synchronizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,19 +9,28 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InOrder;
 
-import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import static com.codeaffine.tiny.star.ApplicationServer.State;
+import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
+import static com.codeaffine.tiny.star.ShutdownHookHandler.RuntimeSupplier;
+import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
+import static com.codeaffine.tiny.star.common.SynchronizerTestHelper.fakeSynchronizer;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class ShutdownHookHandlerTest {
 
     private ShutdownHookHandler shutdownHookHandler;
+    private Synchronizer synchronizer;
     private Runtime runtime;
 
     @BeforeEach
     void setUp() {
         runtime = mock(Runtime.class);
-        shutdownHookHandler = new ShutdownHookHandler(stubRuntimeSupplier(runtime));
+        synchronizer = fakeSynchronizer();
+        shutdownHookHandler = new ShutdownHookHandler(stubRuntimeSupplier(runtime), synchronizer);
     }
-        
+
     @Test
     void register() throws InterruptedException {
         Runnable shutdownOperation = mock(Runnable.class);
@@ -113,6 +110,31 @@ class ShutdownHookHandlerTest {
     }
 
     @Test
+    void registerWithoutSynchronization() throws InterruptedException {
+        reset(synchronizer);
+        Runnable shutdownOperation = mock(Runnable.class);
+
+        shutdownHookHandler.register(shutdownOperation);
+
+        verify(runtime, never()).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
+    }
+
+    @Test
+    @ExtendWith(SystemErrCaptor.class)
+    void runHookWithoutSynchronization(SystemErrCaptor systemErrCaptor) throws InterruptedException {
+        Runnable shutdownOperation = mock(Runnable.class);
+        shutdownHookHandler.register(shutdownOperation);
+        reset(synchronizer);
+
+        shutdownHookHandler.getShutdownHookThread().start();
+        shutdownHookHandler.getShutdownHookThread().join();
+
+        assertThat(systemErrCaptor.getLog()).contains(NullPointerException.class.getName());
+        verify(runtime).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
+        verify(shutdownOperation, never()).run();
+    }
+
+    @Test
     void deregister() throws InterruptedException {
         Runnable shutdownOperation = mock(Runnable.class);
 
@@ -137,6 +159,19 @@ class ShutdownHookHandlerTest {
 
         verify(runtime).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
         verify(runtime, never()).removeShutdownHook(shutdownHookHandler.getShutdownHookThread());
+    }
+
+    @Test
+    void deregisterWithoutSynchronization() throws InterruptedException {
+        Runnable shutdownOperation = mock(Runnable.class);
+        shutdownHookHandler.register(shutdownOperation);
+
+        reset(synchronizer);
+        shutdownHookHandler.deregister(shutdownOperation);
+
+        InOrder order = inOrder(runtime, shutdownOperation);
+        order.verify(runtime).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
+        order.verifyNoMoreInteractions();
     }
 
     @Test

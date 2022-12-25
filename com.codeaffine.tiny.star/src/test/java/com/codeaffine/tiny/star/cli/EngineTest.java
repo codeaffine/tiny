@@ -1,25 +1,24 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
+import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.common.Synchronizer;
+import com.codeaffine.tiny.star.spi.CliCommand;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.codeaffine.tiny.star.ApplicationServer;
-import com.codeaffine.tiny.star.spi.CliCommand;
+import org.mockito.InOrder;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static com.codeaffine.tiny.star.common.SynchronizerTestHelper.fakeSynchronizer;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class EngineTest {
 
@@ -28,6 +27,7 @@ class EngineTest {
 
     private Map<String, CliCommand> codeToCommandMap;
     private ExecutorService executorService;
+    private Synchronizer synchronizer;
     private InputScanner scanner;
     private Engine engine;
 
@@ -36,7 +36,8 @@ class EngineTest {
         executorService = newSingleThreadExecutor();
         scanner = mock(InputScanner.class);
         codeToCommandMap = new HashMap<>();
-        engine = new Engine(new ExecutorServiceAdapter(executorService), scanner, codeToCommandMap);
+        synchronizer = fakeSynchronizer();
+        engine = new Engine(new ExecutorServiceAdapter(executorService), scanner, codeToCommandMap, synchronizer);
     }
 
     @AfterEach
@@ -45,26 +46,87 @@ class EngineTest {
         boolean isTerminated = executorService.awaitTermination(THREAD_SWITCH_TIME, MILLISECONDS);
         assertThat(isTerminated).isTrue();
     }
+
     @Test
     void start() {
         int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), Map.of(CODE, stubCliCommmand()));
         sleepFor(THREAD_SWITCH_TIME);
+        boolean running = engine.isRunning();
 
         verify(scanner).scanForCommandCode();
         assertThat(cliInstanceId).isZero();
+        assertThat(running).isTrue();
+    }
+
+    @Test
+    void startWithoutSynchronization() {
+        reset(synchronizer);
+
+        Integer cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), Map.of(CODE, stubCliCommmand()));
+        sleepFor(THREAD_SWITCH_TIME);
+        Boolean running = engine.isRunning();
+
+        verify(scanner, never()).scanForCommandCode();
+        assertThat(cliInstanceId).isNull();
+        assertThat(running).isNull();
     }
 
     @Test
     void stop() {
-        Map<String, CliCommand> codeToCommandMap = Map.of(CODE, stubCliCommmand());
-        int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), codeToCommandMap);
+        Map<String, CliCommand> localCodeToCommandMap = Map.of(CODE, stubCliCommmand());
+        int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), localCodeToCommandMap);
         sleepFor(THREAD_SWITCH_TIME);
 
-        engine.removeCliInstance(mock(ApplicationServer.class), cliInstanceId, codeToCommandMap);
+        engine.removeCliInstance(mock(ApplicationServer.class), cliInstanceId, localCodeToCommandMap);
         sleepFor(THREAD_SWITCH_TIME);
+        boolean running = engine.isRunning();
 
         verify(scanner).cancel();
         assertThat(executorService.isTerminated()).isTrue();
+        assertThat(running).isFalse();
+    }
+
+    @Test
+    void stopWithoutSynchronization() {
+        Map<String, CliCommand> localCodeToCommandMap = Map.of(CODE, stubCliCommmand());
+        int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), localCodeToCommandMap);
+        sleepFor(THREAD_SWITCH_TIME);
+        reset(synchronizer);
+
+        engine.removeCliInstance(mock(ApplicationServer.class), cliInstanceId, localCodeToCommandMap);
+        sleepFor(THREAD_SWITCH_TIME);
+        Boolean running = engine.isRunning();
+
+        verify(scanner, never()).cancel();
+        assertThat(executorService.isTerminated()).isFalse();
+        assertThat(running).isNull();
+    }
+
+    @Test
+    void lifecycleOfMultipleCliInstance() {
+        Map<String, CliCommand> localCodeOfCommandMap = Map.of(CODE, stubCliCommmand());
+        int cliInstanceId1 = engine.addCliInstance(mock(ApplicationServer.class), localCodeOfCommandMap);
+        sleepFor(THREAD_SWITCH_TIME);
+        int cliInstanceId2 = engine.addCliInstance(mock(ApplicationServer.class), localCodeOfCommandMap);
+        sleepFor(THREAD_SWITCH_TIME);
+        boolean running = engine.isRunning();
+        engine.removeCliInstance(mock(ApplicationServer.class), cliInstanceId1, localCodeOfCommandMap);
+        sleepFor(THREAD_SWITCH_TIME);
+        boolean runningAfterRemovalOfOneInstance = engine.isRunning();
+        engine.removeCliInstance(mock(ApplicationServer.class), cliInstanceId2, localCodeOfCommandMap);
+        sleepFor(THREAD_SWITCH_TIME);
+        boolean runningAfterRemovalOfAllInstances = engine.isRunning();
+
+        InOrder order = inOrder(scanner);
+        order.verify(scanner).scanForCommandCode();
+        order.verify(scanner).cancel();
+        order.verifyNoMoreInteractions();
+        assertThat(executorService.isTerminated()).isTrue();
+        assertThat(cliInstanceId1).isZero();
+        assertThat(cliInstanceId2).isOne();
+        assertThat(running).isTrue();
+        assertThat(runningAfterRemovalOfOneInstance).isTrue();
+        assertThat(runningAfterRemovalOfAllInstances).isFalse();
     }
 
     @Test

@@ -18,7 +18,7 @@ import com.codeaffine.tiny.star.spi.CliCommand;
 import java.util.HashMap;
 import java.util.Map;
 
-class CliInstanceCommandAdapterTest {
+class CliCommandAdapterTest {
 
     private static final int CLI_INSTANCE_NUMBER = 1;
     public static final String CODE = "C";
@@ -35,7 +35,7 @@ class CliInstanceCommandAdapterTest {
 
     @Test
     void getCode() {
-        CliInstanceCommandAdapter adapter = new CliInstanceCommandAdapter(applicationServer, command, CLI_INSTANCE_NUMBER);
+        CliCommandAdapter adapter = new CliCommandAdapter(applicationServer, command, CLI_INSTANCE_NUMBER);
 
         String actual = adapter.getCode();
 
@@ -44,7 +44,7 @@ class CliInstanceCommandAdapterTest {
 
     @Test
     void getCodeWithZeroAsCliInstanceNumberArgument() {
-        CliInstanceCommandAdapter adapter = new CliInstanceCommandAdapter(applicationServer, command, ZERO);
+        CliCommandAdapter adapter = new CliCommandAdapter(applicationServer, command, ZERO);
 
         String actual = adapter.getCode();
 
@@ -54,7 +54,7 @@ class CliInstanceCommandAdapterTest {
     @Test
     @SuppressWarnings("unchecked")
     void execute() {
-        CliInstanceCommandAdapter adapter = new CliInstanceCommandAdapter(applicationServer, command, CLI_INSTANCE_NUMBER);
+        CliCommandAdapter adapter = new CliCommandAdapter(applicationServer, command, CLI_INSTANCE_NUMBER);
         Map<String, CliCommand> codeToCommandMap = new HashMap<>(Map.of(adapter.getCode(), adapter));
         Map<String, CliCommand> copyOfCodeToCommandMap = copyAndClearMap(codeToCommandMap);
 
@@ -72,13 +72,13 @@ class CliInstanceCommandAdapterTest {
 
     @Test
     void constructWithNullAsApplicationServerArgument() {
-        assertThatThrownBy(() -> new CliInstanceCommandAdapter(null, command, CLI_INSTANCE_NUMBER))
+        assertThatThrownBy(() -> new CliCommandAdapter(null, command, CLI_INSTANCE_NUMBER))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsDelegateArgument() {
-        assertThatThrownBy(() -> new CliInstanceCommandAdapter(applicationServer, null, CLI_INSTANCE_NUMBER))
+        assertThatThrownBy(() -> new CliCommandAdapter(applicationServer, null, CLI_INSTANCE_NUMBER))
             .isInstanceOf(NullPointerException.class);
     }
 

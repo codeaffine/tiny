@@ -1,20 +1,19 @@
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.Server;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
+
 import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
 import static com.codeaffine.tiny.star.Texts.INFO_SERVER_USAGE;
 import static com.codeaffine.tiny.star.Texts.INFO_WORKING_DIRECTORY;
 import static lombok.AccessLevel.PACKAGE;
 import static org.slf4j.LoggerFactory.getLogger;
-
-import org.slf4j.Logger;
-
-import com.codeaffine.tiny.star.spi.Server;
-
-import java.io.File;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class ApplicationProcessFactory {
@@ -64,7 +63,7 @@ class ApplicationProcessFactory {
         File applicationWorkingDirectory = workingDirectoryPreparer.prepareWorkingDirectory();
         LoggingFrameworkControl loggingFrameworkControl = loggingFrameworkConfigurator.configureLoggingFramework();
         Server server = delegatingServerFactory.create(applicationWorkingDirectory);
-        Runnable shutdownHookRemover = () -> shutdownHookHandler.deregister(shutdownHookOperation.get());
+        Runnable shutdownHookRemover = new ShutdownHookRemover(applicationServer, loggingFrameworkControl, shutdownHookHandler, shutdownHookOperation);
         Terminator terminator = terminatorFactory.create(applicationWorkingDirectory, server, loggingFrameworkControl, shutdownHookRemover);
         ApplicationProcess result = new ApplicationProcess(applicationServer, server::start, terminator);
         shutdownHookOperation.set(() -> beforeProcessShutdown(terminator, result));
@@ -75,4 +74,5 @@ class ApplicationProcessFactory {
         logger.info(INFO_SERVER_USAGE, applicationServer.getIdentifier(), server.getName());
         return result;
     }
+
 }

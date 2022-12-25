@@ -59,16 +59,16 @@ class Engine {
     }
 
     private void adaptAndAddCliCommand(ApplicationServer applicationServer, CliCommand command, int cliInstanceIdentifier) {
-        CliInstanceCommandAdapter adapter = adaptCliCommand(applicationServer, command, cliInstanceIdentifier);
+        CliCommandAdapter adapter = adaptCliCommand(applicationServer, command, cliInstanceIdentifier);
         codeToCommandMap.put(adapter.getCode(), adapter);
     }
 
     private void adaptAndRemoveCliCommand(ApplicationServer applicationServer, int instanceIdentifier, CliCommand command) {
-        CliInstanceCommandAdapter adapter = adaptCliCommand(applicationServer, command, instanceIdentifier);
+        CliCommandAdapter adapter = adaptCliCommand(applicationServer, command, instanceIdentifier);
         codeToCommandMap.remove(adapter.getCode());
     }
 
-    private static CliInstanceCommandAdapter adaptCliCommand(ApplicationServer applicationServer, CliCommand command, int cliInstanceIdentifier) {
-        return new CliInstanceCommandAdapter(applicationServer, command, cliInstanceIdentifier);
+    private static CliCommandAdapter adaptCliCommand(ApplicationServer applicationServer, CliCommand command, int cliInstanceIdentifier) {
+        return new CliCommandAdapter(applicationServer, command, cliInstanceIdentifier);
     }
 }

@@ -1,32 +1,33 @@
 package com.codeaffine.tiny.star.cli;
 
+import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.spi.CliCommand;
+import com.codeaffine.tiny.star.spi.CliCommandProvider;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static com.codeaffine.tiny.star.ApplicationServer.Starting;
 import static com.codeaffine.tiny.star.ApplicationServer.Stopped;
-import static lombok.AccessLevel.PACKAGE;
-import static org.slf4j.LoggerFactory.getLogger;
-
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-
-import org.slf4j.Logger;
-
-import com.codeaffine.tiny.star.ApplicationServer;
-import com.codeaffine.tiny.star.spi.CliCommand;
-
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import static lombok.AccessLevel.PACKAGE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @RequiredArgsConstructor(access = PACKAGE)
 public class CommandLineInterface {
 
     static final AtomicReference<Engine> GLOBAL_ENGINE = new AtomicReference<>();
 
+    private static final EngineFactory ENGINE_FACTORY = new EngineFactory();
+
     @NonNull
-    private final DelegatingCliCommandProvider commandProvider;
+    private final CliCommandProvider commandProvider;
     @NonNull
     private final AtomicReference<Engine> commandlineEngineHolder;
     @NonNull
@@ -37,7 +38,11 @@ public class CommandLineInterface {
     private Integer instanceIdentifier;
 
     public CommandLineInterface() {
-        this(new DelegatingCliCommandProvider(), new AtomicReference<>(), getLogger(CommandLineInterface.class));
+        this(new DelegatingCliCommandProvider());
+    }
+
+    public CommandLineInterface(CliCommandProvider cliCommandProvider) {
+        this(cliCommandProvider, new AtomicReference<>(), getLogger(CommandLineInterface.class));
     }
 
     @Stopped
@@ -79,7 +84,7 @@ public class CommandLineInterface {
 
     private static Engine ensureGlobalEngineExists(Engine globalEngine) {
         if (isNull(globalEngine)) {
-            return new EngineFactory().createEngine();
+            return ENGINE_FACTORY.createEngine();
         }
         return globalEngine;
     }
@@ -96,7 +101,7 @@ public class CommandLineInterface {
     }
 
     private void printHelpOnStartup(ApplicationServer applicationServer, CliCommand command, Logger logger) {
-        CliInstanceCommandAdapter commandAdapter = new CliInstanceCommandAdapter(applicationServer, command, instanceIdentifier);
+        CliCommandAdapter commandAdapter = new CliCommandAdapter(applicationServer, command, instanceIdentifier);
         if(commandAdapter.printHelpOnStartup()) {
             logger.info(commandAdapter.getDescription(commandAdapter, applicationServer));
         }

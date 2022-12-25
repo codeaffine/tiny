@@ -12,7 +12,7 @@ import java.util.Map;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
-class CliInstanceCommandAdapter implements CliCommand {
+class CliCommandAdapter implements CliCommand {
 
     @NonNull
     private final ApplicationServer applicationServer;

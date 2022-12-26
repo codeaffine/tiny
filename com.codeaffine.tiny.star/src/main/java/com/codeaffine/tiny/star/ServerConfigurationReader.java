@@ -1,33 +1,47 @@
 package com.codeaffine.tiny.star;
 
-import static lombok.AccessLevel.PRIVATE;
-
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import lombok.NoArgsConstructor;
+import java.util.function.Supplier;
+
+import static com.codeaffine.tiny.star.Texts.ERROR_READING_ATTRIBUTE;
+import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 class ServerConfigurationReader {
 
     static final String ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION = "com.codeaffine.tiny.star.configuration";
-    static final String ERROR_READING_ATTRIBUTE = "unable to read attribute %s from environment configuration %s";
 
-    static <T> T readEnvironmentConfigurationAttribute(String attributeName, T defaultValue, Function<String, T> factory) {
-        String serialized = System.getenv(ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION);
+    private static final Supplier<String> CONFIGURATION_READER = () -> System.getenv(ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION);
+    private static final AtomicReference<Supplier<String>> CONFIGURATION_READER_HOLDER = new AtomicReference<>(CONFIGURATION_READER);
+    private static final ObjectMapper OBJECT_MAPPERE = new ObjectMapper();
+
+    static void setConfigurationReader(@NonNull Supplier<String> configurationReader) {
+        CONFIGURATION_READER_HOLDER.set(configurationReader);
+    }
+
+    static void resetConfigurationReader() {
+        CONFIGURATION_READER_HOLDER.set(CONFIGURATION_READER);
+    }
+
+    static <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Function<String, T> factory) {
+        String serialized = readSerializedConfigurationFromEnvironment();
         if (nonNull(serialized)) {
             return readWithFactory(serialized, attributeName, defaultValue, factory);
         }
         return defaultValue;
     }
 
-    static <T> T readEnvironmentConfigurationAttribute(String attributeName, T defaultValue, Class<T> type) {
-        String serialized = System.getenv(ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION);
+    static <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Class<T> type) {
+        String serialized = readSerializedConfigurationFromEnvironment();
         if (nonNull(serialized)) {
             return readWithTypeCast(attributeName, defaultValue, type, serialized);
         }
@@ -49,11 +63,16 @@ class ServerConfigurationReader {
     }
 
     @SuppressWarnings("unchecked")
-    private static <V> Map<String, V> deserialize(String attributeName, String serialized) {
+    private static <V> Map<String, V> deserialize(String attributeName, String serialized) throws IllegalArgumentException {
         try {
-            return new ObjectMapper().readValue(serialized, Map.class);
+            return OBJECT_MAPPERE.readValue(serialized, Map.class);
         } catch (JsonProcessingException cause) {
             throw new IllegalArgumentException(format(ERROR_READING_ATTRIBUTE, attributeName, serialized), cause);
         }
+    }
+
+    private static String readSerializedConfigurationFromEnvironment() {
+        return CONFIGURATION_READER_HOLDER.get()
+            .get();
     }
 }

@@ -1,13 +1,5 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
-import static com.codeaffine.tiny.star.FilesTestHelper.fakeFileThatCannotBeDeleted;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-
-import static java.lang.System.getProperty;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +8,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.File;
 import java.util.UUID;
+
+import static com.codeaffine.tiny.star.FilesTestHelper.fakeFileThatCannotBeDeleted;
+import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
+import static java.lang.System.getProperty;
+import static org.assertj.core.api.Assertions.*;
 
 class IoUtilsTest {
 
@@ -42,7 +39,8 @@ class IoUtilsTest {
 
     @Test
     void createTemporaryDirectory() {
-        File actual = createTemporayDirectory(directoryNamePrefix);
+        File actual = IoUtils.createTemporayDirectory(directoryNamePrefix);
+        actual.deleteOnExit(); // housekeeping only, not part of the test
 
         assertThat(actual)
             .exists()

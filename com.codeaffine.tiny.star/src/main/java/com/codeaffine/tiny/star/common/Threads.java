@@ -1,24 +1,34 @@
 package com.codeaffine.tiny.star.common;
 
-import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.common.Texts.ERROR_TIMEOUT_CALLING_RUNNABLE;
-import static lombok.AccessLevel.PRIVATE;
-
-import static java.lang.String.format;
-import static java.lang.Thread.currentThread;
-import static java.util.concurrent.CompletableFuture.runAsync;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+
+import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.star.common.Texts.ERROR_TIMEOUT_CALLING_RUNNABLE;
+import static java.lang.String.format;
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
 public final class Threads {
+
+    public static void sleepFor(long millis) {
+        try {
+            sleep(millis); // NOSONAR
+        } catch (InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(interruptedException);
+        }
+    }
 
     public static void runAsyncAwaitingTermination(
         @NonNull Runnable runnable,

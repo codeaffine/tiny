@@ -11,9 +11,9 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static com.codeaffine.tiny.star.cli.CancelableInputStream.SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS;
 import static com.codeaffine.tiny.star.cli.Texts.*;
+import static com.codeaffine.tiny.star.common.Threads.sleepFor;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;

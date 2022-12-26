@@ -1,13 +1,13 @@
 package com.codeaffine.tiny.star.common;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
+
+import static com.codeaffine.tiny.star.common.Threads.sleepFor;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MetricTest {
 

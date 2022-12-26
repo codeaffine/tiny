@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static com.codeaffine.tiny.star.cli.Texts.ERROR_AWAITING_SHUT_DOWN_CLI;
 import static com.codeaffine.tiny.star.cli.Texts.ERROR_SHUTTING_DOWN_CLI;
+import static com.codeaffine.tiny.star.common.Threads.sleepFor;
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;

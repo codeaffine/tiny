@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static com.codeaffine.tiny.star.common.Threads.sleepFor;
 import static java.lang.Thread.currentThread;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;

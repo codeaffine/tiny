@@ -3,21 +3,46 @@ package com.codeaffine.tiny.star.common;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ThreadsTest {
 
     public static final long TIMEOUT = 40;
+
+    @Test
+    void sleepFor() {
+        long start = System.currentTimeMillis();
+        Threads.sleepFor(TIMEOUT);
+        long end = System.currentTimeMillis();
+
+        assertThat(end - start).isGreaterThanOrEqualTo(TIMEOUT);
+    }
+
+    @Test
+    void sleepForIfInterrupted() {
+        AtomicReference<Thread> threadCaptor = new AtomicReference<>();
+
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            threadCaptor.set(currentThread());
+            Threads.sleepFor(1000L);
+        });
+        Threads.sleepFor(TIMEOUT);
+        threadCaptor.get().interrupt();
+        Throwable actual = catchThrowable(future::get);
+
+        assertThat(actual.getCause())
+            .isInstanceOf(IllegalStateException.class)
+            .hasCauseInstanceOf(InterruptedException.class);
+    }
 
     @Test
     void runAsyncAwaitingTermination() {
@@ -43,7 +68,7 @@ class ThreadsTest {
     @Test
     void runAsyncAwaitingTerminationIfExecutionTakesTooLong() {
         AtomicReference<Exception> exceptionCaptor = new AtomicReference<>();
-        Runnable runnable = () -> sleepFor(TIMEOUT * 2);
+        Runnable runnable = () -> Threads.sleepFor(TIMEOUT * 2);
 
         Threads.runAsyncAwaitingTermination(runnable, exceptionCaptor::set, TIMEOUT, MILLISECONDS);
 
@@ -61,15 +86,15 @@ class ThreadsTest {
     void runAsyncAwaitingTerminationGetsInterrupted(SystemErrCaptor systemErrCaptor) {
         AtomicReference<Exception> exceptionCaptor = new AtomicReference<>();
         AtomicReference<Thread> threadCaptor = new AtomicReference<>();
-        Runnable runnable = () -> sleepFor(TIMEOUT * 2);
+        Runnable runnable = () -> Threads.sleepFor(TIMEOUT * 2);
 
         runAsync(() -> {
             threadCaptor.set(currentThread());
             Threads.runAsyncAwaitingTermination(runnable, exceptionCaptor::set, TIMEOUT, MILLISECONDS);
         });
-        sleepFor(TIMEOUT / 2);
+        Threads.sleepFor(TIMEOUT / 2);
         threadCaptor.get().interrupt();
-        sleepFor(TIMEOUT / 2);
+        Threads.sleepFor(TIMEOUT / 2);
 
         assertThat(exceptionCaptor.get())
             .isInstanceOf(IllegalStateException.class)

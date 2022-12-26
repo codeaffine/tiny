@@ -9,8 +9,10 @@
         </processorPath>
         <module name="tiny.com.codeaffine.tiny.star.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.main" />
+        <module name="tiny.com.codeaffine.tiny.star.tck.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.test" />
         <module name="tiny.com.codeaffine.tiny.demo.main" />
+        <module name="tiny.com.codeaffine.tiny.star.tck.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.main" />
         <module name="tiny.com.codeaffine.tiny.demo.test" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />

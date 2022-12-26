@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static com.codeaffine.tiny.star.common.SynchronizerTestHelper.fakeSynchronizer;
+import static com.codeaffine.tiny.star.common.Threads.sleepFor;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;

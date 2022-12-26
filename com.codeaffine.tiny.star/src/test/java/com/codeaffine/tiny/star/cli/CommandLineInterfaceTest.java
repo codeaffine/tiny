@@ -14,9 +14,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
 import static com.codeaffine.tiny.star.cli.CancelableInputStream.SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS;
 import static com.codeaffine.tiny.star.cli.ExecutorServiceAdapter.TIMEOUT_AWAITING_TERMINATION;
+import static com.codeaffine.tiny.star.common.Threads.sleepFor;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.Executors.newCachedThreadPool;

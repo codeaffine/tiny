@@ -1,34 +1,5 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.ApplicationServerBuilder;
-import static com.codeaffine.tiny.star.ApplicationServer.DEFAULT_HOST;
-import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
-import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-import static com.codeaffine.tiny.star.ApplicationServer.newDefaultApplicationServerBuilder;
-import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
-import static com.codeaffine.tiny.star.Texts.INFO_CREATION_CONFIRMATION;
-import static com.codeaffine.tiny.star.Texts.INFO_SERVER_USAGE;
-import static com.codeaffine.tiny.star.Texts.INFO_SHUTDOWN_CONFIRMATION;
-import static com.codeaffine.tiny.star.Texts.INFO_STARTUP_CONFIRMATION;
-import static com.codeaffine.tiny.star.Texts.INFO_WORKING_DIRECTORY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-import static java.lang.System.getProperty;
-import static java.util.Objects.nonNull;
-
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +12,18 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+
+import static com.codeaffine.tiny.star.ApplicationServer.*;
+import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
+import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
+import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
+import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.Texts.*;
+import static java.lang.System.getProperty;
+import static java.util.Objects.nonNull;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationServerTestContext.class)
 class ApplicationServerTest {
@@ -249,6 +232,16 @@ class ApplicationServerTest {
         assertThat(stateCaptor.getStarting()).isNull();
         assertThat(stateCaptor.getStarted()).isNull();
         assertThat(stateCaptor.getStopping()).isNull();
+    }
+
+    @Test
+    void stop() {
+        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+            .build();
+
+        ApplicationServer actual = applicationServer.stop();
+
+        assertThat(actual).isSameAs(applicationServer);
     }
 
     @Test

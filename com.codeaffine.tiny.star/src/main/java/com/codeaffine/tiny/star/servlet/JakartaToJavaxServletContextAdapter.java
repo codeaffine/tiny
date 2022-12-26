@@ -1,13 +1,11 @@
 package com.codeaffine.tiny.star.servlet;
 
-import static lombok.AccessLevel.PACKAGE;
-
-import static java.util.Objects.isNull;
+import jakarta.servlet.ServletException;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
-
-import jakarta.servlet.ServletException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,8 +13,8 @@ import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.Map;
 import java.util.Set;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContext {
@@ -29,8 +27,8 @@ class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContex
         return delegate.getContextPath();
     }
 
-    public javax.servlet.ServletContext getContext(String uripath) {
-        return new JakartaToJavaxServletContextAdapter(delegate.getContext(uripath));
+    public javax.servlet.ServletContext getContext(String uriPath) {
+        return new JakartaToJavaxServletContextAdapter(delegate.getContext(uriPath));
     }
 
     @Override
@@ -82,19 +80,16 @@ class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContex
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public javax.servlet.Servlet getServlet(String name) throws javax.servlet.ServletException {
+    public javax.servlet.Servlet getServlet(String name) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public Enumeration<Servlet> getServlets() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public Enumeration<String> getServletNames() {
         throw new UnsupportedOperationException();
     }
@@ -105,7 +100,6 @@ class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContex
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void log(Exception exception, String msg) {
         throw new UnsupportedOperationException();
     }
@@ -185,7 +179,7 @@ class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContex
     }
 
     @Override
-    public <T extends Servlet> T createServlet(Class<T> clazz) throws javax.servlet.ServletException {
+    public <T extends Servlet> T createServlet(Class<T> clazz) {
         throw new UnsupportedOperationException();
     }
 
@@ -212,7 +206,7 @@ class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContex
         throw new UnsupportedOperationException();
     }
 
-    public <T extends javax.servlet.Filter> T createFilter(Class<T> clazz) throws javax.servlet.ServletException {
+    public <T extends javax.servlet.Filter> T createFilter(Class<T> clazz) {
         throw new UnsupportedOperationException();
     }
 

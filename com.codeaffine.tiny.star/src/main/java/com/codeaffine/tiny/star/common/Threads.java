@@ -2,7 +2,7 @@ package com.codeaffine.tiny.star.common;
 
 import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.common.Texts.ERROR_TIMOUT_CALLING_RUNNABLE;
+import static com.codeaffine.tiny.star.common.Texts.ERROR_TIMEOUT_CALLING_RUNNABLE;
 import static lombok.AccessLevel.PRIVATE;
 
 import static java.lang.String.format;
@@ -34,7 +34,7 @@ public final class Threads {
             currentThread().interrupt();
             exceptionHandler.accept(extractExceptionToReport(cause, IllegalStateException::new));
         } catch (TimeoutException cause) {
-            String message = format(ERROR_TIMOUT_CALLING_RUNNABLE, timeout, timeUnit, runnable.getClass().getName());
+            String message = format(ERROR_TIMEOUT_CALLING_RUNNABLE, timeout, timeUnit, runnable.getClass().getName());
             exceptionHandler.accept(extractExceptionToReport(cause, throwable -> new IllegalStateException(message, throwable)));
         } catch (ExecutionException cause) {
             exceptionHandler.accept(extractExceptionToReport(cause, IllegalStateException::new, FORWARD_RUNTIME_EXCEPTIONS));

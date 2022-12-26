@@ -1,32 +1,19 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.ENFORCED;
-import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.NORMAL;
-import static com.codeaffine.tiny.star.ApplicationServer.Started;
-import static com.codeaffine.tiny.star.ApplicationServer.Starting;
-import static com.codeaffine.tiny.star.ApplicationServer.State;
-import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
-import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
-import static com.codeaffine.tiny.star.ApplicationServer.State.STOPPING;
-import static com.codeaffine.tiny.star.ApplicationServer.Stopped;
-import static com.codeaffine.tiny.star.ApplicationServer.Stopping;
-import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_HALTED;
-import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_RUNNING;
-import static com.codeaffine.tiny.star.Texts.ENFORCING_APPLICATION_TERMINATION;
-import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STARTED_LISTENER;
-import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPED_LISTENER;
-import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPING_LISTENER;
-import static com.codeaffine.tiny.star.Texts.ERROR_TERMINATING_APPLICATION;
-import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static org.slf4j.LoggerFactory.getLogger;
-
+import lombok.NonNull;
 import org.slf4j.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import lombok.NonNull;
+
+import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.ENFORCED;
+import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.NORMAL;
+import static com.codeaffine.tiny.star.ApplicationServer.*;
+import static com.codeaffine.tiny.star.ApplicationServer.State.*;
+import static com.codeaffine.tiny.star.Texts.*;
+import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static org.slf4j.LoggerFactory.getLogger;
 
 class ApplicationProcess {
 
@@ -41,7 +28,7 @@ class ApplicationProcess {
     enum StopMode { NORMAL, ENFORCED }
 
     static class LifecycleException extends RuntimeException {
-        LifecycleException(String message) { super(message); }
+        LifecycleException(@SuppressWarnings("SameParameterValue") String message) { super(message); }
         LifecycleException(Throwable cause) { super(cause); }
     }
 

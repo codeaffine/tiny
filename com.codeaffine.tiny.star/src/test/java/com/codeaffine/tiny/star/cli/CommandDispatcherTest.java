@@ -1,23 +1,19 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemOutCaptor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static java.util.Collections.emptyMap;
-
+import com.codeaffine.tiny.star.spi.CliCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
-import com.codeaffine.tiny.star.spi.CliCommand;
-
 import java.util.Map;
+
+import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemOutCaptor;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Mockito.*;
 
 class CommandDispatcherTest {
 
@@ -47,6 +43,7 @@ class CommandDispatcherTest {
 
     @Test
     @ExtendWith(SystemOutCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void dispatchCommandWithUnknownCode(SystemOutCaptor systemOutCaptor) {
         when(command.isHelpCommand()).thenReturn(true);
 

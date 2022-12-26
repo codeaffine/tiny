@@ -22,7 +22,7 @@ class ServerConfigurationReader {
 
     private static final Supplier<String> CONFIGURATION_READER = () -> System.getenv(ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION);
     private static final AtomicReference<Supplier<String>> CONFIGURATION_READER_HOLDER = new AtomicReference<>(CONFIGURATION_READER);
-    private static final ObjectMapper OBJECT_MAPPERE = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static void setConfigurationReader(@NonNull Supplier<String> configurationReader) {
         CONFIGURATION_READER_HOLDER.set(configurationReader);
@@ -65,7 +65,7 @@ class ServerConfigurationReader {
     @SuppressWarnings("unchecked")
     private static <V> Map<String, V> deserialize(String attributeName, String serialized) throws IllegalArgumentException {
         try {
-            return OBJECT_MAPPERE.readValue(serialized, Map.class);
+            return OBJECT_MAPPER.readValue(serialized, Map.class);
         } catch (JsonProcessingException cause) {
             throw new IllegalArgumentException(format(ERROR_READING_ATTRIBUTE, attributeName, serialized), cause);
         }

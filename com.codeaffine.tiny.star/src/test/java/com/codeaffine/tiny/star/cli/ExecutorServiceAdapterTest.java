@@ -1,18 +1,5 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.*;
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static com.codeaffine.tiny.star.cli.Texts.ERROR_AWAITING_SHUT_DOWN_CLI;
-import static com.codeaffine.tiny.star.cli.Texts.ERROR_SHUTTING_DOWN_CLI;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import static java.lang.Thread.currentThread;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +8,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static com.codeaffine.tiny.star.cli.Texts.ERROR_AWAITING_SHUT_DOWN_CLI;
+import static com.codeaffine.tiny.star.cli.Texts.ERROR_SHUTTING_DOWN_CLI;
+import static java.lang.Thread.currentThread;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class ExecutorServiceAdapterTest {
 
@@ -90,6 +89,7 @@ class ExecutorServiceAdapterTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void stopWithBlockingTask(SystemErrCaptor systemErrCaptor) {
         AtomicReference<Object> threadCaptor = new AtomicReference<>();
         AtomicBoolean canceledCaptor = new AtomicBoolean(false);
@@ -103,7 +103,8 @@ class ExecutorServiceAdapterTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
-    void stopIfShutdownHandlerThreadWouldBeSomhowInterrupted(SystemErrCaptor systemErrCaptor) {
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    void stopIfShutdownHandlerThreadWouldBeSomehowInterrupted(SystemErrCaptor systemErrCaptor) {
         executor = new ExecutorServiceAdapter(executorService, MILLIS_IN_WHICH_SERVER_IS_EXPECTED_TO_BE_HALTED);
 
         executor.execute(() -> blockAndIgnoreShutdownRequestByInterrupt(new AtomicReference<>(), new AtomicBoolean()));

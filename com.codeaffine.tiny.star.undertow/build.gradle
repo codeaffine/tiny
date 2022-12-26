@@ -22,8 +22,8 @@ dependencies {
             'org.projectlombok:lombok:1.18.24'
     )
     implementation(
-            'io.undertow:undertow-core:2.3.0.Final',
-            'io.undertow:undertow-servlet:2.3.0.Final',
+            'io.undertow:undertow-core:2.3.2.Final',
+            'io.undertow:undertow-servlet:2.3.2.Final',
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
             'org.slf4j:slf4j-api:2.0.3',
             project(':com.codeaffine.tiny.star')

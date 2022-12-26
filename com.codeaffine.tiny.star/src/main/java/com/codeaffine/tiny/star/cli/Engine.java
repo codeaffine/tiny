@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static lombok.AccessLevel.PACKAGE;
 
@@ -30,18 +31,19 @@ class Engine {
     }
 
     void removeCliInstance(ApplicationServer applicationServer, int instanceIdentifier, Map<String, CliCommand> toRemove) {
-        synchronizer.execute(() -> doRemmoveCliInstance(applicationServer, instanceIdentifier, toRemove));
+        synchronizer.execute(() -> doRemoveCliInstance(applicationServer, instanceIdentifier, toRemove));
     }
 
     Integer addCliInstance(ApplicationServer applicationServer, Map<String, CliCommand> toAdd) {
         return synchronizer.execute(() -> doAddCliInstance(applicationServer, toAdd));
     }
 
-    Boolean isRunning() {
-        return synchronizer.execute(() -> cliInstanceCounter > 0);
+    boolean isRunning() {
+        return Optional.ofNullable(synchronizer.execute(() -> cliInstanceCounter > 0))
+            .orElse(false);
     }
 
-    private void doRemmoveCliInstance(ApplicationServer applicationServer, int instanceIdentifier, Map<String, CliCommand> toRemove) {
+    private void doRemoveCliInstance(ApplicationServer applicationServer, int instanceIdentifier, Map<String, CliCommand> toRemove) {
         toRemove.forEach((code, command) -> adaptAndRemoveCliCommand(applicationServer, instanceIdentifier, command));
         cliInstanceCounter--;
         if (cliInstanceCounter == 0) {

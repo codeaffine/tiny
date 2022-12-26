@@ -1,15 +1,14 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.cli.Texts.*;
-import static com.codeaffine.tiny.star.cli.Texts.ERROR_AWAITING_SHUT_DOWN_CLI;
-import static lombok.AccessLevel.PACKAGE;
-
-import static java.lang.Thread.currentThread;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
-import java.util.concurrent.ExecutorService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.util.concurrent.ExecutorService;
+
+import static com.codeaffine.tiny.star.cli.Texts.*;
+import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class ExecutorServiceAdapter {

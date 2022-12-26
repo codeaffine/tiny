@@ -1,14 +1,13 @@
 package com.codeaffine.tiny.star.cli;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.spi.CliCommandContract;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.codeaffine.tiny.star.ApplicationServer;
-import com.codeaffine.tiny.star.SystemPrintStreamCaptor;
-import com.codeaffine.tiny.star.spi.CliCommandContract;
+import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemOutCaptor;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class StateCommandTest implements CliCommandContract<StateCommand> {
 
@@ -18,8 +17,9 @@ class StateCommandTest implements CliCommandContract<StateCommand> {
     }
 
     @Test
-    @ExtendWith(SystemPrintStreamCaptor.SystemOutCaptor.class)
-    void execute(SystemPrintStreamCaptor.SystemOutCaptor systemOutCaptor) {
+    @ExtendWith(SystemOutCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    void execute(SystemOutCaptor systemOutCaptor) {
         ApplicationServer applicationServer = CliCommandContract.stubApplicationServer();
         StateCommand actual = create();
 
@@ -31,7 +31,8 @@ class StateCommandTest implements CliCommandContract<StateCommand> {
     }
 
     @Override
-    @ExtendWith(SystemPrintStreamCaptor.SystemOutCaptor.class)
+    @ExtendWith(SystemOutCaptor.class)
+    @SuppressWarnings({"EmptyMethod", "unused"})
     public void execute() {
         CliCommandContract.super.execute();
     }

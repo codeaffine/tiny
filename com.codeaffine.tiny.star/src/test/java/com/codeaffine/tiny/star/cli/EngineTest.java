@@ -49,7 +49,7 @@ class EngineTest {
 
     @Test
     void start() {
-        int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), Map.of(CODE, stubCliCommmand()));
+        int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), Map.of(CODE, stubCliCommand()));
         sleepFor(THREAD_SWITCH_TIME);
         boolean running = engine.isRunning();
 
@@ -62,18 +62,18 @@ class EngineTest {
     void startWithoutSynchronization() {
         reset(synchronizer);
 
-        Integer cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), Map.of(CODE, stubCliCommmand()));
+        Integer cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), Map.of(CODE, stubCliCommand()));
         sleepFor(THREAD_SWITCH_TIME);
         Boolean running = engine.isRunning();
 
         verify(scanner, never()).scanForCommandCode();
         assertThat(cliInstanceId).isNull();
-        assertThat(running).isNull();
+        assertThat(running).isFalse();
     }
 
     @Test
     void stop() {
-        Map<String, CliCommand> localCodeToCommandMap = Map.of(CODE, stubCliCommmand());
+        Map<String, CliCommand> localCodeToCommandMap = Map.of(CODE, stubCliCommand());
         int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), localCodeToCommandMap);
         sleepFor(THREAD_SWITCH_TIME);
 
@@ -88,7 +88,7 @@ class EngineTest {
 
     @Test
     void stopWithoutSynchronization() {
-        Map<String, CliCommand> localCodeToCommandMap = Map.of(CODE, stubCliCommmand());
+        Map<String, CliCommand> localCodeToCommandMap = Map.of(CODE, stubCliCommand());
         int cliInstanceId = engine.addCliInstance(mock(ApplicationServer.class), localCodeToCommandMap);
         sleepFor(THREAD_SWITCH_TIME);
         reset(synchronizer);
@@ -99,12 +99,12 @@ class EngineTest {
 
         verify(scanner, never()).cancel();
         assertThat(executorService.isTerminated()).isFalse();
-        assertThat(running).isNull();
+        assertThat(running).isFalse();
     }
 
     @Test
     void lifecycleOfMultipleCliInstance() {
-        Map<String, CliCommand> localCodeOfCommandMap = Map.of(CODE, stubCliCommmand());
+        Map<String, CliCommand> localCodeOfCommandMap = Map.of(CODE, stubCliCommand());
         int cliInstanceId1 = engine.addCliInstance(mock(ApplicationServer.class), localCodeOfCommandMap);
         sleepFor(THREAD_SWITCH_TIME);
         int cliInstanceId2 = engine.addCliInstance(mock(ApplicationServer.class), localCodeOfCommandMap);
@@ -143,7 +143,7 @@ class EngineTest {
             .isInstanceOf(NullPointerException.class);
     }
 
-    private static CliCommand stubCliCommmand() {
+    private static CliCommand stubCliCommand() {
         CliCommand result = mock(CliCommand.class);
         when(result.getCode()).thenReturn(CODE);
         return result;

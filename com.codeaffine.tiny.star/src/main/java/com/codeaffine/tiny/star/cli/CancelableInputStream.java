@@ -1,18 +1,19 @@
 package com.codeaffine.tiny.star.cli;
 
-import static lombok.AccessLevel.PACKAGE;
-
-import static java.lang.Thread.currentThread;
-import static java.lang.Thread.sleep;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static lombok.AccessLevel.PACKAGE;
+
+@SuppressWarnings("BusyWait")
 @RequiredArgsConstructor(access = PACKAGE)
 class CancelableInputStream extends InputStream {
 
@@ -28,8 +29,9 @@ class CancelableInputStream extends InputStream {
 
     private volatile boolean canceled;
 
+    @SuppressWarnings("unused")
     interface Excludes {
-        int read(byte[] buffer, int off, int end) throws IOException;
+        int read(byte[] buffer, int off, int end);
         void close();
     }
 
@@ -63,6 +65,7 @@ class CancelableInputStream extends InputStream {
 
     private void waitBusyTillBytesAvailable() throws IOException, InterruptedException {
         while (delegate.available() == 0 && !canceled) {
+            //noinspection BusyWait
             sleep(suspendedTimeInMillisBetweenDataAvailabilityChecks); // ignore warning: unfortunately busy-waiting is the way to go...
         }
     }

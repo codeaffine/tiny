@@ -1,15 +1,15 @@
 package com.codeaffine.tiny.star.servlet;
 
-import static lombok.AccessLevel.PACKAGE;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.servlet.ServletOutputStream;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Locale;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class JakartaToJavaxServletResponseAdapter implements javax.servlet.http.HttpServletResponse {
@@ -38,13 +38,11 @@ class JakartaToJavaxServletResponseAdapter implements javax.servlet.http.HttpSer
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public String encodeUrl(String url) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public String encodeRedirectUrl(String url) {
         throw new UnsupportedOperationException();
     }
@@ -100,7 +98,6 @@ class JakartaToJavaxServletResponseAdapter implements javax.servlet.http.HttpSer
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void setStatus(int sc, String sm) {
         throw new UnsupportedOperationException();
     }
@@ -197,7 +194,7 @@ class JakartaToJavaxServletResponseAdapter implements javax.servlet.http.HttpSer
 
     @Override
     public void setLocale(Locale loc) {
-
+        // unused
     }
 
     @Override

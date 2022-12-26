@@ -1,19 +1,18 @@
 package com.codeaffine.tiny.star.cli;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.star.spi.CliCommand;
+import com.codeaffine.tiny.star.spi.CliCommandProviderContract;
 import org.assertj.core.api.AbstractCollectionAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
-import com.codeaffine.tiny.star.spi.CliCommand;
-import com.codeaffine.tiny.star.spi.CliCommandProviderContract;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SystemErrCaptor.class)
 class DelegatingCliCommandProviderTest implements CliCommandProviderContract<DelegatingCliCommandProvider> {
@@ -24,6 +23,7 @@ class DelegatingCliCommandProviderTest implements CliCommandProviderContract<Del
 
         Set<CliCommand> actual = commandProvider.getCliCommands();
 
+        assertThat(actual).isNotEmpty();
         assertThat(systemErrCaptor.getLog())
             .contains(TestCliCommandProviderWithServiceConfigurationError.class.getName())
             .contains(TestCliCommandProviderWithRuntimeException.class.getName())

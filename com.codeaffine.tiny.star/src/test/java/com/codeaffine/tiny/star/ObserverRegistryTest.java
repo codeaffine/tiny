@@ -1,17 +1,5 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +11,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
+
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ObserverRegistryTest {
 
@@ -49,6 +44,7 @@ class ObserverRegistryTest {
 
     public static class SlowListener {
         @ObserverAnnotation
+        @SuppressWarnings("unused")
         public void eventFired() {
             sleepFor( OBSERVER_NOTIFICATION_TIMEOUT * 2 );
         }
@@ -164,12 +160,14 @@ class ObserverRegistryTest {
         return Stream.of(
             new Object() {
                 @ObserverAnnotation
-                void eventFired(String parameter) {
+                @SuppressWarnings({"EmptyMethod", "unused"})
+                void eventFired(@SuppressWarnings("unused") String parameter) {
                 }
             },
             new Object() {
                 @ObserverAnnotation
-                void eventFired(Observed observed, String parameter) {
+                @SuppressWarnings({"EmptyMethod", "unused"})
+                void eventFired(@SuppressWarnings("unused") Observed observed, @SuppressWarnings("unused") String parameter) {
                 }
             }
         );

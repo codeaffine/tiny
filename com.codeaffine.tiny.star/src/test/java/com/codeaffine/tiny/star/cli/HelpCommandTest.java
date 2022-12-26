@@ -1,22 +1,22 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemOutCaptor;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.spi.CliCommand;
+import com.codeaffine.tiny.star.spi.CliCommandContract;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.codeaffine.tiny.star.ApplicationServer;
-import com.codeaffine.tiny.star.spi.CliCommand;
-import com.codeaffine.tiny.star.spi.CliCommandContract;
-
 import java.util.Map;
+
+import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemOutCaptor;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class HelpCommandTest implements CliCommandContract<HelpCommand> {
 
     @Test
     @ExtendWith(SystemOutCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void execute(SystemOutCaptor systemOutCaptor) {
         ApplicationServer applicationServer = CliCommandContract.stubApplicationServer();
         TestCliCommand testCommand = new TestCliCommand();
@@ -36,6 +36,7 @@ class HelpCommandTest implements CliCommandContract<HelpCommand> {
 
     @Override
     @ExtendWith(SystemOutCaptor.class)
+    @SuppressWarnings({"EmptyMethod", "unused"})
     public void execute() {
         CliCommandContract.super.execute();
     }

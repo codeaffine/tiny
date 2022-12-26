@@ -1,7 +1,6 @@
 package com.codeaffine.tiny.star.cli;
 
 import static com.codeaffine.tiny.star.cli.Texts.*;
-import static com.codeaffine.tiny.star.cli.Texts.STATE_DESCRIPTION;
 
 import static java.lang.String.format;
 

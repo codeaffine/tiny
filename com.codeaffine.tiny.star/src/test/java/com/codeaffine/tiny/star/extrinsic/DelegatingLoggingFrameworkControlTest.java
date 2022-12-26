@@ -1,25 +1,18 @@
 package com.codeaffine.tiny.star.extrinsic;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static java.util.Collections.EMPTY_MAP;
-
+import com.codeaffine.tiny.star.LoggingFrameworkControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.codeaffine.tiny.star.LoggingFrameworkControl;
-
 import java.util.Map;
+
+import static java.util.Collections.EMPTY_MAP;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class DelegatingLoggingFrameworkControlTest {
 
-    private static final String UNAVAILABE_SLF_4_J_SERVICE_PROVIDER_CLASSNAME = "unAvailabeSlf4jServiceProviderClassName";
+    private static final String UNAVAILABLE_SLF_4_J_SERVICE_PROVIDER_CLASSNAME = "unAvailableSlf4jServiceProviderClassName";
     private static final String APPLICATION_NAME = "applicationName";
 
     private LoggingFrameworkControl delegate;
@@ -35,7 +28,7 @@ class DelegatingLoggingFrameworkControlTest {
     void delegateMethodCalls() {
         Map<String, LoggingFrameworkControl> loggingFrameworksMap = Map.of(
             simulateLoadableSlf4jServiceProviderClassname1(), delegate,
-            UNAVAILABE_SLF_4_J_SERVICE_PROVIDER_CLASSNAME, delegate
+            UNAVAILABLE_SLF_4_J_SERVICE_PROVIDER_CLASSNAME, delegate
         );
         DelegatingLoggingFrameworkControl control = new DelegatingLoggingFrameworkControl(fakeApplicationClassLoader(), loggingFrameworksMap, fallback);
 
@@ -57,7 +50,7 @@ class DelegatingLoggingFrameworkControlTest {
         LoggingFrameworkControl delegate = stubLoggingFrameworkControlDelegate();
         LoggingFrameworkControl fallback = stubLoggingFrameworkControlDelegate();
         Map<String, LoggingFrameworkControl> loggingFrameworksMap = Map.of(
-            UNAVAILABE_SLF_4_J_SERVICE_PROVIDER_CLASSNAME, delegate
+            UNAVAILABLE_SLF_4_J_SERVICE_PROVIDER_CLASSNAME, delegate
         );
         DelegatingLoggingFrameworkControl control = new DelegatingLoggingFrameworkControl(fakeApplicationClassLoader(), loggingFrameworksMap, fallback);
 

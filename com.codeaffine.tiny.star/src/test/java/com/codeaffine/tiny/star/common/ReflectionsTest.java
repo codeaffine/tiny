@@ -1,16 +1,14 @@
 package com.codeaffine.tiny.star.common;
 
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.common.Texts.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
+
+import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.star.common.Texts.*;
+import static org.assertj.core.api.Assertions.*;
 
 class ReflectionsTest {
 
@@ -102,7 +100,7 @@ class ReflectionsTest {
     void extractExceptionToReportWithRuntimeExceptionFactoryArgumentReturningNullWrapper() {
         Exception expected = new Exception();
 
-        Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> null));
+        @SuppressWarnings("ThrowableNotThrown") Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> null));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -113,7 +111,7 @@ class ReflectionsTest {
     void extractExceptionToReportWithRuntimeExceptionFactoryArgumentReturningWrapperWithoutCause() {
         Exception expected = new Exception();
 
-        Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> new RuntimeException()));
+        @SuppressWarnings("ThrowableNotThrown") Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> new RuntimeException()));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -124,7 +122,7 @@ class ReflectionsTest {
     void extractExceptionToReportWithRuntimeExceptionFactoryArgumentReturningWrapperWithWrongCause() {
         Exception expected = new Exception();
 
-        Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> new RuntimeException(new IllegalStateException())));
+        @SuppressWarnings("ThrowableNotThrown") Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> new RuntimeException(new IllegalStateException())));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -135,6 +133,7 @@ class ReflectionsTest {
     void extractExceptionToReportWithNullAsExceptionArgument() {
         Function<Throwable, RuntimeException> runtimeExceptionFactory = RuntimeException::new;
 
+        //noinspection ThrowableNotThrown
         assertThatThrownBy(() -> extractExceptionToReport(null, runtimeExceptionFactory, Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS))
             .isInstanceOf(NullPointerException.class);
     }
@@ -143,6 +142,7 @@ class ReflectionsTest {
     void extractExceptionToReportWithNullAsRuntimeExceptionFactoryArgument() {
         Exception exception = new Exception();
 
+        //noinspection ThrowableNotThrown
         assertThatThrownBy(() -> extractExceptionToReport(exception, null, Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS))
             .isInstanceOf(NullPointerException.class);
     }
@@ -151,6 +151,7 @@ class ReflectionsTest {
     void extractExceptionToReportWithNullAsModeArgument() {
         Exception exception = new Exception();
 
+        //noinspection ThrowableNotThrown
         assertThatThrownBy(() -> extractExceptionToReport(exception, RuntimeException::new, null))
             .isInstanceOf(NullPointerException.class);
     }

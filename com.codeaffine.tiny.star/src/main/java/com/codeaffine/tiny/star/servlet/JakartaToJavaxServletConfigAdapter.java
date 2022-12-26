@@ -1,11 +1,13 @@
 package com.codeaffine.tiny.star.servlet;
 
-import static lombok.AccessLevel.PACKAGE;
-
-import java.util.Enumeration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Enumeration;
+
+import static lombok.AccessLevel.PACKAGE;
+
+@SuppressWarnings("ClassCanBeRecord")
 @RequiredArgsConstructor(access = PACKAGE)
 class JakartaToJavaxServletConfigAdapter implements javax.servlet.ServletConfig {
 

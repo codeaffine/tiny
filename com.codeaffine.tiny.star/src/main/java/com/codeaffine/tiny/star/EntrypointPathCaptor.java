@@ -25,10 +25,9 @@ public class EntrypointPathCaptor {
         @Delegate(excludes = Excludes.class)
         private final Application application = new ApplicationImpl(null,  null);
 
+        @SuppressWarnings("unused")
         interface Excludes {
-            @SuppressWarnings("unused")
             void addEntryPoint(String path, Class<? extends EntryPoint> entryPointType, Map<String, String> properties);
-            @SuppressWarnings("unused")
             void addEntryPoint(String path, EntryPointFactory entryPointFactory, Map<String, String> properties);
         }
 

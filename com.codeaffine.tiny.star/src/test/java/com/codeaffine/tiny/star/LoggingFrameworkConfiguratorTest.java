@@ -1,23 +1,15 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.*;
+import com.codeaffine.tiny.star.extrinsic.DelegatingLoggingFrameworkControl;
+import org.junit.jupiter.api.Test;
+
+import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.codeaffine.tiny.star.extrinsic.DelegatingLoggingFrameworkControl;
-
 class LoggingFrameworkConfiguratorTest {
-
-
-    @BeforeEach
-    void setUp() {
-
-    }
 
     @Test
     void configureLoggingFramework() {

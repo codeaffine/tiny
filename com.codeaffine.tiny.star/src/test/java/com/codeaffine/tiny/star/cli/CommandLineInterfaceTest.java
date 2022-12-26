@@ -78,6 +78,7 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void handleCommandRequest(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -91,6 +92,7 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void stopCli(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -106,6 +108,7 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void stopCliMoreThanOnce(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -140,6 +143,7 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void lifeCycleOfMultipleCliInstances(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -169,6 +173,7 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void lifeCycleCommandLineInterfaceWithCustomCliCommandProvider(SystemInSupplier systemInSupplier) throws IOException {
         commandLineInterface = new CommandLineInterface(() -> Set.of(command));
 

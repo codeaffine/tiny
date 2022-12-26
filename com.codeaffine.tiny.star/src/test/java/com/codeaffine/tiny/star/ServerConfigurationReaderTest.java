@@ -18,7 +18,7 @@ class ServerConfigurationReaderTest {
     private static final String ATTRibUTE_NAME = "attribute";
     private static final String ATTRIBUTE_VALUE = "value";
     private static final String ATTRIBUTE_DEFAULT_VALUE = "defaultValue";
-    private static final String SERiALIZED = format("{\"%s\":\"%s\"}", ATTRibUTE_NAME, ATTRIBUTE_VALUE);
+    private static final String SERIALIZED = format("{\"%s\":\"%s\"}", ATTRibUTE_NAME, ATTRIBUTE_VALUE);
     private static final String INVALID_JSON_ATTRIBUTE_TO_VALUE_MAP = "invalid";
 
     private Supplier<String> configurationReader;
@@ -37,7 +37,7 @@ class ServerConfigurationReaderTest {
 
     @Test
     void readEnvironmentConfigurationAttribute() {
-        stubConfigurationReaderGet(SERiALIZED);
+        stubConfigurationReaderGet(SERIALIZED);
 
         String actual = ServerConfigurationReader.readEnvironmentConfigurationAttribute(ATTRibUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String.class);
 
@@ -46,7 +46,7 @@ class ServerConfigurationReaderTest {
 
     @Test
     void readEnvironmentConfigurationAttributeIfAttributeNotSet() {
-        stubConfigurationReaderGet(SERiALIZED);
+        stubConfigurationReaderGet(SERIALIZED);
 
         String actual = ServerConfigurationReader.readEnvironmentConfigurationAttribute("unknown", ATTRIBUTE_DEFAULT_VALUE, String.class);
 
@@ -85,7 +85,7 @@ class ServerConfigurationReaderTest {
 
     @Test
     void readEnvironmentConfigurationAttributeUsingFactoryArgument() {
-        stubConfigurationReaderGet(SERiALIZED);
+        stubConfigurationReaderGet(SERIALIZED);
 
         String actual = ServerConfigurationReader.readEnvironmentConfigurationAttribute(ATTRibUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String::valueOf);
 
@@ -94,7 +94,7 @@ class ServerConfigurationReaderTest {
 
     @Test
     void readEnvironmentConfigurationAttributeUsingFactoryArgumentIfAttributeNotSet() {
-        stubConfigurationReaderGet(SERiALIZED);
+        stubConfigurationReaderGet(SERIALIZED);
 
         String actual = ServerConfigurationReader.readEnvironmentConfigurationAttribute("unknown", ATTRIBUTE_DEFAULT_VALUE, String::valueOf);
 

@@ -157,7 +157,6 @@ class JakartaToJavaxServletRequestAdapter implements javax.servlet.http.HttpServ
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean isRequestedSessionIdFromUrl() {
         return delegate.isRequestedSessionIdFromURL();
     }
@@ -318,7 +317,6 @@ class JakartaToJavaxServletRequestAdapter implements javax.servlet.http.HttpServ
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public String getRealPath(String path) {
         throw new UnsupportedOperationException();
     }

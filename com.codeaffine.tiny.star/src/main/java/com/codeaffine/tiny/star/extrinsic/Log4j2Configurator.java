@@ -5,7 +5,7 @@ import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToRepo
 import static com.codeaffine.tiny.star.extrinsic.Texts.ERROR_UNABLE_TO_CONFIGURE_LOG4J2;
 import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_CONFIGURATION_NOT_FOUND;
 import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_DETECTED;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_RECONFIGURATION_SUCESSFUL;
+import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_RECONFIGURATION_SUCCESSFUL;
 import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER;
 import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER;
 import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_SYSTEM_CLASS_LOADER;
@@ -73,7 +73,7 @@ class Log4j2Configurator {
             logger.debug(LOG_LOG4J2_CONFIGURATION_NOT_FOUND, configurationFileName); // NOSONAR
         } else {
             configure(configuratorClass, resource);
-            logger.debug(LOG_LOG4J2_RECONFIGURATION_SUCESSFUL, configurationFileName);
+            logger.debug(LOG_LOG4J2_RECONFIGURATION_SUCCESSFUL, configurationFileName);
         }
     }
 

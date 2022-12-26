@@ -1,18 +1,14 @@
 package com.codeaffine.tiny.star.spi;
 
-import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import static java.util.Collections.emptyMap;
-
+import com.codeaffine.tiny.star.ApplicationServer;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 
-import com.codeaffine.tiny.star.ApplicationServer;
+import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.Mockito.*;
 
 public interface CliCommandContract<T extends CliCommand> {
 
@@ -49,7 +45,7 @@ public interface CliCommandContract<T extends CliCommand> {
 
     default void assertDescription(AbstractStringAssert<?> description, CliCommand command, ApplicationServer applicationServer) {
         description.contains(command.getCode());
-        description.contains(APPLICATION_IDENTIFIER);
+        description.contains(applicationServer.getIdentifier());
     }
 
     @Test

@@ -1,44 +1,21 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationProcess.LifecycleException;
-import static com.codeaffine.tiny.star.ApplicationServer.Started;
-import static com.codeaffine.tiny.star.ApplicationServer.Starting;
-import static com.codeaffine.tiny.star.ApplicationServer.State;
-import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
-import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
-import static com.codeaffine.tiny.star.ApplicationServer.State.STOPPING;
-import static com.codeaffine.tiny.star.ApplicationServer.Stopped;
-import static com.codeaffine.tiny.star.ApplicationServer.Stopping;
-import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_HALTED;
-import static com.codeaffine.tiny.star.Texts.DEBUG_APPLICATION_NOT_RUNNING;
-import static com.codeaffine.tiny.star.Texts.ENFORCING_APPLICATION_TERMINATION;
-import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STARTED_LISTENER;
-import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPED_LISTENER;
-import static com.codeaffine.tiny.star.Texts.ERROR_NOTIFYING_STOPPING_LISTENER;
-import static com.codeaffine.tiny.star.Texts.ERROR_TERMINATING_APPLICATION;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.Logger;
 
 import java.util.stream.Stream;
+
+import static com.codeaffine.tiny.star.ApplicationProcess.LifecycleException;
+import static com.codeaffine.tiny.star.ApplicationServer.*;
+import static com.codeaffine.tiny.star.ApplicationServer.State.*;
+import static com.codeaffine.tiny.star.Texts.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ApplicationProcessTest {
 
@@ -422,12 +399,14 @@ class ApplicationProcessTest {
         return Stream.of(
             new Object() {
                 @Starting
-                void starting(String parameter) {
+                @SuppressWarnings({"EmptyMethod", "unused"})
+                void starting(@SuppressWarnings("unused") String parameter) {
                 }
             },
             new Object() {
                 @Starting
-                void starting(ApplicationProcess applicationProcess, String parameter) {
+                @SuppressWarnings({"EmptyMethod", "unused"})
+                void starting(@SuppressWarnings("unused") ApplicationProcess applicationProcess, @SuppressWarnings("unused") String parameter) {
                 }
             }
         );
@@ -438,21 +417,21 @@ class ApplicationProcessTest {
     }
 
     private LifecycleConsumerListener startOn() {
-        return doAnswer((Answer<Void>) this::triggerStart)
+        return doAnswer(invocation -> triggerStart())
             .when(lifecycleConsumingListener);
     }
 
-    private Void triggerStart(InvocationOnMock invocation) {
+    private Void triggerStart() {
         applicationProcess.start();
         return null;
     }
 
     private LifecycleConsumerListener stopOn() {
-        return doAnswer((Answer<Void>) this::triggerStop)
+        return doAnswer(invocation -> triggerStop())
             .when(lifecycleConsumingListener);
     }
 
-    private Void triggerStop(InvocationOnMock invocation) {
+    private Void triggerStop() {
         applicationProcess.stop();
         return null;
     }

@@ -1,20 +1,7 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-import static com.codeaffine.tiny.star.FilesTestHelper.fakeFileThatCannotBeDeleted;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static java.util.Collections.emptyList;
-
+import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.star.spi.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,19 +9,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InOrder;
 
-import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
-import com.codeaffine.tiny.star.spi.Server;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
+import static com.codeaffine.tiny.star.FilesTestHelper.fakeFileThatCannotBeDeleted;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class TerminatorTest {
 
     private static final boolean DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = true;
     private static final boolean KEEP_WORKING_DIRECTORY_ON_SHUTDOWN = false;
-    private static final List<Runnable> EMPTY_PREPROCESSORS = emptyList();
     private static final String ERROR_MESSAGE = "bad";
 
     private LoggingFrameworkControl loggingFrameworkControl;
@@ -107,6 +94,7 @@ class TerminatorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfConstructorArgumentDirectoryToDeleteCannotBeDeleted(SystemErrCaptor systemErrCaptor) {
         File unDeletableFile = fakeFileThatCannotBeDeleted();
         Terminator terminator = new Terminator(unDeletableFile, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
@@ -139,6 +127,7 @@ class TerminatorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void runOnShutdownHookWithLoggingFrameworkControlErrorOnHalt(SystemErrCaptor systemErrCaptor) {
         stubLoggingFrameworkControlWithErrorOnHalt();
         Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
@@ -195,13 +184,13 @@ class TerminatorTest {
 
     private AtomicBoolean captorWorkingDirectoryExistenceOnLoggingFrameworkControlHalt() {
         AtomicBoolean result = new AtomicBoolean(false);
-        doAnswer(invocation -> captureWorkingDirectoryExistance(result))
+        doAnswer(invocation -> captureWorkingDirectoryExistence(result))
             .when(loggingFrameworkControl)
             .halt();
         return result;
     }
 
-    private Void captureWorkingDirectoryExistance(AtomicBoolean workingDirectoryExistenceValue) {
+    private Void captureWorkingDirectoryExistence(AtomicBoolean workingDirectoryExistenceValue) {
         workingDirectoryExistenceValue.set(workingDirectory.exists());
         return null;
     }

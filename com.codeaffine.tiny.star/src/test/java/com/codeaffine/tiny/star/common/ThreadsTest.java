@@ -1,22 +1,19 @@
 package com.codeaffine.tiny.star.common;
 
-import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import static java.lang.Thread.currentThread;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static java.lang.Thread.currentThread;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class ThreadsTest {
 
@@ -60,6 +57,7 @@ class ThreadsTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void runAsyncAwaitingTerminationGetsInterrupted(SystemErrCaptor systemErrCaptor) {
         AtomicReference<Exception> exceptionCaptor = new AtomicReference<>();
         AtomicReference<Thread> threadCaptor = new AtomicReference<>();
@@ -110,6 +108,7 @@ class ThreadsTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void saveRunWithRunnableArgumentThatThrowsRuntimeException(SystemErrCaptor systemErrCaptor) {
         Runnable runnable = mock(Runnable.class);
         RuntimeException expected = new RuntimeException("bad");

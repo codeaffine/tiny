@@ -1,22 +1,6 @@
 package com.codeaffine.tiny.star.cli;
 
-import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
-import static com.codeaffine.tiny.star.cli.CancelableInputStream.*;
-import static com.codeaffine.tiny.star.cli.Texts.DEBUG_DISPATCHING_COMMAND;
-import static com.codeaffine.tiny.star.cli.Texts.DEBUG_END_SCANNING_FOR_COMMANDS;
-import static com.codeaffine.tiny.star.cli.Texts.DEBUG_START_SCANNING_FOR_COMMANDS;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
+import com.codeaffine.tiny.star.SystemInSupplier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,10 +8,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.SystemInSupplier;
-
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
+
+import static com.codeaffine.tiny.star.ThreadTestHelper.sleepFor;
+import static com.codeaffine.tiny.star.cli.CancelableInputStream.SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS;
+import static com.codeaffine.tiny.star.cli.Texts.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 class InputScannerTest {
 
@@ -56,6 +48,7 @@ class InputScannerTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void scanForCommandCode(SystemInSupplier systemInSupplier) throws IOException {
         executorService.execute(() -> scanner.scanForCommandCode());
         systemInSupplier.getSupplierOutputStream().write(COMMAND_LINE.getBytes(UTF_8));

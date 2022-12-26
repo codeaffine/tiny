@@ -21,6 +21,7 @@ class CliCommandAdapter implements CliCommand {
     private final CliCommand delegate;
     private final int cliInstanceNumber;
 
+    @SuppressWarnings("unused")
     interface Excludes {
         String getCode();
         void execute(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap);

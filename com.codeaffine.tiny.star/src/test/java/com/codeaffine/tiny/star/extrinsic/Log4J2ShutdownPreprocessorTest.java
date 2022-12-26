@@ -1,18 +1,17 @@
 package com.codeaffine.tiny.star.extrinsic;
 
-import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
-import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.initializeFakeLogManager;
-import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.shutdownCalled;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static java.util.Objects.nonNull;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.initializeFakeLogManager;
+import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.shutdownCalled;
+import static java.util.Objects.nonNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class Log4J2ShutdownPreprocessorTest {
 
@@ -32,6 +31,7 @@ class Log4J2ShutdownPreprocessorTest {
             problemHolder.set(null);
         }
 
+        @SuppressWarnings("unused")
         public static void shutdown() throws Exception {
             if(nonNull(problemHolder.get())) {
                 throw problemHolder.get();
@@ -65,6 +65,7 @@ class Log4J2ShutdownPreprocessorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfShutdownMethodIsNotFoundOrUnAccessible(SystemErrCaptor systemErrCaptor) {
         Log4j2ShutdownPreprocessor preprocessor = new Log4j2ShutdownPreprocessor(LOG_MANAGER_CLASS, WRONG_METHOD);
 
@@ -78,6 +79,7 @@ class Log4J2ShutdownPreprocessorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfShutdownMethodThrowsRuntimeException(SystemErrCaptor systemErrCaptor) {
         FakeLogManager.problemHolder.set(new RuntimeException(ERROR_MESSAGE));
         Log4j2ShutdownPreprocessor preprocessor = new Log4j2ShutdownPreprocessor(LOG_MANAGER_CLASS, SHUTDOWN_METHOD);
@@ -93,6 +95,7 @@ class Log4J2ShutdownPreprocessorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfShutdownMethodThrowsException(SystemErrCaptor systemErrCaptor) {
         FakeLogManager.problemHolder.set(new Exception(ERROR_MESSAGE));
         Log4j2ShutdownPreprocessor preprocessor = new Log4j2ShutdownPreprocessor(LOG_MANAGER_CLASS, SHUTDOWN_METHOD);

@@ -50,6 +50,7 @@ public class CommandLineInterface {
         commandlineEngineHolder.updateAndGet(this::doStop);
     }
 
+    @SuppressWarnings("SameReturnValue")
     private Engine doStop(Engine engine) {
         if (nonNull(engine)) {
             engine.removeCliInstance(applicationServer, instanceIdentifier, instanceCodeToCommandMap);

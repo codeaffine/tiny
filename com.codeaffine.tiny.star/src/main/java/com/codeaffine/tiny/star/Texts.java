@@ -32,7 +32,7 @@ class Texts {
     static final String DEBUG_APPLICATION_NOT_RUNNING = "Application process is not running.";
     static final String INFO_SHUTDOWN_CONFIRMATION = "Stopping application server instance of {} took {} ms.";
     static final String INFO_STARTUP_CONFIRMATION = "Starting {} application process took {} ms.";
-    static final String INFO_CREATION_CONFIRMATION = "Creation of {} appliation process took {} ms.";
+    static final String INFO_CREATION_CONFIRMATION = "Creation of {} application process took {} ms.";
     static final String INFO_SERVER_USAGE = "Starting {} with embedded {}.";
     static final String INFO_WORKING_DIRECTORY = "Application server working directory: {}";
     static final String ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST = "Given working directory %s does not exist.";

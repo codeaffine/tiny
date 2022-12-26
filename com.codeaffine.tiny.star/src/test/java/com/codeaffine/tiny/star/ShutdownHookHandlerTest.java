@@ -61,6 +61,7 @@ class ShutdownHookHandlerTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void registerErrorProneOperation(SystemErrCaptor systemErrCaptor) throws InterruptedException {
         Runnable shutdownOperation1 = mock(Runnable.class);
         Runnable shutdownOperation2 = mock(Runnable.class);
@@ -110,7 +111,7 @@ class ShutdownHookHandlerTest {
     }
 
     @Test
-    void registerWithoutSynchronization() throws InterruptedException {
+    void registerWithoutSynchronization() {
         reset(synchronizer);
         Runnable shutdownOperation = mock(Runnable.class);
 
@@ -121,6 +122,7 @@ class ShutdownHookHandlerTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
+    @SuppressWarnings("JUnitMalformedDeclaration")
     void runHookWithoutSynchronization(SystemErrCaptor systemErrCaptor) throws InterruptedException {
         Runnable shutdownOperation = mock(Runnable.class);
         shutdownHookHandler.register(shutdownOperation);
@@ -162,7 +164,7 @@ class ShutdownHookHandlerTest {
     }
 
     @Test
-    void deregisterWithoutSynchronization() throws InterruptedException {
+    void deregisterWithoutSynchronization() {
         Runnable shutdownOperation = mock(Runnable.class);
         shutdownHookHandler.register(shutdownOperation);
 
@@ -219,7 +221,7 @@ class ShutdownHookHandlerTest {
     }
 
     @Test
-    void beforeProcessShutdownIfProcwssIsRunning() {
+    void beforeProcessShutdownIfProcessIsRunning() {
         Terminator terminator = mock(Terminator.class);
         ApplicationProcess applicationProcess = stubApplicationProcessGetState(RUNNING);
 
@@ -273,6 +275,7 @@ class ShutdownHookHandlerTest {
     }
 
     private static Runnable spyRunnable(Runnable runnable) {
+        //noinspection Convert2Lambda,Anonymous2MethodRef
         return spy(new Runnable() { // in general, it is not allowed to spy a lambda expression
             @Override
             public void run() {

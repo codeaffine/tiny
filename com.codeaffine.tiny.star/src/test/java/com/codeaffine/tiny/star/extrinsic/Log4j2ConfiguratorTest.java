@@ -1,27 +1,5 @@
 package com.codeaffine.tiny.star.extrinsic;
 
-import static com.codeaffine.tiny.star.extrinsic.Log4j2Configurator.CONFIGURATION_FILE_NAME_SUFFIX;
-import static com.codeaffine.tiny.star.extrinsic.Log4j2ConfiguratorTest.FakeConfigurator.initializeFakeConfigurator;
-import static com.codeaffine.tiny.star.extrinsic.Log4j2ConfiguratorTest.FakeConfigurator.reconfigureCalled;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_CONFIGURATION_NOT_FOUND;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_DETECTED;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_RECONFIGURATION_SUCESSFUL;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_SYSTEM_CLASS_LOADER;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import static java.lang.Thread.currentThread;
-import static java.util.Objects.nonNull;
-
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +12,15 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.codeaffine.tiny.star.extrinsic.Log4j2Configurator.CONFIGURATION_FILE_NAME_SUFFIX;
+import static com.codeaffine.tiny.star.extrinsic.Log4j2ConfiguratorTest.FakeConfigurator.initializeFakeConfigurator;
+import static com.codeaffine.tiny.star.extrinsic.Log4j2ConfiguratorTest.FakeConfigurator.reconfigureCalled;
+import static com.codeaffine.tiny.star.extrinsic.Texts.*;
+import static java.lang.Thread.currentThread;
+import static java.util.Objects.nonNull;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 class Log4j2ConfiguratorTest {
 
     private static final String GLOBAL = "application-expecting-log4j2-configuration-only-available-to-system-classloader";
@@ -41,7 +28,6 @@ class Log4j2ConfiguratorTest {
     private static final String CONFIGURATOR_CLASS = FakeConfigurator.class.getName();
     private static final String APPLICATION_NAME = TestConfiguration.class.getName();
     private static final String RECONFIGURE_METHOD = "reconfigure";
-    private static final String WRONG_METHOD = "wrongMethod";
     private static final String ERROR_MESSAGE = "bad";
 
     private TestConfiguration configuration;
@@ -57,7 +43,8 @@ class Log4j2ConfiguratorTest {
             problemHolder.set(null);
         }
 
-        public static void reconfigure(URI uri) throws Exception {
+        @SuppressWarnings("unused")
+        public static void reconfigure(@SuppressWarnings("unused") URI uri) throws Exception {
             if(nonNull(problemHolder.get())) {
                 throw problemHolder.get();
             }
@@ -87,7 +74,7 @@ class Log4j2ConfiguratorTest {
         InOrder order = inOrder(logger);
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName());
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER, expectedLog4j2ConfigurationFileName());
-        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCESSFUL, expectedLog4j2ConfigurationFileName());
+        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCCESSFUL, expectedLog4j2ConfigurationFileName());
         order.verifyNoMoreInteractions();
     }
 
@@ -102,7 +89,7 @@ class Log4j2ConfiguratorTest {
         InOrder order = inOrder(logger);
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName());
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER, expectedLog4j2ConfigurationFileName());
-        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCESSFUL, expectedLog4j2ConfigurationFileName());
+        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCCESSFUL, expectedLog4j2ConfigurationFileName());
         order.verifyNoMoreInteractions();
     }
 
@@ -118,7 +105,7 @@ class Log4j2ConfiguratorTest {
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName());
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER, expectedLog4j2ConfigurationFileName());
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER, expectedLog4j2ConfigurationFileName());
-        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCESSFUL, expectedLog4j2ConfigurationFileName());
+        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCCESSFUL, expectedLog4j2ConfigurationFileName());
         order.verifyNoMoreInteractions();
     }
 
@@ -135,7 +122,7 @@ class Log4j2ConfiguratorTest {
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER, expectedLog4j2ConfigurationFileName(GLOBAL));
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER, expectedLog4j2ConfigurationFileName(GLOBAL));
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_SYSTEM_CLASS_LOADER, expectedLog4j2ConfigurationFileName(GLOBAL));
-        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCESSFUL, expectedLog4j2ConfigurationFileName(GLOBAL));
+        order.verify(logger).debug(LOG_LOG4J2_RECONFIGURATION_SUCCESSFUL, expectedLog4j2ConfigurationFileName(GLOBAL));
         order.verifyNoMoreInteractions();
     }
 

@@ -1,13 +1,13 @@
 package com.codeaffine.tiny.star.servlet;
 
-import static lombok.AccessLevel.PACKAGE;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSessionContext;
-
 import java.util.Enumeration;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession {
@@ -57,7 +57,6 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public Object getValue(String name) {
         throw new UnsupportedOperationException();
     }
@@ -68,7 +67,6 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public String[] getValueNames() {
         throw new UnsupportedOperationException();
     }
@@ -79,7 +77,6 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void putValue(String name, Object value) {
         throw new UnsupportedOperationException();
     }
@@ -90,7 +87,6 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void removeValue(String name) {
         throw new UnsupportedOperationException();
     }

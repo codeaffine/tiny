@@ -1,7 +1,7 @@
 package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.common.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.star.common.Threads.saveRun;
 import static lombok.AccessLevel.PACKAGE;
 

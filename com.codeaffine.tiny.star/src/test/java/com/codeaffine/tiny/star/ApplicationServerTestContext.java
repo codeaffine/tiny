@@ -1,24 +1,23 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-
+import com.codeaffine.tiny.star.spi.Server;
+import com.codeaffine.tiny.star.spi.ServerFactory;
+import lombok.Getter;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
-import com.codeaffine.tiny.star.spi.Server;
-import com.codeaffine.tiny.star.spi.ServerFactory;
-
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
-import lombok.Getter;
+
+import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
 
 public class ApplicationServerTestContext implements ServerFactory, Server, InvocationInterceptor {
 
-    public static final AtomicReference<ApplicationServerTestContext> CURRENT_SERVER = new AtomicReference<>();
-    public static final String TEST_SERVER = "TEST-SERVER";
+    static final AtomicReference<ApplicationServerTestContext> CURRENT_SERVER = new AtomicReference<>();
+    static final String TEST_SERVER = "TEST-SERVER";
 
     @Getter
     private boolean started;

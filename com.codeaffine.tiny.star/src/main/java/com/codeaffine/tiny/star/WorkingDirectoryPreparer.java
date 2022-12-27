@@ -1,7 +1,7 @@
 package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
+import static com.codeaffine.tiny.star.common.IoUtils.createTemporayDirectory;
 import static com.codeaffine.tiny.star.Texts.ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST;
 import static com.codeaffine.tiny.star.Texts.ERROR_GIVEN_WORKING_DIRECTORY_FILE_IS_NOT_A_DIRECTORY;
 import static lombok.AccessLevel.PACKAGE;

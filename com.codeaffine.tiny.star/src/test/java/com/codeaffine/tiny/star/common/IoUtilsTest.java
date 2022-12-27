@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.common;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.UUID;
 
 import static com.codeaffine.tiny.star.FilesTestHelper.fakeFileThatCannotBeDeleted;
-import static com.codeaffine.tiny.star.IoUtils.createTemporayDirectory;
+import static com.codeaffine.tiny.star.common.IoUtils.createTemporayDirectory;
 import static java.lang.System.getProperty;
 import static org.assertj.core.api.Assertions.*;
 

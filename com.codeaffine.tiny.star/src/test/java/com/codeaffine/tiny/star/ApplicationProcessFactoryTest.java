@@ -4,7 +4,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICA
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.common.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.star.Texts.INFO_SERVER_USAGE;
 import static com.codeaffine.tiny.star.Texts.INFO_WORKING_DIRECTORY;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,24 +1,23 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.common;
 
-import static lombok.AccessLevel.PRIVATE;
-
-import static java.lang.String.format;
-import static java.nio.file.Files.createTempDirectory;
-import static java.nio.file.Files.delete;
-import static java.nio.file.Files.newDirectoryStream;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+
+import static com.codeaffine.tiny.star.common.Texts.*;
+import static java.lang.String.format;
+import static java.nio.file.Files.*;
+import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-class IoUtils {
+public class IoUtils {
 
-    static int findFreePort() {
+    public static int findFreePort() {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
         } catch (IOException e) {
@@ -26,23 +25,23 @@ class IoUtils {
         }
     }
 
-    static File createTemporayDirectory(@NonNull String directoryNamePrefix) throws IllegalArgumentException {
+    public static File createTemporayDirectory(@NonNull String directoryNamePrefix) throws IllegalArgumentException {
         if(directoryNamePrefix.isEmpty()) {
-            throw new IllegalArgumentException("directoryNamePrefix must not be empty");
+            throw new IllegalArgumentException(ERROR_DIRECTORY_NAME_PREFIX_IS_EMPTY);
         }
         try {
             return createTempDirectory(directoryNamePrefix + "-")
                 .toFile();
         } catch (Exception cause) {
-            throw new IllegalArgumentException(format("unable to create temporay directory with filename prefix %s", directoryNamePrefix), cause);
+            throw new IllegalArgumentException(format(ERROR_UNABLE_TO_CREATE_TEMPORARY_DIRECTORY, directoryNamePrefix), cause);
         }
     }
 
-    static void deleteDirectory(@NonNull File toDelete) {
+    public static void deleteDirectory(@NonNull File toDelete) {
         try {
             doDelete(toDelete);
         } catch (IOException cause) {
-            throw new IllegalArgumentException(format("Could not delete file or directory '%s'.", toDelete), cause);
+            throw new IllegalArgumentException(format(ERROR_UNABLE_TO_DELETE_FILE, toDelete), cause);
         }
     }
 

@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.common.IoUtils.deleteDirectory;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
 

@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.IoUtils.findFreePort;
+import static com.codeaffine.tiny.star.common.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
 import static com.codeaffine.tiny.star.Texts.*;
 import static com.codeaffine.tiny.star.common.Metric.measureDuration;

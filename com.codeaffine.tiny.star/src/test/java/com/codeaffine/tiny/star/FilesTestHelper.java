@@ -1,14 +1,15 @@
 package com.codeaffine.tiny.star;
 
-import static lombok.AccessLevel.PRIVATE;
-
-import java.io.File;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = PRIVATE)
-class FilesTestHelper {
+import java.io.File;
 
-    static File fakeFileThatCannotBeDeleted() {
+import static lombok.AccessLevel.PRIVATE;
+
+@NoArgsConstructor(access = PRIVATE)
+public class FilesTestHelper {
+
+    public static File fakeFileThatCannotBeDeleted() {
         return new File("unknown") {
             @Override
             public boolean exists() {

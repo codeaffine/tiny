@@ -17,7 +17,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.star.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.common.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.star.Texts.*;
 import static java.lang.System.getProperty;
 import static java.util.Objects.nonNull;

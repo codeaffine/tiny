@@ -1,16 +1,16 @@
 package com.codeaffine.tiny.star;
 
 import org.eclipse.rap.rwt.application.Application;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-import static com.codeaffine.tiny.star.ApplicationServerCompatibilityContractUtil.MAX_RETRY_DURATION;
-import static com.codeaffine.tiny.star.ApplicationServerCompatibilityContractUtil.awaitState;
+import static com.codeaffine.tiny.star.ApplicationServerCompatibilityContractUtil.*;
 import static com.codeaffine.tiny.star.common.IoUtils.createTemporayDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,9 +56,25 @@ public interface ApplicationServerCompatibilityContract {
             .isSameAs(HALTED);
     }
 
-    @Test
-    default void sendRequest() {
-        assertThat(true).isTrue();
+    @RequestApplicationServer
+    default void requestEntryPoint(ApplicationServerContractContext context) {
+        ApplicationServer applicationServer = context.getApplicationServer();
+        URL entryPointUrl = applicationServer.getUrls()[0];
+
+        String actual = readContent(entryPointUrl);
+
+        assertThat(actual).contains(SCRIPT_REGISTRATION);
+    }
+
+    @RequestApplicationServer
+    default void requestClientScript(ApplicationServerContractContext context) throws IOException {
+        ApplicationServer applicationServer = context.getApplicationServer();
+        URL entryPointUrl = applicationServer.getUrls()[0];
+        URL clientScriptUrl = new URL(entryPointUrl.getProtocol(), entryPointUrl.getHost(), entryPointUrl.getPort(), "/" + CLIENT_JS_PATH);
+
+        String actual = readContent(clientScriptUrl);
+
+        assertThat(actual).contains(readContent(getClass().getClassLoader().getResourceAsStream("client.js")));
     }
 
     private static void configure(Application application) {

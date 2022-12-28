@@ -1,5 +1,6 @@
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.Protocol;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
@@ -9,15 +10,19 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.common.IoUtils.findFreePort;
+import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
 import static com.codeaffine.tiny.star.Texts.*;
+import static com.codeaffine.tiny.star.common.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.common.Metric.measureDuration;
+import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;
@@ -36,10 +41,12 @@ public class ApplicationServer {
 
     public static final String ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION = ServerConfigurationReader.ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION;
     public static final String CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = "delete-working-directory-on-shutdown";
+    public static final String CONFIGURATION_ATTRIBUTE_PROTOCOL = "http";
     public static final String CONFIGURATION_ATTRIBUTE_HOST = "host";
     public static final String CONFIGURATION_ATTRIBUTE_PORT = "port";
     public static final String CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY = "working-directory";
     public static final String CONFIGURATION_ATTRIBUTE_SHOW_START_INFO = "show-start-info";
+    public static final Protocol DEFAULT_PROTOCOL = HTTP;
     public static final String DEFAULT_HOST = "localhost";
     public static final boolean DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = true;
     public static final String SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY = "com.codeaffine.tiny.star.workingDirectory";
@@ -48,6 +55,9 @@ public class ApplicationServer {
 
     @NonNull
     final ApplicationConfiguration applicationConfiguration;
+    @NonNull
+    @Default
+    final Protocol protocol = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf);
     @Default
     final String host = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class);
     @Default
@@ -100,6 +110,13 @@ public class ApplicationServer {
         return isNull(applicationProcess) ? HALTED :  applicationProcess.getState();
     }
 
+    public URL[] getUrls() {
+        return captureEntrypointPaths(applicationConfiguration)
+            .stream()
+            .map(this::toUrl)
+            .toArray(URL[]::new);
+    }
+
     public ApplicationServer start() {
         return startInternal(new ApplicationProcessFactory(this), getLogger(getClass()));
     }
@@ -132,6 +149,14 @@ public class ApplicationServer {
         }
         return measureDuration(applicationProcessFactory::createProcess)
             .report((value, duration) -> logger.info(INFO_CREATION_CONFIRMATION, getIdentifier(), duration));
+    }
+
+    private URL toUrl(String path) {
+        try {
+            return new URL(protocol.name().toLowerCase(), host, port, path);
+        } catch (MalformedURLException cause) {
+            throw new IllegalArgumentException(cause);
+        }
     }
 
     private static String encode(String name) {

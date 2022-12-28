@@ -12,13 +12,17 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.star.common.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.star.Texts.*;
+import static com.codeaffine.tiny.star.common.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.common.IoUtils.findFreePort;
+import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.System.getProperty;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
@@ -31,6 +35,9 @@ class ApplicationServerTest {
     private static final String APPLICATION_IDENTIFIER = "applicationIdentifier";
     private static final int CUSTOM_PORT = Integer.MAX_VALUE;
     private static final String CUSTOM_HOST = "host";
+    private static final String ENTRY_POINT_PATH_1 = "/ep1";
+    private static final String ENTRY_POINT_PATH_2 = "/ep2";
+    private static final String PROTOCOL = HTTP.name().toLowerCase();
 
     private ApplicationConfiguration applicationConfiguration;
     private ApplicationServer applicationServer;
@@ -38,8 +45,7 @@ class ApplicationServerTest {
     private Logger logger;
     @TempDir
     private File tempDir;
-
-
+    
     @BeforeEach
     void setUp() {
         applicationConfiguration = application -> {};
@@ -56,6 +62,25 @@ class ApplicationServerTest {
         }
     }
 
+    @Test
+    void getUrls() throws MalformedURLException {
+        ApplicationConfiguration configuration = application -> {
+            application.addEntryPoint(ENTRY_POINT_PATH_1, () -> null, null);
+            application.addEntryPoint(ENTRY_POINT_PATH_2, () -> null, null);
+        };
+        int port = findFreePort();
+        applicationServer = newApplicationServerBuilder(configuration)
+            .withPort(port)
+            .build();
+
+        URL[] actual = applicationServer.getUrls();
+
+        assertThat(actual).containsExactlyInAnyOrder(
+            new URL(PROTOCOL, DEFAULT_HOST, port, ENTRY_POINT_PATH_1),
+            new URL(PROTOCOL, DEFAULT_HOST, port, ENTRY_POINT_PATH_2)
+        );
+    }
+    
     @Test
     void start() {
         applicationServer = newApplicationServerBuilder(applicationConfiguration)

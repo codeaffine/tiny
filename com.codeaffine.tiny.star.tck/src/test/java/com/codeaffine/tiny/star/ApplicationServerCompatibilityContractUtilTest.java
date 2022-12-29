@@ -1,5 +1,6 @@
 package com.codeaffine.tiny.star;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,6 +20,8 @@ import static org.mockito.Mockito.when;
 
 class ApplicationServerCompatibilityContractUtilTest {
 
+    private static final String RESOURCE_PATH = "resource/path";
+
     @ParameterizedTest(name = "[{index}] awaiting state {2} with server having initial state {0} and retry state {1} expects server to provide"
         + " state {3} after call.")
     @CsvSource({
@@ -37,7 +40,7 @@ class ApplicationServerCompatibilityContractUtilTest {
     }
 
     @Test
-    void readContentFromUrl() throws IOException {
+    void readContentFromUrl() {
         String expected = "Hello\nWorld!";
         URL url = createUrlToContent(expected);
 
@@ -66,7 +69,21 @@ class ApplicationServerCompatibilityContractUtilTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private static URL createUrlToContent(String content) throws IOException {
+    @Test
+    void createResourceUrl() {
+        URL url = createUrlToContent("content");
+
+        URL actual = ApplicationServerCompatibilityContractUtil.createResourceUrl(url, RESOURCE_PATH);
+
+        assertThat(actual)
+            .hasProtocol(url.getProtocol())
+            .hasHost(url.getHost())
+            .hasPort(url.getPort())
+            .hasPath(ApplicationServerCompatibilityContractUtil.PATH_SEPARATOR + RESOURCE_PATH);
+    }
+
+    @SneakyThrows
+    private static URL createUrlToContent(String content) {
         File tmpFile = createTempFile("readContentTest", ".tmp");
         tmpFile.deleteOnExit();
         FileWriter writer = new FileWriter(tmpFile);

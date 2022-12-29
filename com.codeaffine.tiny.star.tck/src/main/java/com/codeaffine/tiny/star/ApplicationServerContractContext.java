@@ -1,20 +1,29 @@
 package com.codeaffine.tiny.star;
 
+import org.eclipse.rap.rwt.application.Application;
+import org.eclipse.rap.rwt.application.EntryPoint;
+import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.junit.jupiter.api.extension.*;
 
+import java.net.URL;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.star.ApplicationServer.*;
-import static org.junit.jupiter.api.extension.ExtensionContext.*;
+import static com.codeaffine.tiny.star.ApplicationServer.Starting;
+import static com.codeaffine.tiny.star.ApplicationServer.Stopping;
+import static org.junit.jupiter.api.extension.ExtensionContext.Namespace;
+import static org.junit.jupiter.api.extension.ExtensionContext.Store;
 
-public class ApplicationServerContractContext implements ParameterResolver, BeforeAllCallback {
+public class ApplicationServerContractContext implements ParameterResolver, BeforeAllCallback, EntryPointFactory {
 
     static final Namespace NAMESPACE = Namespace.create(ApplicationServerCompatibilityContract.class);
     static final String CONTEXT_STORAGE_KEY = ApplicationServerContractContext.class.getName();
 
+    private final AtomicReference<EntryPointFactory> entryPointFactoryHub;
     private final AtomicReference<ApplicationServer> applicationServerHolder;
 
     ApplicationServerContractContext() {
+        entryPointFactoryHub = new AtomicReference<>();
         applicationServerHolder = new AtomicReference<>();
     }
 
@@ -49,5 +58,19 @@ public class ApplicationServerContractContext implements ParameterResolver, Befo
     @Override
     public void beforeAll(ExtensionContext context) {
         context.getStore(NAMESPACE).put(CONTEXT_STORAGE_KEY, this);
+    }
+
+    @Override
+    public EntryPoint create() {
+        return entryPointFactoryHub.get().create();
+    }
+
+    UserSession simulateUserSession(URL url) {
+        String uuid = UUID.randomUUID().toString();
+        return new UserSession(url, entryPointFactoryHub, uuid);
+    }
+
+    void configure(Application application) {
+        application.addEntryPoint("/ui", this, null);
     }
 }

@@ -1,9 +1,6 @@
 package com.codeaffine.tiny.star;
 
-import org.eclipse.rap.rwt.application.Application;
-
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 import static com.codeaffine.tiny.star.ApplicationServer.State;
@@ -21,7 +18,7 @@ public interface ApplicationServerCompatibilityContract {
     @StartApplicationServer
     default void startApplicationServer(ApplicationServerContractContext context) {
         File workingDirectory = createTemporayDirectory(getClass().getName());
-        ApplicationServer applicationServer = newApplicationServerBuilder(ApplicationServerCompatibilityContract::configure)
+        ApplicationServer applicationServer = newApplicationServerBuilder(context::configure)
             .withLifecycleListener(context)
             .withWorkingDirectory(workingDirectory)
             .build();
@@ -57,27 +54,49 @@ public interface ApplicationServerCompatibilityContract {
     }
 
     @RequestApplicationServer
-    default void requestEntryPoint(ApplicationServerContractContext context) {
+    default void simulateUserSession(ApplicationServerContractContext context) {
         ApplicationServer applicationServer = context.getApplicationServer();
-        URL entryPointUrl = applicationServer.getUrls()[0];
 
-        String actual = readContent(entryPointUrl);
+        UserSession actual = context.simulateUserSession(applicationServer.getUrls()[0]);
+        actual.simulateSessionInteraction();
 
-        assertThat(actual).contains(SCRIPT_REGISTRATION);
+        assertThat(actual.getStartupPageResponseBody())
+            .contains(SCRIPT_REGISTRATION);
+        assertThat(actual.getWidgetTreeInitializationResponseBody())
+            .contains(TestEntryPoint.BUTTON_LABEL + actual.getTrackingId());
+        assertThat(actual.getButtonPushedResponseBody())
+            .contains(TestEntryPoint.BUTTON_AFTER_PUSHED_LABEL + actual.getTrackingId());
     }
 
     @RequestApplicationServer
-    default void requestClientScript(ApplicationServerContractContext context) throws IOException {
+    default void simulateMultipleUserSessions(ApplicationServerContractContext context) {
         ApplicationServer applicationServer = context.getApplicationServer();
-        URL entryPointUrl = applicationServer.getUrls()[0];
-        URL clientScriptUrl = new URL(entryPointUrl.getProtocol(), entryPointUrl.getHost(), entryPointUrl.getPort(), "/" + CLIENT_JS_PATH);
+        URL url = applicationServer.getUrls()[0];
 
-        String actual = readContent(clientScriptUrl);
+        UserSession actual1 = context.simulateUserSession(url);
+        actual1.simulateSessionInteraction();
+        UserSession actual2 = context.simulateUserSession(url);
+        actual2.simulateSessionInteraction();
 
-        assertThat(actual).contains(readContent(getClass().getClassLoader().getResourceAsStream("client.js")));
+        assertThat(actual1.getButtonPushedResponseBody())
+            .contains(TestEntryPoint.BUTTON_AFTER_PUSHED_LABEL + actual1.getTrackingId());
+        assertThat(actual2.getButtonPushedResponseBody())
+            .contains(TestEntryPoint.BUTTON_AFTER_PUSHED_LABEL + actual2.getTrackingId());
+        assertThat(actual1.getTrackingId()).isNotEqualTo(actual2.getTrackingId());
     }
 
-    private static void configure(Application application) {
-        application.addEntryPoint("/ui", TestEntryPoint.class, null);
+    @RequestApplicationServer
+    default void requestStaticResources(ApplicationServerContractContext context) {
+        ApplicationServer applicationServer = context.getApplicationServer();
+        URL url = applicationServer.getUrls()[0];
+
+        String actualClientScript = readContent(createResourceUrl(url, CLIENT_JS_PATH));
+        String actualThemeFallbackJson = readContent(createResourceUrl(url, THEME_FALLBACK_JSON_PATH));
+        String actualThemeDefaultJson = readContent(createResourceUrl(url, THEME_DEFAULT_JSON_PATH));
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        assertThat(actualClientScript).contains(readContent(classLoader.getResourceAsStream("client.js")));
+        assertThat(actualThemeFallbackJson).isNotNull();
+        assertThat(actualThemeDefaultJson).isNotNull();
     }
 }

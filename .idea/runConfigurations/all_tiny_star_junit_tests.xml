@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="all star junit tests" type="JUnit" factoryName="JUnit">
+  <configuration default="false" name="all tiny star junit tests" type="JUnit" factoryName="JUnit">
     <module name="tiny.com.codeaffine.tiny.star.test" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="19" />

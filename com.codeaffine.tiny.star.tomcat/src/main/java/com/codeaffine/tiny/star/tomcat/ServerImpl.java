@@ -1,9 +1,11 @@
 package com.codeaffine.tiny.star.tomcat;
 
-import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
-import static lombok.AccessLevel.PACKAGE;
-import static org.slf4j.LoggerFactory.getLogger;
-
+import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
+import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
+import com.codeaffine.tiny.star.spi.Server;
+import jakarta.servlet.ServletContextEvent;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
@@ -12,15 +14,12 @@ import org.apache.catalina.startup.Tomcat;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
-import com.codeaffine.tiny.star.spi.Server;
-
-import jakarta.servlet.ServletContextEvent;
 import java.io.File;
 import java.util.Set;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
+import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
+import static lombok.AccessLevel.PACKAGE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class ServerImpl implements Server {
@@ -75,7 +74,6 @@ class ServerImpl implements Server {
         } catch (LifecycleException e) {
             throw new IllegalStateException(e);
         }
-        entrypointPaths.forEach(path -> logger.atInfo().log("Application Entrypoint URL:  http://{}:{}{}", host, port, path));
     }
 
     @Override

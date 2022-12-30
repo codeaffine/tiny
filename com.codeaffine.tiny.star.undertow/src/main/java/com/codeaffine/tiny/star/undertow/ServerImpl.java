@@ -1,16 +1,8 @@
 package com.codeaffine.tiny.star.undertow;
 
-import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
-import static lombok.AccessLevel.PACKAGE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
-import org.slf4j.Logger;
-
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.Server;
-
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -20,10 +12,17 @@ import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletInfo;
 import jakarta.servlet.ServletException;
-import java.io.File;
-import java.util.Set;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.Set;
+
+import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
+import static lombok.AccessLevel.PACKAGE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class ServerImpl implements Server {
@@ -77,7 +76,6 @@ class ServerImpl implements Server {
             .build();
 
         server.start();
-        entrypointPaths.forEach(entrypointPath-> logger.atInfo().log("Application Entrypoint URL:  http://{}:{}{}", host, port, entrypointPath));
     }
 
     @Override

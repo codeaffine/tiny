@@ -23,6 +23,7 @@ import static com.codeaffine.tiny.star.Texts.*;
 import static com.codeaffine.tiny.star.common.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.star.common.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
+import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
@@ -38,8 +39,11 @@ class ApplicationServerTest {
     private static final String ENTRY_POINT_PATH_1 = "/ep1";
     private static final String ENTRY_POINT_PATH_2 = "/ep2";
     private static final String PROTOCOL = HTTP.name().toLowerCase();
+    private static final ApplicationConfiguration MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION = application -> {
+        application.addEntryPoint(ENTRY_POINT_PATH_1, () -> null, null);
+        application.addEntryPoint(ENTRY_POINT_PATH_2, () -> null, null);
+    };
 
-    private ApplicationConfiguration applicationConfiguration;
     private ApplicationServer applicationServer;
     private File persistentWorkingDirectory;
     private Logger logger;
@@ -48,7 +52,6 @@ class ApplicationServerTest {
     
     @BeforeEach
     void setUp() {
-        applicationConfiguration = application -> {};
         logger = mock(Logger.class);
     }
 
@@ -64,12 +67,8 @@ class ApplicationServerTest {
 
     @Test
     void getUrls() throws MalformedURLException {
-        ApplicationConfiguration configuration = application -> {
-            application.addEntryPoint(ENTRY_POINT_PATH_1, () -> null, null);
-            application.addEntryPoint(ENTRY_POINT_PATH_2, () -> null, null);
-        };
         int port = findFreePort();
-        applicationServer = newApplicationServerBuilder(configuration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withPort(port)
             .build();
 
@@ -83,7 +82,7 @@ class ApplicationServerTest {
     
     @Test
     void start() {
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .build();
 
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
@@ -94,13 +93,15 @@ class ApplicationServerTest {
         order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
         order.verify(logger).info(eq(INFO_SERVER_USAGE), applicationIdentifierCaptor.capture(), eq(CURRENT_SERVER.get().getName()));
         order.verify(logger).info(eq(INFO_CREATION_CONFIRMATION), eq(applicationIdentifierCaptor.getValue()), anyLong());
+        order.verify(logger).info(INFO_ENTRYPOINT_URL, expectedEntrypointUrl(ENTRY_POINT_PATH_1));
+        order.verify(logger).info(INFO_ENTRYPOINT_URL, expectedEntrypointUrl(ENTRY_POINT_PATH_2));
         order.verify(logger).info(eq(INFO_STARTUP_CONFIRMATION), eq(applicationIdentifierCaptor.getValue()), anyLong());
         order.verifyNoMoreInteractions();
         assertThat(CURRENT_SERVER.get().isStarted()).isTrue();
         assertThat(CURRENT_SERVER.get().isStopped()).isFalse();
         assertThat(CURRENT_SERVER.get().getHost()).isEqualTo(DEFAULT_HOST);
         assertThat(CURRENT_SERVER.get().getPort()).isNotNegative();
-        assertThat(CURRENT_SERVER.get().getConfiguration()).isSameAs(applicationConfiguration);
+        assertThat(CURRENT_SERVER.get().getConfiguration()).isSameAs(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION);
         assertThat(CURRENT_SERVER.get().getWorkingDirectory())
             .isEqualTo(workingDirectory)
             .isDirectory()
@@ -113,7 +114,7 @@ class ApplicationServerTest {
     void startWithWorkingDirectoryThatExists() {
         File givenWorkingDirectory = new File(tempDir, "workingDirectory");
         boolean isCreated = givenWorkingDirectory.mkdirs();
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withWorkingDirectory(givenWorkingDirectory)
             .build();
 
@@ -131,7 +132,7 @@ class ApplicationServerTest {
     @Test
     void startWithWorkingDirectoryThatDoesNotExist() {
         File givenWorkingDirectory = new File(tempDir, "workingDirectory");
-        ApplicationServer server = newApplicationServerBuilder(applicationConfiguration)
+        ApplicationServer server = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withWorkingDirectory(givenWorkingDirectory)
             .build();
 
@@ -148,7 +149,7 @@ class ApplicationServerTest {
     void startWithWorkingDirectoryThatIsNoDirectory() throws IOException {
         File givenWorkingDirectory = new File(tempDir, "workingDirectory");
         boolean fileCreated = givenWorkingDirectory.createNewFile();
-        ApplicationServer server = newApplicationServerBuilder(applicationConfiguration)
+        ApplicationServer server = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withWorkingDirectory(givenWorkingDirectory)
             .build();
 
@@ -164,7 +165,7 @@ class ApplicationServerTest {
 
     @Test
     void startWithPort() {
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withPort(CUSTOM_PORT)
             .build();
 
@@ -175,7 +176,7 @@ class ApplicationServerTest {
 
     @Test
     void startWithHost() {
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withHost(CUSTOM_HOST)
             .build();
 
@@ -186,7 +187,7 @@ class ApplicationServerTest {
 
     @Test
     void startWithoutDeletingWorkingDirectoryOnShutdown() {
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withDeleteWorkingDirectoryOnShutdown(false)
             .build();
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
@@ -202,7 +203,7 @@ class ApplicationServerTest {
 
     @Test
     void startWithApplicationIdentifier() {
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withApplicationIdentifier(APPLICATION_IDENTIFIER)
             .build();
 
@@ -226,7 +227,7 @@ class ApplicationServerTest {
     @Test
     void startWithLifecycleListener() {
         StateCaptor stateCaptor = spy(new StateCaptor());
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withLifecycleListener(stateCaptor)
             .build();
 
@@ -245,7 +246,7 @@ class ApplicationServerTest {
     @Test
     void startIfAlreadyStarted() {
         StateCaptor stateCaptor = new StateCaptor();
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withLifecycleListener(stateCaptor)
             .build();
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
@@ -261,7 +262,7 @@ class ApplicationServerTest {
 
     @Test
     void stop() {
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .build();
 
         ApplicationServer actual = applicationServer.stop();
@@ -271,7 +272,7 @@ class ApplicationServerTest {
 
     @Test
     void stopRunningInstance() {
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .build();
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
         reset(logger);
@@ -288,7 +289,7 @@ class ApplicationServerTest {
     void stopRunningInstanceButKeepWorkingDirectory() {
         File givenWorkingDirectory = new File(tempDir, "workingDirectory");
         boolean isCreated = givenWorkingDirectory.mkdirs();
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withWorkingDirectory(givenWorkingDirectory)
             .withDeleteWorkingDirectoryOnShutdown(false)
             .build()
@@ -308,7 +309,7 @@ class ApplicationServerTest {
     @Test
     void stopWithLifecycleListener() {
         StateCaptor stateCaptor = spy(new StateCaptor());
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withLifecycleListener(stateCaptor)
             .build();
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
@@ -330,7 +331,7 @@ class ApplicationServerTest {
     @Test
     void stopIfAlreadyStopped() {
         StateCaptor stateCaptor = spy(new StateCaptor());
-        applicationServer = newApplicationServerBuilder(applicationConfiguration)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withLifecycleListener(stateCaptor)
             .build();
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
@@ -360,5 +361,9 @@ class ApplicationServerTest {
     void newApplicationRunnerBuilderWithNullAsArgumentNameArgument() {
         assertThatThrownBy(() -> newApplicationServerBuilder(null))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    private static String expectedEntrypointUrl(String entryPointPath) {
+        return format("%s://%s:%s%s", DEFAULT_PROTOCOL.name().toLowerCase(), DEFAULT_HOST, CURRENT_SERVER.get().getPort(), entryPointPath);
     }
 }

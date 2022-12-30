@@ -28,6 +28,7 @@ import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static java.time.LocalDate.now;
+import static java.util.Arrays.stream;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.Builder.Default;
@@ -138,7 +139,7 @@ public class ApplicationServer {
         ApplicationProcess process = processHolder.updateAndGet(currentProcess -> createProcess(logger, currentProcess, applicationProcessFactory));
         if (process.getState().equals(HALTED)) {
             measureDuration(process::start)
-                .report(duration -> logger.info(INFO_STARTUP_CONFIRMATION, getIdentifier(), duration));
+                .report(duration -> logStartupInfos(logger, duration));
         }
         return this;
     }
@@ -149,6 +150,12 @@ public class ApplicationServer {
         }
         return measureDuration(applicationProcessFactory::createProcess)
             .report((value, duration) -> logger.info(INFO_CREATION_CONFIRMATION, getIdentifier(), duration));
+    }
+
+    private void logStartupInfos(Logger logger, long duration) {
+        stream(getUrls())
+            .forEach(url -> logger.info(INFO_ENTRYPOINT_URL, url.toString()));
+        logger.info(INFO_STARTUP_CONFIRMATION, getIdentifier(), duration);
     }
 
     private URL toUrl(String path) {

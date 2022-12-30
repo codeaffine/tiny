@@ -1,6 +1,5 @@
 package com.codeaffine.tiny.star;
 
-import java.io.File;
 import java.net.URL;
 
 import static com.codeaffine.tiny.star.ApplicationServer.State;
@@ -17,10 +16,10 @@ public interface ApplicationServerCompatibilityContract {
 
     @StartApplicationServer
     default void startApplicationServer(ApplicationServerContractContext context) {
-        File workingDirectory = createTemporayDirectory(getClass().getName());
+        context.setWorkingDirectory(createTemporayDirectory(getClass().getName()));
         ApplicationServer applicationServer = newApplicationServerBuilder(context::configure)
             .withLifecycleListener(context)
-            .withWorkingDirectory(workingDirectory)
+            .withWorkingDirectory(context.getWorkingDirectory())
             .build();
 
         State initialState = applicationServer.getState();
@@ -32,7 +31,7 @@ public interface ApplicationServerCompatibilityContract {
             .describedAs("Application server was expected to be %s but was %s.", HALTED, initialState)
             .isSameAs(HALTED);
         assertThat(actual)
-            .describedAs("Application server did not start within %s seconds", MAX_RETRY_DURATION)
+            .describedAs("Application server did not start within %s seconds.", MAX_RETRY_DURATION)
             .isSameAs(RUNNING);
     }
 
@@ -43,14 +42,33 @@ public interface ApplicationServerCompatibilityContract {
         State initialState = applicationServer.getState();
         applicationServer.stop();
         awaitState(applicationServer, HALTED);
-        State actual = applicationServer.getState();
+        State afterStop = applicationServer.getState();
+        boolean successRecreatingWorkingDirectory = context.getWorkingDirectory().mkdir();
+        applicationServer.start();
+        awaitState(applicationServer, RUNNING);
+        State afterRestart = applicationServer.getState();
+        applicationServer.stop();
+        awaitState(applicationServer, HALTED);
+        State afterFinalStop = applicationServer.getState();
 
         assertThat(initialState)
             .describedAs("Application server was expected to be %s but was %s.", RUNNING, initialState)
             .isSameAs(RUNNING);
-        assertThat(actual)
-            .describedAs("Application server did not stop within %s seconds", MAX_RETRY_DURATION)
+        assertThat(afterStop)
+            .describedAs("Application server did not stop within %s seconds.", MAX_RETRY_DURATION)
             .isSameAs(HALTED);
+        assertThat(afterRestart)
+            .describedAs("Application server was expected to be %s after restart but was %s.", RUNNING, initialState)
+            .isSameAs(RUNNING);
+        assertThat(afterFinalStop)
+            .describedAs("Application server did not stop finally within %s seconds.", MAX_RETRY_DURATION)
+            .isSameAs(HALTED);
+        assertThat(successRecreatingWorkingDirectory)
+            .describedAs("Could not recreate working directory %s.", context.getWorkingDirectory())
+            .isTrue();
+        assertThat(context.getWorkingDirectory())
+            .describedAs("Working directory %s still exists.", context.getWorkingDirectory())
+            .doesNotExist();
     }
 
     @RequestApplicationServer

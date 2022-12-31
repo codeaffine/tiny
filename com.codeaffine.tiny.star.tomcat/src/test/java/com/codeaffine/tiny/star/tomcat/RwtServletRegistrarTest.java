@@ -6,12 +6,10 @@ import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
-import org.eclipse.rap.rwt.application.AbstractEntryPoint;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
-import org.eclipse.swt.widgets.Composite;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import static com.codeaffine.tiny.star.ApplicationServerTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -19,25 +17,12 @@ import static org.mockito.Mockito.*;
 
 class RwtServletRegistrarTest {
 
-    private static final String ENTRYPOINT_PATH_1 = "/foo";
-    private static final String ENTRYPOINT_PATH_2 = "/bar";
-    private static final ApplicationConfiguration APPLICATION_CONFIGURATION = application -> {
-        application.addEntryPoint(ENTRYPOINT_PATH_1, TestEntryPoint.class, null);
-        application.addEntryPoint(ENTRYPOINT_PATH_2, TestEntryPoint.class, null);
-    };
-
-    static class TestEntryPoint extends AbstractEntryPoint {
-        @Override
-        protected void createContents(Composite parent) {
-        }
-    }
-
     @Test
     void addRwtServlet() throws ServletException {
         Tomcat tomcat = mock(Tomcat.class);
         Context context = stubContext();
         TinyStarServletContextListener contextListener = mock(TinyStarServletContextListener.class);
-        RwtServletRegistrar registrar = new RwtServletRegistrar(tomcat, APPLICATION_CONFIGURATION, contextListener);
+        RwtServletRegistrar registrar = new RwtServletRegistrar(tomcat, MULTI_ENTRYPOINT_CONFIGURATION, contextListener);
 
         registrar.addRwtServlet(context);
         simulateContainerStartup(context);
@@ -52,7 +37,7 @@ class RwtServletRegistrarTest {
 
     @Test
     void constructWithNullAsTomcatArgument() {
-        assertThatThrownBy(() -> new RwtServletRegistrar(null, APPLICATION_CONFIGURATION))
+        assertThatThrownBy(() -> new RwtServletRegistrar(null, MULTI_ENTRYPOINT_CONFIGURATION))
             .isInstanceOf(NullPointerException.class);
     }
 

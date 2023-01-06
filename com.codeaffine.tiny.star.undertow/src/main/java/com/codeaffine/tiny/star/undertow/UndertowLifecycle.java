@@ -44,6 +44,7 @@ class UndertowLifecycle {
         return result;
     }
 
+    @SuppressWarnings("SameReturnValue")
     private static Undertow doStop(Undertow current) {
         if(nonNull(current)) {
             current.stop();

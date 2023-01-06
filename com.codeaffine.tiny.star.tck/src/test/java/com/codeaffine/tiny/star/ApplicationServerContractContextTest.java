@@ -24,6 +24,7 @@ class ApplicationServerContractContextTest {
     private ApplicationServer applicationServer;
     private ExtensionContext extensionContext;
 
+    @SuppressWarnings("unused")
     interface MethodParameterTemplate {
         void methodWithExpectedParameter(ApplicationServerContractContext parameter);
         void methodWithUnexpectedParameter(Runnable parameter);

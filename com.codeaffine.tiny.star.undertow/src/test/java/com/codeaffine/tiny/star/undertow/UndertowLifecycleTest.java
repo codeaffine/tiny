@@ -104,6 +104,15 @@ class UndertowLifecycleTest {
                 .isInstanceOf(ConnectException.class)
                 .hasMessageContaining(CONNECTION_REFUSED);
         }
+
+        @Test
+        void requestServerAfterRestartAlreadyRunningServer() {
+            lifecycle.startUndertow(setupBasicPathHandler());
+
+            String actual = readIndexContent();
+
+            assertThat(actual).isEqualTo(INDEX_CONTENT);
+        }
     }
 
     @Nested

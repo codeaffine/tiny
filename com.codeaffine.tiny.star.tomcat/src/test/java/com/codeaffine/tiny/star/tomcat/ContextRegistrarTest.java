@@ -9,18 +9,18 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.io.CleanupMode.ALWAYS;
 import static org.mockito.Mockito.*;
 
 class ContextRegistrarTest {
 
-    @TempDir(cleanup = ALWAYS)
+    @TempDir
     private File workingDirectory;
     private Tomcat tomcat;
 
     @BeforeEach
     void setUp() {
         tomcat = spy(new Tomcat());
+        workingDirectory.deleteOnExit(); // @TempDir(cleanup = ALWAYS) has no effect.
     }
 
     @Test
@@ -54,7 +54,7 @@ class ContextRegistrarTest {
         File notExistingWorkingDirectory = new File("notExisting");
         ContextRegistrar registrar = new ContextRegistrar(notExistingWorkingDirectory, tomcat);
 
-        Throwable actual = catchThrowable(registrar::addContext);
+        Exception actual = catchException(registrar::addContext);
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)

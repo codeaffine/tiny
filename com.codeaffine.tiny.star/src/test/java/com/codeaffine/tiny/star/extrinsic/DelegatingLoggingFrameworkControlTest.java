@@ -74,7 +74,7 @@ class DelegatingLoggingFrameworkControlTest {
             simulateLoadableSlf4jServiceProviderClassname2(), delegate
         );
 
-        Throwable actual = catchThrowable(() -> new DelegatingLoggingFrameworkControl(fakeApplicationClassLoader(), loggingFrameworksMap, fallback));
+        Exception actual = catchException(() -> new DelegatingLoggingFrameworkControl(fakeApplicationClassLoader(), loggingFrameworksMap, fallback));
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)

@@ -13,12 +13,11 @@ import java.io.File;
 import static com.codeaffine.tiny.star.ApplicationServerTestHelper.MULTI_ENTRYPOINT_CONFIGURATION;
 import static io.undertow.Handlers.path;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.io.CleanupMode.ALWAYS;
 import static org.mockito.Mockito.*;
 
 class HttpHandlerStarterTest {
 
-    @TempDir(cleanup = ALWAYS)
+    @TempDir
     private File workingDirectory;
     private DeploymentManager manager;
     private PathHandler spyPathHandler;
@@ -46,7 +45,7 @@ class HttpHandlerStarterTest {
         RuntimeException expected = new RuntimeException("bad");
         DeploymentManager spyManager = equipDeploymentManagerStartWithProblem(expected);
 
-        Throwable actual = catchThrowable(() -> starter.startRwtApplicationHttpHandler(spyManager));
+        Exception actual = catchException(() -> starter.startRwtApplicationHttpHandler(spyManager));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -56,7 +55,7 @@ class HttpHandlerStarterTest {
         ServletException expectedCause = new ServletException("bad");
         DeploymentManager spyManager = equipDeploymentManagerStartWithProblem(expectedCause);
 
-        Throwable actual = catchThrowable(() -> starter.startRwtApplicationHttpHandler(spyManager));
+        Exception actual = catchException(() -> starter.startRwtApplicationHttpHandler(spyManager));
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)

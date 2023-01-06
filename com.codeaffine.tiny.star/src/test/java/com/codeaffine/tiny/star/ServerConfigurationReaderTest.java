@@ -73,8 +73,8 @@ class ServerConfigurationReaderTest {
     void readEnvironmentConfigurationAttributeWithInvalidFormattedJson() {
         stubConfigurationReaderGet(INVALID_JSON_ATTRIBUTE_TO_VALUE_MAP);
 
-        Throwable actual
-            = catchThrowable(() -> ServerConfigurationReader.readEnvironmentConfigurationAttribute(ATTRibUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String.class));
+        Exception actual
+            = catchException(() -> ServerConfigurationReader.readEnvironmentConfigurationAttribute(ATTRibUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String.class));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -120,8 +120,8 @@ class ServerConfigurationReaderTest {
     void readEnvironmentConfigurationAttributeUsingFactoryArgumentWithInvalidFormattedJson() {
         stubConfigurationReaderGet(INVALID_JSON_ATTRIBUTE_TO_VALUE_MAP);
 
-        Throwable actual
-            = catchThrowable(() -> ServerConfigurationReader.readEnvironmentConfigurationAttribute(ATTRibUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String::valueOf));
+        Exception actual
+            = catchException(() -> ServerConfigurationReader.readEnvironmentConfigurationAttribute(ATTRibUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String::valueOf));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)

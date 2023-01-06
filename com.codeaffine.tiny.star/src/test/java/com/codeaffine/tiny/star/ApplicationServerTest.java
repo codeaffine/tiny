@@ -136,7 +136,7 @@ class ApplicationServerTest {
             .withWorkingDirectory(givenWorkingDirectory)
             .build();
 
-        Throwable actual = catchThrowable(server::start);
+        Exception actual = catchException(server::start);
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -153,7 +153,7 @@ class ApplicationServerTest {
             .withWorkingDirectory(givenWorkingDirectory)
             .build();
 
-        Throwable actual = catchThrowable(server::start);
+        Exception actual = catchException(server::start);
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)

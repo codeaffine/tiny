@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.catchException;
 import static org.mockito.Mockito.*;
 
 class SynchronizerTest {
@@ -46,7 +46,7 @@ class SynchronizerTest {
         Runnable runnable = mock(Runnable.class);
         doThrow(expected).when(runnable).run();
 
-        Throwable actual = catchThrowable(() -> synchronizer.execute(runnable));
+        Exception actual = catchException(() -> synchronizer.execute(runnable));
 
         assertThat(actual).isSameAs(expected);
         verifyRunnableLockHandlingOnExecute(runnable);
@@ -58,7 +58,7 @@ class SynchronizerTest {
         Supplier<Object> supplier = stubSupplier(new Object());
         doThrow(expected).when(supplier).get();
 
-        Throwable actual = catchThrowable(() -> synchronizer.execute(supplier));
+        Exception actual = catchException(() -> synchronizer.execute(supplier));
 
         assertThat(actual).isSameAs(expected);
         verifyRunnableLockHandlingOnExecute(supplier);

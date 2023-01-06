@@ -6,7 +6,7 @@ import static com.codeaffine.tiny.star.DelegatingServerFactory.*;
 import static com.codeaffine.tiny.star.Texts.ERROR_NO_SERVER_FACTORY_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.catchException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +54,7 @@ class DelegatingServerFactoryTest {
         ServiceLoaderAdapter serviceLoaderAdapter = stubServiceLoaderAdapterWithFactoriesToLoad();
         DelegatingServerFactory factory = new DelegatingServerFactory(applicationServer, serviceLoaderAdapter);
 
-        Throwable actual = catchThrowable(() -> factory.create(workingDirectory));
+        Exception actual = catchException(() -> factory.create(workingDirectory));
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)
@@ -69,7 +69,7 @@ class DelegatingServerFactoryTest {
         ServiceLoaderAdapter serviceLoaderAdapter = stubServiceLoaderAdapterWithFactoriesToLoad(factory1, factory2);
         DelegatingServerFactory factory = new DelegatingServerFactory(applicationServer, serviceLoaderAdapter);
 
-        Throwable actual = catchThrowable(() -> factory.create(workingDirectory));
+        Exception actual = catchException(() -> factory.create(workingDirectory));
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)

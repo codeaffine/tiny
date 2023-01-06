@@ -13,11 +13,10 @@ import java.io.File;
 import static com.codeaffine.tiny.star.ApplicationServerTestHelper.MULTI_ENTRYPOINT_CONFIGURATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.io.CleanupMode.ALWAYS;
 
 class DeploymentOperationTest {
 
-    @TempDir(cleanup = ALWAYS)
+    @TempDir
     private File workingDirectory;
 
     @Test

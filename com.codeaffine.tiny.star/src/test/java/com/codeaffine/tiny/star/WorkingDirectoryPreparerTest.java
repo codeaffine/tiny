@@ -48,7 +48,7 @@ class WorkingDirectoryPreparerTest {
             .build();
         WorkingDirectoryPreparer preparer = new WorkingDirectoryPreparer(applicationServer);
 
-        Throwable actual = catchThrowable(preparer::prepareWorkingDirectory);
+        Exception actual = catchException(preparer::prepareWorkingDirectory);
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -67,7 +67,7 @@ class WorkingDirectoryPreparerTest {
             .build();
         WorkingDirectoryPreparer preparer = new WorkingDirectoryPreparer(applicationServer);
 
-        Throwable actual = catchThrowable(preparer::prepareWorkingDirectory);
+        Exception actual = catchException(preparer::prepareWorkingDirectory);
 
         assertThat(created).isTrue();
         assertThat(actual)

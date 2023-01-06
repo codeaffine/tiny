@@ -56,7 +56,7 @@ class IoUtilsTest {
         "^\\/;"
     })
     void createTemporaryDirectoryWithIllegalNameAsDirectoryNamePrefixArgument(String illegalDirectoryNamePrefix) {
-        Throwable actual = catchThrowable(() -> createTemporayDirectory(illegalDirectoryNamePrefix));
+        Exception actual = catchException(() -> createTemporayDirectory(illegalDirectoryNamePrefix));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -86,7 +86,7 @@ class IoUtilsTest {
     void deleteDirectoryIfArgumentToDeleteCannotBeDeleted() {
         File unDeletableFile = fakeFileThatCannotBeDeleted();
 
-        Throwable actual = catchThrowable(() -> IoUtils.deleteDirectory(unDeletableFile));
+        Exception actual = catchException(() -> IoUtils.deleteDirectory(unDeletableFile));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)

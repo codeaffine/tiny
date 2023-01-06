@@ -99,7 +99,7 @@ class TerminatorTest {
         File unDeletableFile = fakeFileThatCannotBeDeleted();
         Terminator terminator = new Terminator(unDeletableFile, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
 
-        Throwable actual = catchThrowable(terminator::run);
+        Exception actual = catchException(terminator::run);
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)

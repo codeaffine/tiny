@@ -100,7 +100,8 @@ class ReflectionsTest {
     void extractExceptionToReportWithRuntimeExceptionFactoryArgumentReturningNullWrapper() {
         Exception expected = new Exception();
 
-        @SuppressWarnings("ThrowableNotThrown") Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> null));
+        @SuppressWarnings("ThrowableNotThrown")
+        Exception actual = catchException(() -> extractExceptionToReport(expected, throwable -> null));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -111,7 +112,8 @@ class ReflectionsTest {
     void extractExceptionToReportWithRuntimeExceptionFactoryArgumentReturningWrapperWithoutCause() {
         Exception expected = new Exception();
 
-        @SuppressWarnings("ThrowableNotThrown") Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> new RuntimeException()));
+        @SuppressWarnings("ThrowableNotThrown")
+        Exception actual = catchException(() -> extractExceptionToReport(expected, throwable -> new RuntimeException()));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -122,7 +124,8 @@ class ReflectionsTest {
     void extractExceptionToReportWithRuntimeExceptionFactoryArgumentReturningWrapperWithWrongCause() {
         Exception expected = new Exception();
 
-        @SuppressWarnings("ThrowableNotThrown") Throwable actual = catchThrowable(() -> extractExceptionToReport(expected, throwable -> new RuntimeException(new IllegalStateException())));
+        @SuppressWarnings("ThrowableNotThrown")
+        Exception actual = catchException(() -> extractExceptionToReport(expected, throwable -> new RuntimeException(new IllegalStateException())));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)

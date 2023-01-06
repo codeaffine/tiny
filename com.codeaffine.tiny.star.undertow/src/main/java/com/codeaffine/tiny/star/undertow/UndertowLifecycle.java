@@ -14,23 +14,18 @@ class UndertowLifecycle {
     private final String host;
     private final int port;
 
-    UndertowLifecycle(@NonNull String host, @NonNull int port) {
+    UndertowLifecycle(@NonNull String host, int port) {
         this.serverHolder = new AtomicReference<>();
         this.host = host;
         this.port = port;
     }
 
-    void startUndertow(PathHandler path) {
+    void startUndertow(@NonNull PathHandler path) {
         serverHolder.getAndUpdate(current -> doStart(path, current));
     }
 
     void stopUndertow() {
         serverHolder.getAndUpdate(UndertowLifecycle::doStop);
-    }
-
-    // for testing purposes only
-    Undertow getServer() {
-        return serverHolder.get();
     }
 
     private Undertow doStart(PathHandler path, Undertow current) {

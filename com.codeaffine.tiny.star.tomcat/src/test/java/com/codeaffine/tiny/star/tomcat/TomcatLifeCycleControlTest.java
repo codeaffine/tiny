@@ -44,7 +44,7 @@ class TomcatLifeCycleControlTest {
     void problemOnTomcatMethodDelegation(String delegateMethodName) throws LifecycleException {
         LifecycleException expected = stubDelegateMethodWithProblem(delegateMethodName, new LifecycleException());
 
-        Throwable actual = catchThrowable(() -> delegateToMethodUnderTest(delegateMethodName));
+        Exception actual = catchException(() -> delegateToMethodUnderTest(delegateMethodName));
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)

@@ -117,7 +117,7 @@ class CommandLineInterfaceTest {
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
         commandLineInterface.stopCli();
         sleepFor(SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS * 2);
-        Throwable actual = catchThrowable(() -> commandLineInterface.stopCli());
+        Exception actual = catchException(() -> commandLineInterface.stopCli());
         triggerCommand(systemInSupplier, command.getCode());
 
         assertThat(actual).isNull();

@@ -148,7 +148,7 @@ class Log4j2ConfiguratorTest {
         RuntimeException expected = new RuntimeException(ERROR_MESSAGE);
         FakeConfigurator.problemHolder.set(expected);
 
-        Throwable actual = catchThrowable(() -> configurator.run(getAppLoader(), APPLICATION_NAME));
+        Exception actual = catchException(() -> configurator.run(getAppLoader(), APPLICATION_NAME));
 
         assertThat(reconfigureCalled).isFalse();
         assertThat(actual).isSameAs(expected);

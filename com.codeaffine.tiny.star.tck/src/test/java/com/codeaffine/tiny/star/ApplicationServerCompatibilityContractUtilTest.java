@@ -14,7 +14,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.State.STOPPING;
 import static java.io.File.createTempFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.catchException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,7 +53,7 @@ class ApplicationServerCompatibilityContractUtilTest {
     void readContentFromUrlWithIoProblem() throws IOException {
         URL url = new File("doesNotExist").toURI().toURL();
 
-        Throwable actual = catchThrowable(() -> ApplicationServerCompatibilityContractUtil.readContent(url));
+        Exception actual = catchException(() -> ApplicationServerCompatibilityContractUtil.readContent(url));
 
         assertThat(actual).isInstanceOf(IllegalArgumentException.class)
             .hasCauseInstanceOf(FileNotFoundException.class);

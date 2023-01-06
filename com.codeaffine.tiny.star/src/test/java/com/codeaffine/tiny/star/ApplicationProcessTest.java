@@ -152,7 +152,7 @@ class ApplicationProcessTest {
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).starting();
 
-        Throwable actual = catchThrowable(() -> applicationProcess.start());
+        Exception actual = catchException(() -> applicationProcess.start());
 
         verify(lifecycleConsumingListener).starting(applicationServer);
         verify(starter, never()).run();
@@ -164,7 +164,7 @@ class ApplicationProcessTest {
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).started();
 
-        Throwable actual = catchThrowable(() -> applicationProcess.start());
+        Exception actual = catchException(() -> applicationProcess.start());
 
         InOrder order = inOrder(starter, terminator, lifecycleConsumingListener, parameterlessListener);
         order.verify(lifecycleConsumingListener).starting(applicationServer);
@@ -187,7 +187,7 @@ class ApplicationProcessTest {
         throwGivenExceptionOnListenerMethod(expected).started();
         throwGivenExceptionOnListenerMethod(expected).stopping();
 
-        Throwable actual = catchThrowable(() -> applicationProcess.start());
+        Exception actual = catchException(() -> applicationProcess.start());
 
         InOrder order = inOrder(starter, terminator, lifecycleConsumingListener, parameterlessListener, logger);
         order.verify(lifecycleConsumingListener).starting(applicationServer);
@@ -292,7 +292,7 @@ class ApplicationProcessTest {
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).stopping();
 
-        Throwable actual = catchThrowable(() -> applicationProcess.stop());
+        Exception actual = catchException(() -> applicationProcess.stop());
 
         InOrder order = inOrder(terminator, lifecycleConsumingListener, parameterlessListener, logger);
         order.verify(lifecycleConsumingListener).stopping(applicationServer);
@@ -313,7 +313,7 @@ class ApplicationProcessTest {
         RuntimeException expected = new RuntimeException("bad");
         throwGivenExceptionOnListenerMethod(expected).stopped();
 
-        Throwable actual = catchThrowable(() -> applicationProcess.stop());
+        Exception actual = catchException(() -> applicationProcess.stop());
 
         InOrder order = inOrder(terminator, lifecycleConsumingListener, parameterlessListener, logger);
         order.verify(lifecycleConsumingListener).stopping(applicationServer);
@@ -330,7 +330,7 @@ class ApplicationProcessTest {
     @ParameterizedTest
     @MethodSource("provideLifecycleListenersWithIllegalSignature")
     void registerLifecycleListenerWithIllegalSignature(Object listenerWithIllegalMethodSignature) {
-        Throwable actual = catchThrowable(() -> applicationProcess.registerLifecycleListener(listenerWithIllegalMethodSignature));
+        Exception actual = catchException(() -> applicationProcess.registerLifecycleListener(listenerWithIllegalMethodSignature));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)

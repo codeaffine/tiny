@@ -97,7 +97,7 @@ class ObserverRegistryTest {
         RuntimeException expected = new RuntimeException();
         doThrow(expected).when(observedConsumingListener).eventFired(observed);
 
-        Throwable actual = catchThrowable(() -> observed.fireEvent());
+        Exception actual = catchException(() -> observed.fireEvent());
 
         assertThat(actual).isSameAs(expected);
     }
@@ -106,7 +106,7 @@ class ObserverRegistryTest {
     void notifyObserversIfListenerExecutionExceedsTimeout() {
         observed.registerObserver(new SlowListener());
 
-        Throwable actual = catchThrowable(() -> observed.fireEvent());
+        Exception actual = catchException(() -> observed.fireEvent());
 
         assertThat(actual)
             .isInstanceOf(IllegalStateException.class)
@@ -118,7 +118,7 @@ class ObserverRegistryTest {
     @ParameterizedTest
     @MethodSource("provideObserversWithIllegalSignature")
     void registerObserverWithIllegalSignature(Object listenerWithIllegalMethodSignature) {
-        Throwable actual = catchThrowable(() -> observed.registerObserver(listenerWithIllegalMethodSignature));
+        Exception actual = catchException(() -> observed.registerObserver(listenerWithIllegalMethodSignature));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)

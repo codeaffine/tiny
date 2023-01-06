@@ -37,7 +37,7 @@ class ThreadsTest {
         });
         Threads.sleepFor(TIMEOUT);
         threadCaptor.get().interrupt();
-        Throwable actual = catchThrowable(future::get);
+        Exception actual = catchException(future::get);
 
         assertThat(actual.getCause())
             .isInstanceOf(IllegalStateException.class)

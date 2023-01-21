@@ -47,8 +47,8 @@ class ServerImpl implements Server {
 
     @Override
     public void start() {
-        connectorRegistrar.addConnector();
         Context context = contextRegistrar.addContext();
+        connectorRegistrar.addConnector();
         resourcesServletRegistrar.addResourcesServlet(context);
         rwtServletRegistrar.addRwtServlet(context);
         tomcatLifeCycleControl.startTomcat();

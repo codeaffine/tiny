@@ -34,8 +34,8 @@ dependencies {
             'org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0',
             'org.apache.logging.log4j:log4j-appserver:2.19.0',
             project(':com.codeaffine.tiny.star.cli.basic'),
-//            project(':com.codeaffine.tiny.star.undertow'),
-            project(':com.codeaffine.tiny.star.tomcat'),
+            project(':com.codeaffine.tiny.star.undertow'),
+//            project(':com.codeaffine.tiny.star.tomcat'),
     )
     testImplementation(
             platform('org.junit:junit-bom:5.9.1'),

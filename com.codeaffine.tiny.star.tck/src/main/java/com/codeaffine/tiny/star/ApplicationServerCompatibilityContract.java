@@ -1,5 +1,6 @@
 package com.codeaffine.tiny.star;
 
+import java.io.File;
 import java.net.URL;
 
 import static com.codeaffine.tiny.star.ApplicationServer.State;
@@ -16,7 +17,9 @@ public interface ApplicationServerCompatibilityContract {
 
     @StartApplicationServer
     default void startApplicationServer(ApplicationServerContractContext context) {
-        context.setWorkingDirectory(createTemporayDirectory(getClass().getName()));
+        File temporayDirectory = createTemporayDirectory(getClass().getName());
+        temporayDirectory.deleteOnExit();
+        context.setWorkingDirectory(temporayDirectory);
         ApplicationServer applicationServer = newApplicationServerBuilder(context::configure)
             .withLifecycleListener(context)
             .withWorkingDirectory(context.getWorkingDirectory())

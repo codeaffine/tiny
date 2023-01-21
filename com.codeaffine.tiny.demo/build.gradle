@@ -26,14 +26,16 @@ dependencies {
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
             'org.eclipse.rap:org.eclipse.rap.jface:3.22.0',
             'org.eclipse.platform:org.eclipse.core.commands:3.10.200',
-            project(':com.codeaffine.tiny.star')
+            project(':com.codeaffine.tiny.star'),
+            project(':com.codeaffine.tiny.star.cli'),
     )
     runtimeOnly(
             'org.apache.logging.log4j:log4j-core:2.19.0',
             'org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0',
             'org.apache.logging.log4j:log4j-appserver:2.19.0',
-            project(':com.codeaffine.tiny.star.undertow'),
-//            project(':com.codeaffine.tiny.star.tomcat'),
+            project(':com.codeaffine.tiny.star.cli.basic'),
+//            project(':com.codeaffine.tiny.star.undertow'),
+            project(':com.codeaffine.tiny.star.tomcat'),
     )
     testImplementation(
             platform('org.junit:junit-bom:5.9.1'),

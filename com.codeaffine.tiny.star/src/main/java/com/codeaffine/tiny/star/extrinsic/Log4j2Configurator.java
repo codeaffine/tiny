@@ -1,7 +1,7 @@
 package com.codeaffine.tiny.star.extrinsic;
 
-import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.star.extrinsic.Texts.ERROR_UNABLE_TO_CONFIGURE_LOG4J2;
 import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_CONFIGURATION_NOT_FOUND;
 import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_DETECTED;

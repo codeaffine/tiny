@@ -1,0 +1,42 @@
+package com.codeaffine.tiny.star.cli;
+
+import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.cli.spi.CliCommand;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static lombok.AccessLevel.PACKAGE;
+
+@RequiredArgsConstructor(access = PACKAGE)
+class CliCommandAdapter implements CliCommand {
+
+    @NonNull
+    private final ApplicationServer applicationServer;
+    @NonNull
+    @Delegate(excludes = Excludes.class)
+    private final CliCommand delegate;
+    private final int cliInstanceNumber;
+
+    @SuppressWarnings("unused")
+    interface Excludes {
+        String getCode();
+        void execute(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap);
+    }
+
+    @Override
+    public String getCode() {
+        if(cliInstanceNumber > 0) {
+            return delegate.getCode() + cliInstanceNumber;
+        }
+        return delegate.getCode();
+    }
+
+    @Override
+    public void execute(ApplicationServer applicationServer, Map<String, CliCommand> codeToCommandMap) {
+        delegate.execute(this.applicationServer, new HashMap<>(codeToCommandMap));
+    }
+}

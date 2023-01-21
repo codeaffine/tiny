@@ -13,10 +13,16 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.demo" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.shared" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.shared.test" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli.basic" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli.tck" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tck" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.undertow" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.test" />
           </set>
         </option>
       </GradleProjectSettings>

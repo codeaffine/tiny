@@ -11,8 +11,8 @@ import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.NORMAL;
 import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.ApplicationServer.State.*;
 import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class ApplicationProcess {

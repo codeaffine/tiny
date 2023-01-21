@@ -7,7 +7,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static com.codeaffine.tiny.star.ApplicationServerCompatibilityContractUtil.*;
-import static com.codeaffine.tiny.star.common.IoUtils.createTemporayDirectory;
+import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ApplicationServerCompatibilityTest

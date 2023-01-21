@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.function.Supplier;
 
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)

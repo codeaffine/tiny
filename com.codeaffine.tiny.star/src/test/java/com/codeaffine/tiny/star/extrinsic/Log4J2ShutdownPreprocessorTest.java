@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import static com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemErrCaptor;
 import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.initializeFakeLogManager;
 import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.shutdownCalled;
 import static java.util.Objects.nonNull;

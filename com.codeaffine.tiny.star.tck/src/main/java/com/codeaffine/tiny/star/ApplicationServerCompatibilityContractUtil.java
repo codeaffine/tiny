@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Scanner;
 
-import static com.codeaffine.tiny.star.common.Threads.sleepFor;
+import static com.codeaffine.tiny.shared.Threads.sleepFor;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 

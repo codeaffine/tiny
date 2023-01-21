@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemErrCaptor;
 import com.codeaffine.tiny.star.spi.Server;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

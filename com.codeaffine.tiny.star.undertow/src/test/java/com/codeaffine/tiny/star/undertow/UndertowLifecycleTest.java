@@ -1,6 +1,6 @@
 package com.codeaffine.tiny.star.undertow;
 
-import static com.codeaffine.tiny.star.common.IoUtils.findFreePort;
+import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static com.codeaffine.tiny.star.undertow.DeploymentOperation.CONTEXT_PATH;
 import static com.codeaffine.tiny.star.undertow.HttpHandlerStarter.PREFIX_PATH;

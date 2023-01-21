@@ -21,6 +21,7 @@ dependencies {
             'org.projectlombok:lombok:1.18.24'
     )
     implementation(
+            project(':com.codeaffine.tiny.shared'),
             project(':com.codeaffine.tiny.star'),
             platform('org.junit:junit-bom:5.9.1'),
             'org.junit.jupiter:junit-jupiter',

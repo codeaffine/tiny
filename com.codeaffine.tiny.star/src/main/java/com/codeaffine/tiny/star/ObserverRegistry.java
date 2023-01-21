@@ -2,9 +2,9 @@ package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.Texts.ERROR_INVALID_METHOD_SIGNATURE;
 import static com.codeaffine.tiny.star.Texts.ERROR_LISTENER_NOTIFICATION;
-import static com.codeaffine.tiny.star.common.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.common.Threads.runAsyncAwaitingTermination;
+import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.shared.Threads.runAsyncAwaitingTermination;
 
 import static java.lang.String.format;
 import static java.util.Arrays.stream;

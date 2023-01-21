@@ -1,7 +1,7 @@
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.common.Synchronizer;
-import com.codeaffine.tiny.star.common.Threads;
+import com.codeaffine.tiny.shared.Synchronizer;
+import com.codeaffine.tiny.shared.Threads;
 import lombok.Getter;
 import lombok.NonNull;
 

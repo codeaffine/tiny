@@ -26,7 +26,8 @@ dependencies {
             'jakarta.servlet:jakarta.servlet-api:6.0.0',
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
             'com.fasterxml.jackson.core:jackson-databind:2.13.4.2',
-            'org.slf4j:slf4j-api:2.0.3'
+            'org.slf4j:slf4j-api:2.0.3',
+            project(':com.codeaffine.tiny.shared'),
     )
     testImplementation(
             platform('org.junit:junit-bom:5.9.1'),
@@ -34,6 +35,8 @@ dependencies {
             'org.assertj:assertj-core:3.23.1',
             'org.mockito:mockito-core:4.8.1',
             'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0',
+            project(':com.codeaffine.tiny.test'),
+            project(':com.codeaffine.tiny.shared.test'),
     )
     testRuntimeOnly(
             'org.junit.jupiter:junit-jupiter-engine:5.9.1',

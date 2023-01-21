@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
-import static com.codeaffine.tiny.star.common.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.common.Threads.sleepFor;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.shared.Threads.sleepFor;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.*;

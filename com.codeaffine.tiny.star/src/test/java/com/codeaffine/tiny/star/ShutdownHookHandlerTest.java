@@ -1,7 +1,7 @@
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.SystemPrintStreamCaptor.SystemErrCaptor;
-import com.codeaffine.tiny.star.common.Synchronizer;
+import com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.shared.Synchronizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +13,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.RuntimeSupplier;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
-import static com.codeaffine.tiny.star.common.SynchronizerTestHelper.fakeSynchronizer;
+import static com.codeaffine.tiny.shared.SynchronizerTestHelper.fakeSynchronizer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;

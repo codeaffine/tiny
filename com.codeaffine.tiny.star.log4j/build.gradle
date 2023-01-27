@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "6.5.1"
+}
+
+group 'com.codeaffine.tiny'
+version '1.0.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compileOnly(
+            'org.projectlombok:lombok:1.18.24'
+    )
+    implementation(
+            'org.apache.logging.log4j:log4j-core:2.19.0',
+            'org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0',
+            'org.apache.logging.log4j:log4j-appserver:2.19.0',
+            'org.slf4j:slf4j-api:2.0.3',
+            project(':com.codeaffine.tiny.shared'),
+            project(':com.codeaffine.tiny.star')
+    )
+    testImplementation(
+            project(':com.codeaffine.tiny.star.tck'),
+            'org.junit.jupiter:junit-jupiter-api:5.9.0',
+            'org.assertj:assertj-core:3.23.1',
+            'org.mockito:mockito-core:4.8.1',
+            'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
+            project(':com.codeaffine.tiny.test')
+    )
+    testRuntimeOnly(
+            'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+    )
+}
+
+test {
+    useJUnitPlatform()
+}

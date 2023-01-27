@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.spi;
 
 public interface LoggingFrameworkControl {
 

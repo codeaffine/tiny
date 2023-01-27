@@ -14,6 +14,7 @@
         <module name="tiny.com.codeaffine.tiny.star.tck.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.tck.main" />
+        <module name="tiny.com.codeaffine.tiny.star.log4j.main" />
         <module name="tiny.com.codeaffine.tiny.demo.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.tck.test" />
@@ -21,6 +22,7 @@
         <module name="tiny.com.codeaffine.tiny.star.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.test" />
+        <module name="tiny.com.codeaffine.tiny.star.log4j.test" />
         <module name="tiny.com.codeaffine.tiny.star.tck.test" />
         <module name="tiny.com.codeaffine.tiny.test.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.test" />

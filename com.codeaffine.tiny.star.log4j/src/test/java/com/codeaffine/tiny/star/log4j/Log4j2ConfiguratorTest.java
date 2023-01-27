@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star.extrinsic;
+package com.codeaffine.tiny.star.log4j;
 
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
@@ -12,10 +12,9 @@ import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.star.extrinsic.Log4j2Configurator.CONFIGURATION_FILE_NAME_SUFFIX;
-import static com.codeaffine.tiny.star.extrinsic.Log4j2ConfiguratorTest.FakeConfigurator.initializeFakeConfigurator;
-import static com.codeaffine.tiny.star.extrinsic.Log4j2ConfiguratorTest.FakeConfigurator.reconfigureCalled;
-import static com.codeaffine.tiny.star.extrinsic.Texts.*;
+import static com.codeaffine.tiny.star.log4j.Log4j2Configurator.CONFIGURATION_FILE_NAME_SUFFIX;
+import static com.codeaffine.tiny.star.log4j.Log4j2ConfiguratorTest.FakeConfigurator.initializeFakeConfigurator;
+import static com.codeaffine.tiny.star.log4j.Texts.*;
 import static java.lang.Thread.currentThread;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
@@ -70,7 +69,7 @@ class Log4j2ConfiguratorTest {
 
         configurator.run(getAppLoader(), APPLICATION_NAME);
 
-        assertThat(reconfigureCalled).isTrue();
+        assertThat(FakeConfigurator.reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName());
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER, expectedLog4j2ConfigurationFileName());
@@ -80,12 +79,12 @@ class Log4j2ConfiguratorTest {
 
     @Test
     void runIfContextClassLoaderIsNotSet() {
-        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD,r -> null, logger);
+        Log4j2Configurator configurator = new Log4j2Configurator(CONFIGURATOR_CLASS, RECONFIGURE_METHOD, r -> null, logger);
         currentThread().setContextClassLoader(null);
 
         configurator.run(getAppLoader(), APPLICATION_NAME);
 
-        assertThat(reconfigureCalled).isTrue();
+        assertThat(FakeConfigurator.reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName());
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER, expectedLog4j2ConfigurationFileName());
@@ -100,7 +99,7 @@ class Log4j2ConfiguratorTest {
 
         configurator.run(getAppLoader(), APPLICATION_NAME);
 
-        assertThat(reconfigureCalled).isTrue();
+        assertThat(FakeConfigurator.reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName());
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER, expectedLog4j2ConfigurationFileName());
@@ -116,7 +115,7 @@ class Log4j2ConfiguratorTest {
 
         configurator.run(getAppLoader(), GLOBAL);
 
-        assertThat(reconfigureCalled).isTrue();
+        assertThat(FakeConfigurator.reconfigureCalled).isTrue();
         InOrder order = inOrder(logger);
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName(GLOBAL));
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER, expectedLog4j2ConfigurationFileName(GLOBAL));
@@ -132,7 +131,7 @@ class Log4j2ConfiguratorTest {
 
         configurator.run(getAppLoader(), GLOBAL);
 
-        assertThat(reconfigureCalled).isFalse();
+        assertThat(FakeConfigurator.reconfigureCalled).isFalse();
         InOrder order = inOrder(logger);
         order.verify(logger).debug(LOG_LOG4J2_DETECTED, expectedLog4j2ConfigurationFileName(GLOBAL));
         order.verify(logger).debug(LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER, expectedLog4j2ConfigurationFileName(GLOBAL));
@@ -150,7 +149,7 @@ class Log4j2ConfiguratorTest {
 
         Exception actual = catchException(() -> configurator.run(getAppLoader(), APPLICATION_NAME));
 
-        assertThat(reconfigureCalled).isFalse();
+        assertThat(FakeConfigurator.reconfigureCalled).isFalse();
         assertThat(actual).isSameAs(expected);
     }
 
@@ -160,7 +159,7 @@ class Log4j2ConfiguratorTest {
 
         configurator.run(getAppLoader(), GLOBAL);
 
-        assertThat(reconfigureCalled).isFalse();
+        assertThat(FakeConfigurator.reconfigureCalled).isFalse();
         verify(logger, never()).debug(anyString(), eq(expectedLog4j2ConfigurationFileName(GLOBAL)));
     }
 

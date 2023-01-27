@@ -1,31 +1,28 @@
 package com.codeaffine.tiny.star;
 
-import static lombok.AccessLevel.PACKAGE;
-
-import static java.util.Objects.isNull;
-
-import com.codeaffine.tiny.star.extrinsic.DelegatingLoggingFrameworkControl;
-
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class LoggingFrameworkConfigurator {
 
     @NonNull
     private final ApplicationServer applicationServer;
+    @NonNull
+    private final LoggingFrameworkControlFactory loggingFrameworkControlFactory;
+
+    LoggingFrameworkConfigurator(ApplicationServer applicationServer) {
+        this(applicationServer, new DelegatingLoggingFrameworkControlFactory());
+    }
 
     LoggingFrameworkControl configureLoggingFramework() {
         ClassLoader applicationClassLoader = applicationServer.applicationConfiguration.getClass().getClassLoader();
-        LoggingFrameworkControl result = getLoggingFrameworkControl(applicationClassLoader);
+        LoggingFrameworkControl result = loggingFrameworkControlFactory.create();
         result.configure(applicationClassLoader, applicationServer.getIdentifier());
         return result;
-    }
-
-    private LoggingFrameworkControl getLoggingFrameworkControl(ClassLoader applicationClassLoader) {
-        if (isNull(applicationServer.loggingFrameworkControl)) {
-            return new DelegatingLoggingFrameworkControl(applicationClassLoader);
-        }
-        return applicationServer.loggingFrameworkControl;
     }
 }

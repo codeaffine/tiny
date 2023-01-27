@@ -2,6 +2,7 @@ package com.codeaffine.tiny.star;
 
 import static lombok.AccessLevel.PACKAGE;
 
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.Server;
 
 import java.io.File;

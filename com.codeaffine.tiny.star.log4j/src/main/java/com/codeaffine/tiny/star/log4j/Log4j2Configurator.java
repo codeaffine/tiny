@@ -1,24 +1,9 @@
-package com.codeaffine.tiny.star.extrinsic;
-
-import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.extrinsic.Texts.ERROR_UNABLE_TO_CONFIGURE_LOG4J2;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_CONFIGURATION_NOT_FOUND;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_DETECTED;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_LOG4J2_RECONFIGURATION_SUCCESSFUL;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_FROM_APPLICATION_CLASS_LOADER;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_CONTEXT_CLASS_LOADER;
-import static com.codeaffine.tiny.star.extrinsic.Texts.LOG_TRY_LOADING_CONFIGURATION_LOADING_FROM_SYSTEM_CLASS_LOADER;
-import static lombok.AccessLevel.PACKAGE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import static java.lang.Thread.currentThread;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-
-import org.slf4j.Logger;
+package com.codeaffine.tiny.star.log4j;
 
 import com.codeaffine.tiny.star.ApplicationServer;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,8 +11,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Function;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
+import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
+import static com.codeaffine.tiny.star.log4j.Texts.*;
+import static java.lang.Thread.currentThread;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static lombok.AccessLevel.PACKAGE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class Log4j2Configurator {

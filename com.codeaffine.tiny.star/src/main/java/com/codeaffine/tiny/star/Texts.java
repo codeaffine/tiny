@@ -42,4 +42,6 @@ class Texts {
     static final String ERROR_NO_SERVER_FACTORY_FOUND = "No server factory found.";
     static final String THREAD_NAME_APPLICATION_SERVER_SHUTDOWN_HOOK = "Application Server Shutdown Hook";
     static final String ERROR_READING_ATTRIBUTE = "unable to read attribute '%s' from environment configuration '%s'";
+    static final String ERROR_MORE_THAN_ONE_LOGGING_FRAMEWORK_CONTROL_FACTORY
+        = "More than one LoggingFrameworkControlFactory implementation found on classpath: %s";
 }

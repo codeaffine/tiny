@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli.basic" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli.tck" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.log4j" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tck" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.undertow" />

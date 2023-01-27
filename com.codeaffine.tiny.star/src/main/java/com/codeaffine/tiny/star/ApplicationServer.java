@@ -78,7 +78,6 @@ public class ApplicationServer {
     @Singular
     final List<Object> lifecycleListeners;
     final String applicationIdentifier;
-    final LoggingFrameworkControl loggingFrameworkControl;
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 

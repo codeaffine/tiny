@@ -1,13 +1,13 @@
-package com.codeaffine.tiny.star.extrinsic;
-
-import static lombok.AccessLevel.PACKAGE;
+package com.codeaffine.tiny.star.log4j;
 
 import com.codeaffine.tiny.star.ApplicationServer;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class Log4j2ShutdownPreprocessor implements Runnable {

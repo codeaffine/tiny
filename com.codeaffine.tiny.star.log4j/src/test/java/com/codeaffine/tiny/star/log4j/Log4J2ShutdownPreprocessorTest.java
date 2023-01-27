@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star.extrinsic;
+package com.codeaffine.tiny.star.log4j;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,8 +8,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemErrCaptor;
-import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.initializeFakeLogManager;
-import static com.codeaffine.tiny.star.extrinsic.Log4J2ShutdownPreprocessorTest.FakeLogManager.shutdownCalled;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +40,7 @@ class Log4J2ShutdownPreprocessorTest {
 
     @BeforeEach
     void setUp() {
-        initializeFakeLogManager();
+        FakeLogManager.initializeFakeLogManager();
     }
 
     @Test
@@ -51,7 +49,7 @@ class Log4J2ShutdownPreprocessorTest {
 
         preprocessor.run();
 
-        assertThat(shutdownCalled).isTrue();
+        assertThat(FakeLogManager.shutdownCalled).isTrue();
     }
 
     @Test
@@ -60,7 +58,7 @@ class Log4J2ShutdownPreprocessorTest {
 
         preprocessor.run();
 
-        assertThat(shutdownCalled).isFalse();
+        assertThat(FakeLogManager.shutdownCalled).isFalse();
     }
 
     @Test
@@ -71,7 +69,7 @@ class Log4J2ShutdownPreprocessorTest {
 
         preprocessor.run();
 
-        assertThat(shutdownCalled).isFalse();
+        assertThat(FakeLogManager.shutdownCalled).isFalse();
         assertThat(systemErrCaptor.getLog())
             .contains(LOG_MANAGER_CLASS)
             .contains(WRONG_METHOD);
@@ -86,7 +84,7 @@ class Log4J2ShutdownPreprocessorTest {
 
         preprocessor.run();
 
-        assertThat(shutdownCalled).isFalse();
+        assertThat(FakeLogManager.shutdownCalled).isFalse();
         assertThat(systemErrCaptor.getLog())
             .contains(LOG_MANAGER_CLASS)
             .contains(SHUTDOWN_METHOD)
@@ -102,7 +100,7 @@ class Log4J2ShutdownPreprocessorTest {
 
         preprocessor.run();
 
-        assertThat(shutdownCalled).isFalse();
+        assertThat(FakeLogManager.shutdownCalled).isFalse();
         assertThat(systemErrCaptor.getLog())
             .contains(LOG_MANAGER_CLASS)
             .contains(SHUTDOWN_METHOD)

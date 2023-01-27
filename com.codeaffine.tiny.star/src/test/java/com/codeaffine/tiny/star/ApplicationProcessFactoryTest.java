@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static java.lang.System.getProperty;
 import static java.util.Objects.nonNull;
 
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

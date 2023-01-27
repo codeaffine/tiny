@@ -1,5 +1,6 @@
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

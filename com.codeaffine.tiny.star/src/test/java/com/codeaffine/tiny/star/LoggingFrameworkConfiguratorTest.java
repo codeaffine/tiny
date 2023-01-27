@@ -1,13 +1,13 @@
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.extrinsic.DelegatingLoggingFrameworkControl;
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory;
 import org.junit.jupiter.api.Test;
 
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class LoggingFrameworkConfiguratorTest {
 
@@ -18,16 +18,15 @@ class LoggingFrameworkConfiguratorTest {
 
         LoggingFrameworkControl actual = configurator.configureLoggingFramework();
 
-        assertThat(actual).isInstanceOf(DelegatingLoggingFrameworkControl.class);
+        assertThat(actual).isInstanceOf(LoggingFrameworkControlFactoryTestFactory.DummyLoggingFrameworkControl.class);
     }
 
     @Test
     void configureLoggingFrameworkWithCustomImplementation() {
         LoggingFrameworkControl expected = mock(LoggingFrameworkControl.class);
-        ApplicationServer applicationServer = newApplicationServerBuilder(application -> {})
-            .withLoggingFrameworkControl(expected)
-            .build();
-        LoggingFrameworkConfigurator loggingFrameworkConfigurator = new LoggingFrameworkConfigurator(applicationServer);
+        LoggingFrameworkControlFactory loggingFrameworkControlFactory = stubLoggingFrameworkControlFactory(expected);
+        ApplicationServer applicationServer = newApplicationServerBuilder(application -> {}).build();
+        LoggingFrameworkConfigurator loggingFrameworkConfigurator = new LoggingFrameworkConfigurator(applicationServer, loggingFrameworkControlFactory);
 
         LoggingFrameworkControl actual = loggingFrameworkConfigurator.configureLoggingFramework();
 
@@ -39,5 +38,11 @@ class LoggingFrameworkConfiguratorTest {
     void constructWithNullAsArgumentNameArgument() {
         assertThatThrownBy(() -> new LoggingFrameworkConfigurator(null))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    private static LoggingFrameworkControlFactory stubLoggingFrameworkControlFactory(LoggingFrameworkControl expected) {
+        LoggingFrameworkControlFactory result = mock(LoggingFrameworkControlFactory.class);
+        when(result.create()).thenReturn(expected);
+        return result;
     }
 }

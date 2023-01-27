@@ -1,5 +1,6 @@
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

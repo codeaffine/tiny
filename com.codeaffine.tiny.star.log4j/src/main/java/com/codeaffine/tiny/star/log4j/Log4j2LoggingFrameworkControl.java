@@ -1,11 +1,10 @@
-package com.codeaffine.tiny.star.extrinsic;
+package com.codeaffine.tiny.star.log4j;
 
-import static lombok.AccessLevel.PACKAGE;
-
-import com.codeaffine.tiny.star.LoggingFrameworkControl;
-
+import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class Log4j2LoggingFrameworkControl implements LoggingFrameworkControl {

@@ -1,25 +1,20 @@
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.star.DelegatingServerFactory.*;
-import static com.codeaffine.tiny.star.Texts.ERROR_NO_SERVER_FACTORY_FOUND;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchException;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
+import com.codeaffine.tiny.shared.ServiceLoaderAdapter;
+import com.codeaffine.tiny.star.spi.Server;
+import com.codeaffine.tiny.star.spi.ServerFactory;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
-import com.codeaffine.tiny.star.spi.Server;
-import com.codeaffine.tiny.star.spi.ServerFactory;
-
 import java.io.File;
-import java.util.List;
+
+import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
+import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
+import static com.codeaffine.tiny.shared.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
+import static com.codeaffine.tiny.star.Texts.ERROR_NO_SERVER_FACTORY_FOUND;
+import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(ApplicationServerTestContext.class)
 class DelegatingServerFactoryTest {
@@ -51,7 +46,7 @@ class DelegatingServerFactoryTest {
     @Test
     void createIfNoServerFactoryIsRegisteredOnClasspath() {
         ApplicationServer applicationServer = newApplicationServerBuilder(APPLICATION_CONFIGURATION).build();
-        ServiceLoaderAdapter serviceLoaderAdapter = stubServiceLoaderAdapterWithFactoriesToLoad();
+        ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter = fakeServiceLoaderAdapter();
         DelegatingServerFactory factory = new DelegatingServerFactory(applicationServer, serviceLoaderAdapter);
 
         Exception actual = catchException(() -> factory.create(workingDirectory));
@@ -66,7 +61,7 @@ class DelegatingServerFactoryTest {
         ApplicationServer applicationServer = newApplicationServerBuilder(APPLICATION_CONFIGURATION).build();
         ServerFactory factory1 = (port, host, workingDirectory, configuration) -> null;
         ServerFactory factory2 = (port, host, workingDirectory, configuration) -> null;
-        ServiceLoaderAdapter serviceLoaderAdapter = stubServiceLoaderAdapterWithFactoriesToLoad(factory1, factory2);
+        ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter = fakeServiceLoaderAdapter(factory1, factory2);
         DelegatingServerFactory factory = new DelegatingServerFactory(applicationServer, serviceLoaderAdapter);
 
         Exception actual = catchException(() -> factory.create(workingDirectory));
@@ -81,11 +76,5 @@ class DelegatingServerFactoryTest {
     void constructWithNullAsArgumentNameArgument() {
         assertThatThrownBy(() -> new DelegatingServerFactory(null))
             .isInstanceOf(NullPointerException.class);
-    }
-
-    private static ServiceLoaderAdapter stubServiceLoaderAdapterWithFactoriesToLoad(ServerFactory ... factories) {
-        ServiceLoaderAdapter result = mock(ServiceLoaderAdapter.class);
-        when(result.collectServerFactories()).thenReturn(List.of(factories));
-        return result;
     }
 }

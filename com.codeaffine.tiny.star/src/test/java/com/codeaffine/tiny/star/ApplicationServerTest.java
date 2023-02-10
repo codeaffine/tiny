@@ -22,7 +22,7 @@ import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERV
 import static com.codeaffine.tiny.star.Texts.*;
 import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
+import static com.codeaffine.tiny.star.Protocol.HTTP;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.util.Objects.nonNull;

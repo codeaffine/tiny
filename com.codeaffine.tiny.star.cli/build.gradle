@@ -31,7 +31,7 @@ dependencies {
             'org.junit.jupiter:junit-jupiter',
             'org.assertj:assertj-core:3.23.1',
             'org.mockito:mockito-core:4.8.1',
-            project(':com.codeaffine.tiny.test'),
+            testFixtures(project(":com.codeaffine.tiny.test")),
             project(':com.codeaffine.tiny.shared.test')
     )
     testRuntimeOnly(

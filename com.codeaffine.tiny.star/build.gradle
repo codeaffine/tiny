@@ -35,7 +35,7 @@ dependencies {
             'org.assertj:assertj-core:3.23.1',
             'org.mockito:mockito-core:4.8.1',
             'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0',
-            project(':com.codeaffine.tiny.test'),
+            testFixtures(project(":com.codeaffine.tiny.test")),
             project(':com.codeaffine.tiny.shared.test'),
     )
     testRuntimeOnly(

@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
     id "io.freefair.lombok" version "6.5.1"
 }
 
@@ -10,6 +11,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    modularity.inferModulePath.set(false)
 }
 
 repositories {
@@ -26,13 +28,22 @@ dependencies {
             'org.junit.jupiter:junit-jupiter',
             'org.assertj:assertj-core:3.23.1',
             'org.mockito:mockito-core:4.8.1',
-            project(':com.codeaffine.tiny.test')
+            testFixtures(project(":com.codeaffine.tiny.test"))
     )
     testRuntimeOnly(
             'org.junit.jupiter:junit-jupiter-engine:5.9.1',
     )
 }
 
+compileTestJava {
+    moduleOptions {
+        compileOnClasspath = true
+    }
+}
+
 test {
     useJUnitPlatform()
+    moduleOptions {
+        runOnClasspath = true
+    }
 }

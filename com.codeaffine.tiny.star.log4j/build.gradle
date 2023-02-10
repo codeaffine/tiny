@@ -35,7 +35,7 @@ dependencies {
             'org.assertj:assertj-core:3.23.1',
             'org.mockito:mockito-core:4.8.1',
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
-            project(':com.codeaffine.tiny.test')
+            testFixtures(project(":com.codeaffine.tiny.test"))
     )
     testRuntimeOnly(
             'org.junit.jupiter:junit-jupiter-engine:5.9.1'

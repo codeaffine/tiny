@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
     id "io.freefair.lombok" version "6.5.1"
 }
 
@@ -22,20 +23,19 @@ dependencies {
             'org.projectlombok:lombok:1.18.24'
     )
     implementation(
-            'org.slf4j:slf4j-api:2.0.3',
-            project(':com.codeaffine.tiny.star'),
-            project(':com.codeaffine.tiny.star.cli')
+            'javax.servlet:javax.servlet-api:4.0.1',
+            'jakarta.servlet:jakarta.servlet-api:6.0.0',
+            'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
     )
     testImplementation(
             platform('org.junit:junit-bom:5.9.1'),
             'org.junit.jupiter:junit-jupiter',
             'org.assertj:assertj-core:3.23.1',
             'org.mockito:mockito-core:4.8.1',
-            testFixtures(project(":com.codeaffine.tiny.test")),
-            project(':com.codeaffine.tiny.star.cli.tck')
+            'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0',
     )
     testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+            'org.junit.jupiter:junit-jupiter-engine:5.9.1',
     )
 }
 

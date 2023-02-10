@@ -1,8 +1,7 @@
 package com.codeaffine.tiny.star.servlet;
 
-import static lombok.AccessLevel.PACKAGE;
-
-import static java.util.Arrays.stream;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -11,17 +10,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.util.*;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class JakartaToJavaxServletRequestAdapter implements javax.servlet.http.HttpServletRequest {
@@ -36,7 +31,7 @@ class JakartaToJavaxServletRequestAdapter implements javax.servlet.http.HttpServ
 
     @Override
     public Cookie[] getCookies() {
-        return stream(delegate.getCookies())
+        return Arrays.stream(delegate.getCookies())
             .map(cookie -> new Cookie(cookie.getName(), cookie.getValue()))
             .toArray(Cookie[]::new);
     }

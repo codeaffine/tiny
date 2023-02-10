@@ -18,13 +18,13 @@ public class SystemPrintStreamCaptor implements InvocationInterceptor, Parameter
 
     public static class SystemOutCaptor extends SystemPrintStreamCaptor {
         public SystemOutCaptor() {
-            super(() -> System.out, System::setOut);
+            super(() -> System.out, System::setOut); // NOSONAR
         }
     }
 
     public static class SystemErrCaptor extends SystemPrintStreamCaptor {
         public SystemErrCaptor() {
-            super(() -> System.err, System::setErr);
+            super(() -> System.err, System::setErr); // NOSONAR
         }
     }
 

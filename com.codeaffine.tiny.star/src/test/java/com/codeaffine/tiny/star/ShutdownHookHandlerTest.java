@@ -13,7 +13,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.RuntimeSupplier;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
-import static com.codeaffine.tiny.shared.SynchronizerTestHelper.fakeSynchronizer;
+import static com.codeaffine.tiny.shared.test.SynchronizerTestHelper.fakeSynchronizer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;

@@ -1,5 +1,6 @@
-package com.codeaffine.tiny.shared;
+package com.codeaffine.tiny.shared.test;
 
+import com.codeaffine.tiny.shared.Synchronizer;
 import lombok.NoArgsConstructor;
 import org.mockito.invocation.InvocationOnMock;
 

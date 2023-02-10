@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
+import static com.codeaffine.tiny.shared.Reflections.Mode.*;
 import static com.codeaffine.tiny.shared.Texts.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -24,7 +25,7 @@ public class Reflections {
         @NonNull Exception exception,
         @NonNull Function<Throwable, T> runtimeExceptionFactory)
     {
-        return extractExceptionToReport(exception, runtimeExceptionFactory, Mode.WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS);
+        return extractExceptionToReport(exception, runtimeExceptionFactory, WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS);
     }
 
     public static <T extends RuntimeException> RuntimeException extractExceptionToReport(
@@ -34,7 +35,7 @@ public class Reflections {
     {
         RuntimeException result;
         T wrappedException = wrapException(exception, runtimeExceptionFactory);
-        if(Mode.FORWARD_RUNTIME_EXCEPTIONS.equals(mode) && exception instanceof RuntimeException runtimeException) {
+        if(FORWARD_RUNTIME_EXCEPTIONS.equals(mode) && exception instanceof RuntimeException runtimeException) {
             result = runtimeException;
         } else if(wrappedException.getClass().isAssignableFrom(exception.getClass()) ) {
             result = (RuntimeException)exception;

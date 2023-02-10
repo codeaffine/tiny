@@ -1,11 +1,12 @@
 package com.codeaffine.tiny.star.servlet;
 
-import static lombok.AccessLevel.PACKAGE;
-
 import jakarta.servlet.WriteListener;
-import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class JavaxToJakartaWriteListenerAdapter implements WriteListener {

@@ -2,7 +2,7 @@ package com.codeaffine.tiny.star.cli.basic;
 
 import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.cli.spi.CliCommand;
-import com.codeaffine.tiny.star.cli.spi.CliCommandContract;
+import com.codeaffine.tiny.star.cli.spi.tck.CliCommandContract;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

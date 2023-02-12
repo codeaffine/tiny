@@ -1,5 +1,7 @@
-package com.codeaffine.tiny.star.cli.spi;
+package com.codeaffine.tiny.star.cli.spi.tck;
 
+import com.codeaffine.tiny.star.cli.spi.CliCommand;
+import com.codeaffine.tiny.star.cli.spi.CliCommandProvider;
 import org.assertj.core.api.AbstractCollectionAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ public interface CliCommandProviderContract <T extends CliCommandProvider> {
 
         Set<CliCommand> actual = provider.getCliCommands();
 
-        AbstractCollectionAssert<?, Collection<? extends CliCommand>, CliCommand, ObjectAssert<CliCommand>> cliCommands = assertThat(actual);
+        AbstractCollectionAssert<?, Collection<? extends CliCommand>, CliCommand, ObjectAssert<CliCommand>> cliCommands = assertThat(actual);  // NOSONAR
         cliCommands.isNotNull();
         assertProvidedCliCommands(cliCommands);
     }

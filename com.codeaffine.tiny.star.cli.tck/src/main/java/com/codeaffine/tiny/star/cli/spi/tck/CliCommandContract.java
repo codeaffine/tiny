@@ -1,6 +1,7 @@
-package com.codeaffine.tiny.star.cli.spi;
+package com.codeaffine.tiny.star.cli.spi.tck;
 
 import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.cli.spi.CliCommand;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,7 @@ public interface CliCommandContract<T extends CliCommand> {
     default void getCode() {
         T actual = create();
 
-        assertThat(actual.getCode()).isNotEmpty();
+        assertThat(actual.getCode()).isNotEmpty();  // NOSONAR
     }
 
     @Test

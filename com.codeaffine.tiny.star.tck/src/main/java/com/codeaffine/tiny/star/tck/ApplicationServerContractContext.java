@@ -1,5 +1,6 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
+import com.codeaffine.tiny.star.ApplicationServer;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.rap.rwt.application.Application;

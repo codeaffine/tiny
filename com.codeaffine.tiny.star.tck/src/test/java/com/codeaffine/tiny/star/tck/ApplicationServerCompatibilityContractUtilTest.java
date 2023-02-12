@@ -1,5 +1,6 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
+import com.codeaffine.tiny.star.ApplicationServer;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

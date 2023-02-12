@@ -1,5 +1,6 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
+import com.codeaffine.tiny.star.ApplicationServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;

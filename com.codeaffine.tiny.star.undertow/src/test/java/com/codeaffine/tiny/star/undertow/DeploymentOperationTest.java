@@ -10,7 +10,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
-import static com.codeaffine.tiny.star.ApplicationServerTestHelper.MULTI_ENTRYPOINT_CONFIGURATION;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.MULTI_ENTRYPOINT_CONFIGURATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

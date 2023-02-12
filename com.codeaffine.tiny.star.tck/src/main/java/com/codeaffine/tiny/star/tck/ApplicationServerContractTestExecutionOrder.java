@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
 import org.junit.jupiter.api.MethodDescriptor;
 import org.junit.jupiter.api.MethodOrderer;

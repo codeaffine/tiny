@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
 import lombok.Getter;
 import lombok.NonNull;

@@ -1,5 +1,6 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.ApplicationServer.State;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;

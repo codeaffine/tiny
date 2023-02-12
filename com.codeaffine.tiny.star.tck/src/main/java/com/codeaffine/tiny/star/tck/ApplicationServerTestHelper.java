@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
 import lombok.NoArgsConstructor;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;

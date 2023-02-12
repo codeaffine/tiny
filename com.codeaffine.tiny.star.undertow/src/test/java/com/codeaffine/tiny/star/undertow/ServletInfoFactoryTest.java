@@ -4,7 +4,7 @@ import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import io.undertow.servlet.api.ServletInfo;
 import org.junit.jupiter.api.Test;
 
-import static com.codeaffine.tiny.star.ApplicationServerTestHelper.*;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

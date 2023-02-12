@@ -1,4 +1,4 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,4 +12,4 @@ import java.lang.annotation.Target;
 @Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 @Test
 @ExtendWith(ApplicationServerContractContext.class)
-@interface StartApplicationServer {}
+@interface RequestApplicationServer {}

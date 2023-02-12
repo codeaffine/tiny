@@ -1,6 +1,6 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.ElementType;
@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-@Test
+@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @ExtendWith(ApplicationServerContractContext.class)
-@interface RequestApplicationServer {}
+@TestMethodOrder(ApplicationServerContractTestExecutionOrder.class)
+@interface ApplicationServerCompatibilityTest {}

@@ -1,4 +1,6 @@
-package com.codeaffine.tiny.star;
+package com.codeaffine.tiny.star.tck;
+
+import com.codeaffine.tiny.star.ApplicationServer;
 
 import java.io.File;
 import java.net.URL;
@@ -7,7 +9,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-import static com.codeaffine.tiny.star.ApplicationServerCompatibilityContractUtil.*;
+import static com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContractUtil.*;
 import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 

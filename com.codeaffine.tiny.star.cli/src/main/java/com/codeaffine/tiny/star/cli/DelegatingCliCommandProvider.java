@@ -10,7 +10,7 @@ import java.util.Set;
 
 import static java.util.ServiceLoader.load;
 
-public class DelegatingCliCommandProvider implements CliCommandProvider {
+class DelegatingCliCommandProvider implements CliCommandProvider {
 
     @Override
     public Set<CliCommand> getCliCommands() {

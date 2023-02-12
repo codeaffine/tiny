@@ -5,5 +5,8 @@ module com.codeaffine.tiny.star.cli {
     requires com.codeaffine.tiny.star;
     requires org.slf4j;
 
+    exports com.codeaffine.tiny.star.cli;
+    exports com.codeaffine.tiny.star.cli.spi;
+
     uses com.codeaffine.tiny.star.cli.spi.CliCommandProvider;
 }

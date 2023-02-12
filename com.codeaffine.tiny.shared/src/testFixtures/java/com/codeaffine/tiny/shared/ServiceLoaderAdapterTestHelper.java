@@ -1,6 +1,5 @@
-package com.codeaffine.tiny.shared.test;
+package com.codeaffine.tiny.shared;
 
-import com.codeaffine.tiny.shared.ServiceLoaderAdapter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;

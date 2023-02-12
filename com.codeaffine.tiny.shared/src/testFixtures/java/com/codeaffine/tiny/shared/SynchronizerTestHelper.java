@@ -1,13 +1,14 @@
-package com.codeaffine.tiny.shared.test;
+package com.codeaffine.tiny.shared;
 
-import com.codeaffine.tiny.shared.Synchronizer;
 import lombok.NoArgsConstructor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.invocation.InvocationOnMock;
 
 import java.util.function.Supplier;
 
 import static lombok.AccessLevel.PRIVATE;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 @NoArgsConstructor(access = PRIVATE)
 public class SynchronizerTestHelper {
@@ -17,10 +18,10 @@ public class SynchronizerTestHelper {
         Synchronizer result = mock(Synchronizer.class);
         doAnswer(SynchronizerTestHelper::executeRunnable)
             .when(result)
-            .execute(any(Runnable.class));
+            .execute(ArgumentMatchers.any(Runnable.class));
         doAnswer(SynchronizerTestHelper::executeSupplier)
             .when(result)
-            .execute(any(Supplier.class));
+            .execute(ArgumentMatchers.any(Supplier.class));
         return result;
     }
 

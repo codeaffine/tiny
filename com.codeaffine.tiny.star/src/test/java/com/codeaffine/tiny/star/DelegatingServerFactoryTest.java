@@ -12,7 +12,7 @@ import java.io.File;
 
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.shared.test.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
+import static com.codeaffine.tiny.shared.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
 import static com.codeaffine.tiny.star.Texts.ERROR_NO_SERVER_FACTORY_FOUND;
 import static org.assertj.core.api.Assertions.*;
 

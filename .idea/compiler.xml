@@ -16,8 +16,8 @@
         <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.test" />
         <module name="tiny.com.codeaffine.tiny.shared.test" />
-        <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.test.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.main" />
+        <module name="tiny.com.codeaffine.tiny.shared.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.tck.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.tck.main" />
@@ -26,13 +26,11 @@
         <module name="tiny.com.codeaffine.tiny.star.servlet.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.main" />
         <module name="tiny.com.codeaffine.tiny.star.main" />
-        <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.test.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.cli.test" />
         <module name="tiny.com.codeaffine.tiny.star.log4j.test" />
         <module name="tiny.com.codeaffine.tiny.star.tck.test" />
         <module name="tiny.com.codeaffine.tiny.test.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.test" />
-        <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.test.test" />
         <module name="tiny.com.codeaffine.tiny.shared.main" />
         <module name="tiny.com.codeaffine.tiny.test.testFixtures" />
       </profile>

@@ -13,6 +13,8 @@ import com.codeaffine.tiny.star.spi.ServerFactory;
 
 import java.io.File;
 import java.util.List;
+import java.util.ServiceLoader;
+
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +27,7 @@ class DelegatingServerFactory implements ServerFactory {
     private final ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter;
 
     DelegatingServerFactory(ApplicationServer applicationServer) {
-        this(applicationServer, new ServiceLoaderAdapter<>(ServerFactory.class));
+        this(applicationServer, new ServiceLoaderAdapter<>(ServerFactory.class, ServiceLoader::load));
     }
 
     Server create(File workingDirectory) {

@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
+    id "io.freefair.lombok" version "6.5.1"
+}
+
+group 'com.codeaffine.tiny'
+version '1.0.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    modularity.inferModulePath.set(false)
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    tomcatSources
+    tomcatResources
+}
+
+dependencies {
+    tomcatSources 'org.apache.tomcat.embed:tomcat-embed-jasper:10.1.1:sources'
+    tomcatResources 'org.apache.tomcat.embed:tomcat-embed-jasper:10.1.1'
+
+    implementation(
+        'jakarta.el:jakarta.el-api:5.0.1',
+        'jakarta.servlet:jakarta.servlet-api:6.0.0',
+        'jakarta.servlet.jsp:jakarta.servlet.jsp-api:3.1.1',
+        'org.eclipse.jdt:ecj:3.32.0',
+        project(':com.codeaffine.tiny.star.tomcat.embed.core'),
+        project(':com.codeaffine.tiny.star.tomcat.embed.el'))
+    implementation('org.apache.ant:ant:1.10.13') {
+        exclude(group: 'org.apache.ant', module: 'ant-launcher')
+    }
+}
+
+clean {
+    delete "${project.getProjectDir()}/src/main/java/org/"
+    delete "${project.getProjectDir()}/src/main/resources/"
+}
+
+task extractTomcatSources(type: Copy) {
+    duplicatesStrategy = 'exclude'
+    def javaDir = "${project.getProjectDir()}/src/main/java/"
+    configurations.tomcatSources.asFileTree.each {
+        from(zipTree(it)) {
+            exclude(
+                'jakarta/**',
+                'module-info.java',
+                'META-INF/**',
+                '/**/*.class',
+                'about.html',
+                'ecj.1')
+        }
+    }
+    into file(javaDir)
+}
+
+task extractTomcatResources(type: Copy) {
+    duplicatesStrategy = 'exclude'
+    configurations.tomcatResources.asFileTree.each {
+        from(zipTree(it)) {
+            include('META-INF/**')
+            exclude('META-INF/MANIFEST.MF')
+        }
+    }
+    into file("${project.getProjectDir()}/src/main/resources/")
+}
+
+project.afterEvaluate {
+    generateEffectiveLombokConfig.dependsOn(extractTomcatSources)
+    processResources.dependsOn(extractTomcatResources)
+    compileJava.dependsOn(extractTomcatSources)
+}

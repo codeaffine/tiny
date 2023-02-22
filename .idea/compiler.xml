@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
@@ -11,10 +12,13 @@
         <module name="tiny.com.codeaffine.tiny.star.undertow.main" />
         <module name="tiny.com.codeaffine.tiny.test.main" />
         <module name="tiny.com.codeaffine.tiny.star.servlet.main" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.core.test" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.el.main" />
         <module name="tiny.com.codeaffine.tiny.demo.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.tck.test" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.test" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.jasper.test" />
         <module name="tiny.com.codeaffine.tiny.shared.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.main" />
         <module name="tiny.com.codeaffine.tiny.shared.testFixtures" />
@@ -26,11 +30,14 @@
         <module name="tiny.com.codeaffine.tiny.star.servlet.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.main" />
         <module name="tiny.com.codeaffine.tiny.star.main" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.core.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.test" />
         <module name="tiny.com.codeaffine.tiny.star.log4j.test" />
         <module name="tiny.com.codeaffine.tiny.star.tck.test" />
         <module name="tiny.com.codeaffine.tiny.test.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.test" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.el.test" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.jasper.main" />
         <module name="tiny.com.codeaffine.tiny.shared.main" />
         <module name="tiny.com.codeaffine.tiny.test.testFixtures" />
       </profile>

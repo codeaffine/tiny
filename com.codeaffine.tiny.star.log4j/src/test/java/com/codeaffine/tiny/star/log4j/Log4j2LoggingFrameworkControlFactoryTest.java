@@ -5,6 +5,7 @@ import com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.ServiceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +13,7 @@ class Log4j2LoggingFrameworkControlFactoryTest {
 
     @Test
     void load() {
-        ServiceLoaderAdapter<LoggingFrameworkControlFactory> loader = new ServiceLoaderAdapter<>(LoggingFrameworkControlFactory.class);
+        ServiceLoaderAdapter<LoggingFrameworkControlFactory> loader = new ServiceLoaderAdapter<>(LoggingFrameworkControlFactory.class, ServiceLoader::load);
 
         List<LoggingFrameworkControlFactory> actual = loader.collectServiceTypeFactories();
 

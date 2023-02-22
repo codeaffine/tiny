@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
     id "io.freefair.lombok" version "6.5.1"
 }
 
@@ -10,6 +11,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    modularity.inferModulePath.set(false)
 }
 
 repositories {
@@ -22,12 +24,13 @@ dependencies {
             'org.projectlombok:lombok:1.18.24'
     )
     implementation(
-            'org.apache.tomcat.embed:tomcat-embed-core:10.1.1',
-            'org.apache.tomcat.embed:tomcat-embed-jasper:10.1.1',
+            'jakarta.servlet:jakarta.servlet-api:6.0.0',
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
             'org.slf4j:slf4j-api:2.0.3',
             project(':com.codeaffine.tiny.star'),
-            project(':com.codeaffine.tiny.star.servlet')
+            project(':com.codeaffine.tiny.star.servlet'),
+            project(':com.codeaffine.tiny.star.tomcat.embed.core'),
+            project(':com.codeaffine.tiny.star.tomcat.embed.jasper')
     )
     testImplementation(
             project(':com.codeaffine.tiny.star.tck'),
@@ -42,6 +45,15 @@ dependencies {
     )
 }
 
+compileTestJava {
+    moduleOptions {
+        compileOnClasspath = true
+    }
+}
+
 test {
     useJUnitPlatform()
+    moduleOptions {
+        runOnClasspath = true
+    }
 }

@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.ServiceLoader;
 
 import static com.codeaffine.tiny.star.Texts.ERROR_MORE_THAN_ONE_LOGGING_FRAMEWORK_CONTROL_FACTORY;
 import static java.lang.String.format;
@@ -21,7 +22,7 @@ class DelegatingLoggingFrameworkControlFactory implements LoggingFrameworkContro
     static class DummyLoggingFrameworkControl implements LoggingFrameworkControl {}
 
     DelegatingLoggingFrameworkControlFactory() {
-        this(new ServiceLoaderAdapter<>(LoggingFrameworkControlFactory.class));
+        this(new ServiceLoaderAdapter<>(LoggingFrameworkControlFactory.class, ServiceLoader::load));
     }
 
     @Override

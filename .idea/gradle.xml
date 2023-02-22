@@ -22,6 +22,10 @@
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.servlet" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tck" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat.bnd.dummy" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat.embed.core" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat.embed.el" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat.embed.jasper" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.undertow" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.test" />
           </set>

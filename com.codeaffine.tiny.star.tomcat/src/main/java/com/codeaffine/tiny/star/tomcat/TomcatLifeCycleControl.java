@@ -5,7 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 
-import static com.codeaffine.tiny.star.tomcat.Texts.*;
+import static com.codeaffine.tiny.star.tomcat.Texts.ERROR_STARTING_TOMCAT;
+import static com.codeaffine.tiny.star.tomcat.Texts.ERROR_STOPPING_TOMCAT;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)

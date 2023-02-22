@@ -1,9 +1,7 @@
 package com.codeaffine.tiny.star.tomcat;
 
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
-
 import com.codeaffine.tiny.star.spi.ServerFactory;
-import com.codeaffine.tiny.star.tomcat.ServerImpl;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 
 import java.io.File;
 

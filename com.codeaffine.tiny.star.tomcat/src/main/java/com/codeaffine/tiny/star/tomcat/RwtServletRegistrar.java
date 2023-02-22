@@ -3,6 +3,7 @@ package com.codeaffine.tiny.star.tomcat;
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.http.HttpServlet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
@@ -32,7 +33,8 @@ class RwtServletRegistrar {
     }
 
     void addRwtServlet(Context context) {
-        tomcat.addServlet(context.getPath(), SERVLET_NAME, new RwtServletAdapter());
+        HttpServlet servlet = new RwtServletAdapter();
+        tomcat.addServlet(context.getPath(), SERVLET_NAME, servlet);
         Set<String> entrypointPaths = captureEntrypointPaths(applicationConfiguration);
         entrypointPaths.forEach(path -> context.addServletMappingDecoded(path + ALL_SUB_PATHS_PATTERN, SERVLET_NAME));
         context.addServletContainerInitializer((classes, servletContext) -> listener.contextInitialized(new ServletContextEvent(servletContext)), null);

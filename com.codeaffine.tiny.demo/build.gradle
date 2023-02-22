@@ -1,6 +1,8 @@
 plugins {
     id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
     id "io.freefair.lombok" version "6.5.1"
+    id 'application'
 }
 
 group 'com.codeaffine.tiny'
@@ -10,6 +12,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    modularity.inferModulePath.set(false)
 }
 
 repositories {
@@ -21,11 +24,7 @@ dependencies {
             'org.projectlombok:lombok:1.18.24'
     )
     implementation(
-            'org.slf4j:slf4j-api:2.0.3',
-            'javax.servlet:javax.servlet-api:4.0.1',
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
-            'org.eclipse.rap:org.eclipse.rap.jface:3.22.0',
-            'org.eclipse.platform:org.eclipse.core.commands:3.10.200',
             project(':com.codeaffine.tiny.star'),
             project(':com.codeaffine.tiny.star.cli'),
     )
@@ -47,6 +46,28 @@ dependencies {
     )
 }
 
+compileTestJava {
+    moduleOptions {
+        compileOnClasspath = true
+    }
+}
+
 test {
     useJUnitPlatform()
+    moduleOptions {
+        runOnClasspath = true
+    }
+}
+
+startScripts {
+    applicationName = "Tiny Star Demo Application"
+}
+
+application {
+    mainClass = "com.codeaffine.tiny.demo.DemoApplication"
+    mainModule = moduleName
+}
+
+run {
+    standardInput = System.in
 }

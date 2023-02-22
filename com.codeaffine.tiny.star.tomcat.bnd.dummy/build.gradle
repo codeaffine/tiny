@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
+}
+
+group 'com.codeaffine.tiny'
+version '1.0.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    modularity.inferModulePath.set(false)
+}
+
+repositories {
+    mavenCentral()
+}

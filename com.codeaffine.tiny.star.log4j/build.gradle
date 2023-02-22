@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
     id "io.freefair.lombok" version "6.5.1"
 }
 
@@ -42,6 +43,21 @@ dependencies {
     )
 }
 
+compileJava {
+    moduleOptions {
+        addReads = ['org.apache.logging.log4j.slf4j': 'org.apache.logging.log4j']
+    }
+}
+
+compileTestJava {
+    moduleOptions {
+        compileOnClasspath = true
+    }
+}
+
 test {
     useJUnitPlatform()
+    moduleOptions {
+        runOnClasspath = true
+    }
 }

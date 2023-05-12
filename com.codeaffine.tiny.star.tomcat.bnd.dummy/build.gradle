@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
+    id 'maven-publish'
 }
 
 group 'com.codeaffine.tiny'
@@ -15,4 +16,23 @@ java {
 
 repositories {
     mavenCentral()
+}
+
+publishing {
+    publications {
+        tinyStarTomcatBndDummy(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = "tiny"
+            url = uri("https://maven.pkg.github.com/fappel/tiny")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
 }

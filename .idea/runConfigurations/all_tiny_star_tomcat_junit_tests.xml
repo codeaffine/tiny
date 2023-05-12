@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="all tiny star tomcat junit tests" type="JUnit" factoryName="JUnit">
-    <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />
+    <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.test" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="17" />
     <option name="MAIN_CLASS_NAME" value="" />

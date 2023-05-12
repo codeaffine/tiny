@@ -59,10 +59,6 @@ test {
     }
 }
 
-startScripts {
-    applicationName = "Tiny Star Demo Application"
-}
-
 application {
     mainClass = "com.codeaffine.tiny.demo.DemoApplication"
     mainModule = moduleName

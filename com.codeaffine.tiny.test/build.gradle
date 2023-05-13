@@ -3,6 +3,7 @@ plugins {
     id "java-test-fixtures"
     id "io.freefair.lombok" version "6.5.1"
     id 'maven-publish'
+    id "org.sonarqube" version "3.5.0.2730"
 }
 
 group 'com.codeaffine.tiny'
@@ -54,5 +55,13 @@ publishing {
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "fappel_tiny"
+        property "sonar.organization", "code-affine"
+        property "sonar.host.url", "https://sonarcloud.io"
     }
 }

@@ -1,3 +1,4 @@
+rootProject.name = 'tiny'
 include 'com.codeaffine.tiny.star'
 include 'com.codeaffine.tiny.star.tck'
 include 'com.codeaffine.tiny.star.undertow'

@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id 'io.freefair.lombok'
+    id 'maven-publish'
+}
+
+group 'com.codeaffine.tiny'
+version '1.0.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    modularity.inferModulePath.set(false)
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}

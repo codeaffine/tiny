@@ -1,22 +1,8 @@
 plugins {
-    id 'java'
+    id 'tiny.java.common'
     id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
-    id "io.freefair.lombok" version "6.5.1"
-    id 'maven-publish'
-    id "org.sonarqube" version "3.5.0.2730"
-}
-
-group 'com.codeaffine.tiny'
-version '1.0.0-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-}
-
-repositories {
-    mavenCentral()
+    id 'tiny.publish.common'
+    id 'tiny.sonar.common'
 }
 
 dependencies {
@@ -60,24 +46,5 @@ publishing {
         tinyStarCli(MavenPublication) {
             from components.java
         }
-    }
-
-    repositories {
-        maven {
-            name = "tiny"
-            url = uri("https://maven.pkg.github.com/fappel/tiny")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-        }
-    }
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "tiny-star-cli"
-        property "sonar.organization", "code-affine"
-        property "sonar.host.url", "https://sonarcloud.io"
     }
 }

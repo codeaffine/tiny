@@ -6,10 +6,11 @@
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.24/13a394eed5c4f9efb2a6d956e2086f1d81e857d9/lombok-1.18.24.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.26/lombok-1.18.26.jar" />
         </processorPath>
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.undertow.main" />
         <module name="tiny.com.codeaffine.tiny.test.main" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.bnd.dummy.test" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.core.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.test" />
@@ -20,6 +21,7 @@
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.demo.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.cli.basic.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.main" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.bnd.dummy.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.embed.el.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.jasper.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.test.testFixtures" />

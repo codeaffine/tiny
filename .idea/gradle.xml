@@ -10,6 +10,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.demo" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.shared" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star" />
@@ -26,6 +27,15 @@
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat.embed.jasper" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.undertow" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.test" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/buildSrc" />
+        <option name="gradleJvm" value="17" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/buildSrc" />
           </set>
         </option>
       </GradleProjectSettings>

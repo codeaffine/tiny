@@ -1,22 +1,7 @@
 plugins {
-    id 'java'
+    id 'tiny.java.common'
     id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
-    id "io.freefair.lombok" version "6.5.1"
     id 'application'
-}
-
-group 'com.codeaffine.tiny'
-version '1.0.0-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-    modularity.inferModulePath.set(false)
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {

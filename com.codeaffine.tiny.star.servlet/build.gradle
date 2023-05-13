@@ -66,7 +66,7 @@ publishing {
 
 sonarqube {
     properties {
-        property "sonar.projectKey", "fappel_tiny"
+        property "sonar.projectKey", "tiny-star-servlet"
         property "sonar.organization", "code-affine"
         property "sonar.host.url", "https://sonarcloud.io"
     }

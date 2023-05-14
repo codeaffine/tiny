@@ -48,3 +48,9 @@ publishing {
         }
     }
 }
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "com.codeaffine.tiny.star.cli.basic"
+    }
+}

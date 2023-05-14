@@ -37,5 +37,6 @@ sonarqube {
     properties {
         property "sonar.projectKey", "com.codeaffine.tiny.test"
         property "sonar.sources", "src/testFixtures/java"
+        property "sonar.java.binaries", "build/classes/java/testFixtures"
     }
 }

@@ -2,6 +2,7 @@ plugins {
     id 'tiny.java.common'
     id 'tiny.publish.common'
     id 'tiny.sonar.common'
+    id 'tiny.jacoco.common'
 }
 
 dependencies {

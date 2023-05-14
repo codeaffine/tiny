@@ -4,6 +4,7 @@ plugins {
     id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
     id 'tiny.publish.common'
     id 'tiny.sonar.common'
+    id 'tiny.jacoco.common'
 }
 
 dependencies {

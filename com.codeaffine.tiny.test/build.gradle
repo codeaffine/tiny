@@ -32,9 +32,10 @@ publishing {
         }
     }
 }
-
+`
 sonarqube {
     properties {
         property "sonar.projectKey", "com.codeaffine.tiny.test"
+        property "sonar.sources", "src/testFixtures/java"
     }
 }

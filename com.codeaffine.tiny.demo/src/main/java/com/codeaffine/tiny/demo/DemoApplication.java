@@ -25,7 +25,7 @@ public class DemoApplication extends AbstractEntryPoint {
             .start();
     }
 
-    static void configure(Application application) {
+    private static void configure(Application application) {
         application.addEntryPoint("/ui", DemoApplication.class, null);
     }
 

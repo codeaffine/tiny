@@ -2,6 +2,7 @@ plugins {
     id 'tiny.java.common'
     id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
     id 'tiny.publish.common'
+    id 'tiny.sonar.common'
 }
 
 dependencies {

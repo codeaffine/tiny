@@ -1,18 +1,16 @@
 plugins {
-    id 'tiny.java.common'
-    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
+    id 'tiny.java.modules.repackage'
     id 'tiny.publish.common'
 }
 
-configurations {
-    tomcatSources
-    tomcatResources
-}
-
 dependencies {
-    tomcatSources 'org.apache.tomcat.embed:tomcat-embed-el:10.1.1:sources'
-    tomcatResources 'org.apache.tomcat.embed:tomcat-embed-el:10.1.1'
-
+    sources 'org.apache.tomcat.embed:tomcat-embed-el:10.1.1:sources'
+    configurations.sources.excludes = ['jakarta/**', 'module-info.java', 'META-INF/**', '/**/*.class']
+    resources 'org.apache.tomcat.embed:tomcat-embed-el:10.1.1'
+    configurations.resources {
+        includes = ['META-INF/**']
+        excludes = ['META-INF/MANIFEST.MF']
+    }
     implementation(
         'jakarta.el:jakarta.el-api:5.0.1',
         project(':com.codeaffine.tiny.star.tomcat.bnd.dummy')
@@ -20,36 +18,7 @@ dependencies {
 }
 
 clean {
-    delete "${project.getProjectDir()}/src/main/java/org/"
-    delete "${project.getProjectDir()}/src/main/resources/"
-}
-
-task extractTomcatSources(type: Copy) {
-    duplicatesStrategy = 'exclude'
-    def javaDir = "${project.getProjectDir()}/src/main/java/"
-    configurations.tomcatSources.asFileTree.each {
-        from(zipTree(it)) {
-            exclude('jakarta/**', 'module-info.java', 'META-INF/**', '/**/*.class')
-        }
-    }
-    into file(javaDir)
-}
-
-task extractTomcatResources(type: Copy) {
-    duplicatesStrategy = 'exclude'
-    configurations.tomcatResources.asFileTree.each {
-        from(zipTree(it)) {
-            include('META-INF/**')
-            exclude('META-INF/MANIFEST.MF')
-        }
-    }
-    into file("${project.getProjectDir()}/src/main/resources/")
-}
-
-project.afterEvaluate {
-    generateEffectiveLombokConfig.dependsOn(extractTomcatSources)
-    processResources.dependsOn(extractTomcatResources)
-    compileJava.dependsOn(extractTomcatSources)
+    cleanupDirectories = ['/src/main/java/org/', '/src/main/resources/']
 }
 
 publishing {

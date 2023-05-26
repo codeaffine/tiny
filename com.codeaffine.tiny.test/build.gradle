@@ -1,5 +1,5 @@
 plugins {
-    id 'tiny.java.common'
+    id 'tiny.java.artefacts'
     id "java-test-fixtures"
     id 'tiny.publish.common'
     id 'tiny.sonar.common'

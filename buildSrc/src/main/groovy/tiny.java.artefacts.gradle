@@ -1,0 +1,8 @@
+plugins {
+    id 'tiny.java.common'
+}
+
+java {
+    withSourcesJar()
+//    withJavadocJar()
+}

@@ -13,4 +13,5 @@ repositories {
 dependencies {
     implementation "io.freefair.gradle:lombok-plugin:8.0.1"
     implementation "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:4.0.0.2929"
+    implementation "org.javamodularity:moduleplugin:1.8.12"
 }

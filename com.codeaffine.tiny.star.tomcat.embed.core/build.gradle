@@ -1,86 +1,44 @@
 plugins {
-    id 'tiny.java.common'
-    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
+    id 'tiny.java.modules.repackage'
     id 'tiny.publish.common'
 }
 
-configurations {
-    tomcatSources
-    tomcatResources
-}
-
 dependencies {
-    tomcatSources 'org.apache.tomcat.embed:tomcat-embed-core:10.1.1:sources'
-    tomcatResources 'org.apache.tomcat.embed:tomcat-embed-core:10.1.1'
-
+    sources 'org.apache.tomcat.embed:tomcat-embed-core:10.1.1:sources'
+    configurations.sources {
+        includes = ['**/*.java']
+        excludes = ['jakarta/servlet/**', 'module-info.java', 'META-INF/**', '/**/*.class']
+        filters = {
+            String line -> {
+                def afterFirstReplacement = line.replaceAll(
+                        "import org\\.apache\\.tomcat\\.jakartaee\\.EESpecProfile;",
+                        "import org.apache.tomcat.jakartaee.EESpecProfile; import org.apache.tomcat.jakartaee.EESpecProfiles;")
+                afterFirstReplacement.replaceAll("EESpecProfile\\.valueOf", "EESpecProfiles.valueOf")
+            }
+        }
+    }
+    resources 'org.apache.tomcat.embed:tomcat-embed-core:10.1.1'
+    configurations.resources {
+        includes = ['META-INF/**']
+        excludes = ['META-INF/MANIFEST.MF']
+        sourceExcludes = ['jakarta/servlet/**', '/**/*.java', '/**/*.class']
+    }
     implementation(
-            'jakarta.servlet:jakarta.servlet-api:6.0.0',
-            'jakarta.annotation:jakarta.annotation-api:2.1.1',
-            'jakarta.ejb:jakarta.ejb-api:4.0.1',
-            'jakarta.mail:jakarta.mail-api:2.1.1',
-            'jakarta.persistence:jakarta.persistence-api:3.1.0',
-            'jakarta.xml.rpc:jakarta.xml.rpc-api:1.1.4',
-            'jakarta.xml.ws:jakarta.xml.ws-api:4.0.0',
-            'wsdl4j:wsdl4j:1.6.3',
-            'org.apache.tomcat:jakartaee-migration:1.0.6',
-            project(':com.codeaffine.tiny.star.tomcat.bnd.dummy')
+        'jakarta.servlet:jakarta.servlet-api:6.0.0',
+        'jakarta.annotation:jakarta.annotation-api:2.1.1',
+        'jakarta.ejb:jakarta.ejb-api:4.0.1',
+        'jakarta.mail:jakarta.mail-api:2.1.1',
+        'jakarta.persistence:jakarta.persistence-api:3.1.0',
+        'jakarta.xml.rpc:jakarta.xml.rpc-api:1.1.4',
+        'jakarta.xml.ws:jakarta.xml.ws-api:4.0.0',
+        'wsdl4j:wsdl4j:1.6.3',
+        'org.apache.tomcat:jakartaee-migration:1.0.6',
+        project(':com.codeaffine.tiny.star.tomcat.bnd.dummy')
     )
 }
 
 clean {
-    delete "${project.getProjectDir()}/src/main/java/jakarta/"
-    delete "${project.getProjectDir()}/src/main/java/org/"
-    delete "${project.getProjectDir()}/src/main/resources/"
-}
-
-task extractTomcatSources(type: Copy) {
-    duplicatesStrategy = 'exclude'
-    def javaDir = "${project.getProjectDir()}/src/main/java/"
-    configurations.tomcatSources.asFileTree.each {
-        from(zipTree(it)) {
-            include('/**/*.java')
-            exclude(
-                'jakarta/servlet/**',
-                'module-info.java',
-                'META-INF/**',
-                '/**/*.class')
-            filter {
-                String line -> line.replaceAll(
-                        "import org\\.apache\\.tomcat\\.jakartaee\\.EESpecProfile;",
-                        "import org.apache.tomcat.jakartaee.EESpecProfile; import org.apache.tomcat.jakartaee.EESpecProfiles;")
-            }
-            filter{
-                String line -> line.replaceAll("EESpecProfile\\.valueOf", "EESpecProfiles.valueOf")
-            }
-        }
-    }
-    into file(javaDir)
-}
-
-task extractTomcatResources(type: Copy) {
-    duplicatesStrategy = 'exclude'
-    configurations.tomcatResources.asFileTree.each {
-        from(zipTree(it)) {
-            include('META-INF/**')
-            exclude('META-INF/MANIFEST.MF')
-        }
-    }
-    into file("${project.getProjectDir()}/src/main/resources/")
-    configurations.tomcatSources.asFileTree.each {
-        from(zipTree(it)) {
-            exclude(
-                'jakarta/servlet/**',
-                '/**/*.java',
-                '/**/*.class')
-        }
-    }
-    into file("${project.getProjectDir()}/src/main/resources/")
-}
-
-project.afterEvaluate {
-    generateEffectiveLombokConfig.dependsOn(extractTomcatSources)
-    processResources.dependsOn(extractTomcatResources)
-    compileJava.dependsOn(extractTomcatSources)
+    cleanupDirectories = ['/src/main/java/jakarta/', '/src/main/java/org/', '/src/main/resources/']
 }
 
 publishing {

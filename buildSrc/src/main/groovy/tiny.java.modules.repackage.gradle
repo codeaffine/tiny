@@ -1,0 +1,66 @@
+plugins {
+    id 'tiny.java.modules'
+}
+
+java {
+    project.configurations.create("sources", {
+        ext.includes = []
+        ext.excludes = []
+        ext.filters = { line -> line }
+    })
+    project.configurations.create("resources", {
+        ext.includes = []
+        ext.excludes = []
+        ext.filters = { line -> line }
+        ext.sourceIncludes = []
+        ext.sourceExcludes = ['/**/*']
+        ext.sourceFilters = { line -> line }
+    })
+}
+
+project.afterEvaluate {
+    generateEffectiveLombokConfig.dependsOn(extractSources)
+    processResources.dependsOn(extractResources)
+    compileJava.dependsOn(extractSources)
+}
+
+tasks.register('extractSources', Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    configurations.sources.asFileTree.each {
+        from(zipTree(it)) {
+            include(configurations.sources.includes)
+            exclude(configurations.sources.excludes)
+            filter {file -> configurations.sources.filters(file)}
+        }
+    }
+    into file("${project.getProjectDir()}/src/main/java/")
+}
+
+tasks.register('extractResources', Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    configurations.resources.asFileTree.each {
+        from(zipTree(it)) {
+            include(configurations.resources.includes)
+            exclude(configurations.resources.excludes)
+            filter {file -> configurations.resources.filters(file)}
+        }
+    }
+    into file("${project.getProjectDir()}/src/main/resources/")
+    configurations.sources.asFileTree.each {
+        from(zipTree(it)) {
+            include(configurations.resources.sourceIncludes)
+            exclude(configurations.resources.sourceExcludes)
+            filter {file -> configurations.resources.sourceFilters(file)}
+        }
+    }
+    into file("${project.getProjectDir()}/src/main/resources/")
+}
+
+clean {
+    ext.cleanupDirectories = []
+    doLast {
+        cleanupDirectories.each {
+            delete "${project.getProjectDir()}${it}"
+        }
+    }
+}

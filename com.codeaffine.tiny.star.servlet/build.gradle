@@ -1,6 +1,5 @@
 plugins {
-    id 'tiny.java.common'
-    id 'org.javamodularity.moduleplugin' version '1.8.12' apply true
+    id 'tiny.java.modules'
     id 'tiny.publish.common'
     id 'tiny.sonar.common'
 }
@@ -25,10 +24,6 @@ dependencies {
     testRuntimeOnly(
             'org.junit.jupiter:junit-jupiter-engine:5.9.1',
     )
-}
-
-test {
-    useJUnitPlatform()
 }
 
 publishing {

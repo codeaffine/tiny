@@ -95,8 +95,6 @@ public class ApplicationServer {
     @Retention(RUNTIME)
     public @interface Stopped {}
 
-    public static class ApplicationServerBuilder {}
-
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
         return newDefaultApplicationServerBuilder()
             .withApplicationConfiguration(applicationConfiguration);

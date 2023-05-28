@@ -1,0 +1,36 @@
+plugins {
+    id 'tiny.java.common'
+    id "java-test-fixtures"
+    id "jacoco"
+}
+
+dependencies {
+    testImplementation(
+            platform('org.junit:junit-bom:5.9.1'),
+            'org.junit.jupiter:junit-jupiter',
+            'org.assertj:assertj-core:3.23.1',
+            'org.mockito:mockito-core:4.8.1',
+    )
+    testFixturesImplementation(
+            platform('org.junit:junit-bom:5.9.1'),
+            'org.junit.jupiter:junit-jupiter',
+            'org.assertj:assertj-core:3.23.1',
+            'org.mockito:mockito-core:4.8.1'
+    )
+    testRuntimeOnly(
+            'org.junit.jupiter:junit-jupiter-engine:5.9.1',
+    )
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}

@@ -8,9 +8,11 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.26/lombok-1.18.26.jar" />
         </processorPath>
+        <module name="tiny.com.codeaffine.tiny.star.undertow.testFixtures" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.undertow.main" />
         <module name="tiny.com.codeaffine.tiny.test.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.bnd.dummy.test" />
+        <module name="tiny.com.codeaffine.tiny.star.log4j.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.core.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.test" />
@@ -21,6 +23,7 @@
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.demo.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.cli.basic.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.main" />
+        <module name="tiny.com.codeaffine.tiny.star.cli.basic.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.bnd.dummy.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.embed.el.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.jasper.test" />
@@ -32,16 +35,22 @@
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.test" />
         <module name="tiny.com.codeaffine.tiny.star.servlet.test" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.testFixtures" />
+        <module name="tiny.com.codeaffine.tiny.star.cli.tck.testFixtures" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.servlet.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tck.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.demo.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.cli.main" />
+        <module name="tiny.com.codeaffine.tiny.star.servlet.testFixtures" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.testFixtures" />
+        <module name="tiny.com.codeaffine.tiny.star.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.test.test" />
+        <module name="tiny.com.codeaffine.tiny.star.tck.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.el.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.undertow.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.log4j.test" />
+        <module name="tiny.com.codeaffine.tiny.star.cli.testFixtures" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

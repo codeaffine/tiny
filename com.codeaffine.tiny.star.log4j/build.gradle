@@ -1,15 +1,10 @@
 plugins {
     id 'tiny.java.modules'
+    id 'tiny.quality.gate'
     id 'tiny.publish.common'
-    id 'tiny.sonar.common'
-    id 'tiny.jacoco.common'
 }
 
 dependencies {
-
-    compileOnly(
-            'org.projectlombok:lombok:1.18.24'
-    )
     implementation(
             'org.apache.logging.log4j:log4j-core:2.19.0',
             'org.apache.logging.log4j:log4j-slf4j2-impl:2.19.0',
@@ -20,14 +15,8 @@ dependencies {
     )
     testImplementation(
             project(':com.codeaffine.tiny.star.tck'),
-            'org.junit.jupiter:junit-jupiter-api:5.9.0',
-            'org.assertj:assertj-core:3.23.1',
-            'org.mockito:mockito-core:4.8.1',
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
             testFixtures(project(":com.codeaffine.tiny.test"))
-    )
-    testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.9.1'
     )
 }
 
@@ -36,11 +25,5 @@ publishing {
         tinyStarLog4j(MavenPublication) {
             from components.java
         }
-    }
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "com.codeaffine.tiny.star.log4j"
     }
 }

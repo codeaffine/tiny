@@ -1,3 +1,10 @@
+/**
+ * <p>Copyright (c) 2022-2023 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
 package com.codeaffine.tiny.star;
 
 import lombok.Builder;
@@ -10,6 +17,8 @@ import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -158,8 +167,9 @@ public class ApplicationServer {
 
     private URL toUrl(String path) {
         try {
-            return new URL(protocol.name().toLowerCase(), host, port, path);
-        } catch (MalformedURLException cause) {
+            URI uri = new URI(protocol.name().toLowerCase(), null, host, port, path, null, null);
+            return uri.toURL();
+        } catch (URISyntaxException | MalformedURLException cause) {
             throw new IllegalArgumentException(cause);
         }
     }

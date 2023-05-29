@@ -1,3 +1,10 @@
+/**
+ * <p>Copyright (c) 2022-2023 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
 package com.codeaffine.tiny.star.log4j;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +70,6 @@ class Log4J2ShutdownPreprocessorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfShutdownMethodIsNotFoundOrUnAccessible(SystemErrCaptor systemErrCaptor) {
         Log4j2ShutdownPreprocessor preprocessor = new Log4j2ShutdownPreprocessor(LOG_MANAGER_CLASS, WRONG_METHOD);
 
@@ -77,7 +83,6 @@ class Log4J2ShutdownPreprocessorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfShutdownMethodThrowsRuntimeException(SystemErrCaptor systemErrCaptor) {
         FakeLogManager.problemHolder.set(new RuntimeException(ERROR_MESSAGE));
         Log4j2ShutdownPreprocessor preprocessor = new Log4j2ShutdownPreprocessor(LOG_MANAGER_CLASS, SHUTDOWN_METHOD);
@@ -93,7 +98,6 @@ class Log4J2ShutdownPreprocessorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfShutdownMethodThrowsException(SystemErrCaptor systemErrCaptor) {
         FakeLogManager.problemHolder.set(new Exception(ERROR_MESSAGE));
         Log4j2ShutdownPreprocessor preprocessor = new Log4j2ShutdownPreprocessor(LOG_MANAGER_CLASS, SHUTDOWN_METHOD);

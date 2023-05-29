@@ -22,6 +22,8 @@ project.afterEvaluate {
     generateEffectiveLombokConfig.dependsOn(extractSources)
     processResources.dependsOn(extractResources)
     compileJava.dependsOn(extractSources)
+    sourcesJar.dependsOn(extractSources)
+    sourcesJar.dependsOn(extractResources)
 }
 
 tasks.register('extractSources', Copy) {

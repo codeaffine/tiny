@@ -1,3 +1,10 @@
+/**
+ * <p>Copyright (c) 2022-2023 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
 package com.codeaffine.tiny.star.cli;
 
 import com.codeaffine.tiny.test.SystemInSupplier;
@@ -78,7 +85,6 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void handleCommandRequest(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -92,7 +98,6 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void stopCli(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -108,7 +113,6 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void stopCliMoreThanOnce(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -143,7 +147,6 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void lifeCycleOfMultipleCliInstances(SystemInSupplier systemInSupplier) throws IOException {
         setUpTestContext();
         stubDelegatingCliCommandProvider(command);
@@ -173,7 +176,6 @@ class CommandLineInterfaceTest {
 
     @Test
     @ExtendWith(SystemInSupplier.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void lifeCycleCommandLineInterfaceWithCustomCliCommandProvider(SystemInSupplier systemInSupplier) throws IOException {
         commandLineInterface = new CommandLineInterface(() -> Set.of(command));
 

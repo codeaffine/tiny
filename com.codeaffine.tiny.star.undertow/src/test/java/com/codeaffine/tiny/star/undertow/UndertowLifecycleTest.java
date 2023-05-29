@@ -1,3 +1,10 @@
+/**
+ * <p>Copyright (c) 2022-2023 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
 package com.codeaffine.tiny.star.undertow;
 
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
@@ -31,6 +38,7 @@ import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import java.io.File;
 import java.net.ConnectException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Scanner;
@@ -166,8 +174,8 @@ class UndertowLifecycleTest {
 
     @SneakyThrows
     private String readIndexContent() {
-        URL url = new URL(HTTP.name().toLowerCase(), HOST, port, CONTEXT_PATH + INDEX);
-        URLConnection connection = url.openConnection();
+        URI uri = new URI(HTTP.name().toLowerCase(), null, HOST, port, CONTEXT_PATH + INDEX, null, null);
+        URLConnection connection = uri.toURL().openConnection();
         String result;
         try(Scanner scanner = new Scanner(connection.getInputStream())) {
             result = scanner.next();

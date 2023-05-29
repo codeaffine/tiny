@@ -2,6 +2,7 @@ plugins {
     id 'tiny.java.artefacts'
     id 'tiny.quality.gate'
     id 'tiny.publish.common'
+    id 'tiny.license'
 }
 
 dependencies {

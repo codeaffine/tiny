@@ -1,3 +1,10 @@
+/**
+ * <p>Copyright (c) 2022-2023 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
 package com.codeaffine.tiny.star;
 
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
@@ -13,6 +20,8 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import static com.codeaffine.tiny.star.ApplicationServer.*;
@@ -66,7 +75,7 @@ class ApplicationServerTest {
     }
 
     @Test
-    void getUrls() throws MalformedURLException {
+    void getUrls() throws MalformedURLException, URISyntaxException {
         int port = findFreePort();
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withPort(port)
@@ -75,8 +84,8 @@ class ApplicationServerTest {
         URL[] actual = applicationServer.getUrls();
 
         assertThat(actual).containsExactlyInAnyOrder(
-            new URL(PROTOCOL, DEFAULT_HOST, port, ENTRY_POINT_PATH_1),
-            new URL(PROTOCOL, DEFAULT_HOST, port, ENTRY_POINT_PATH_2)
+            new URI(PROTOCOL, null, DEFAULT_HOST, port, ENTRY_POINT_PATH_1, null, null).toURL(),
+            new URI(PROTOCOL, null, DEFAULT_HOST, port, ENTRY_POINT_PATH_2, null, null).toURL()
         );
     }
     

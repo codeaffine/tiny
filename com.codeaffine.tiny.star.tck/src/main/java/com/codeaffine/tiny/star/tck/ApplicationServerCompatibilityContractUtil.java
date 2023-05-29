@@ -1,3 +1,10 @@
+/**
+ * <p>Copyright (c) 2022-2023 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
 package com.codeaffine.tiny.star.tck;
 
 import com.codeaffine.tiny.star.ApplicationServer;
@@ -8,6 +15,7 @@ import org.eclipse.swt.SWT;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -62,6 +70,6 @@ class ApplicationServerCompatibilityContractUtil {
 
     @SneakyThrows
     public static URL createResourceUrl(URL entryPointUrl, String resource) {
-        return new URL(entryPointUrl.getProtocol(), entryPointUrl.getHost(), entryPointUrl.getPort(), PATH_SEPARATOR + resource);
+        return new URI(entryPointUrl.getProtocol(), null, entryPointUrl.getHost(), entryPointUrl.getPort(), PATH_SEPARATOR + resource, null, null).toURL();
     }
 }

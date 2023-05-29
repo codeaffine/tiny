@@ -45,6 +45,7 @@
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.test.test" />
+        <module name="tiny.com.codeaffine.tiny.demo.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.tck.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.el.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.undertow.test" />

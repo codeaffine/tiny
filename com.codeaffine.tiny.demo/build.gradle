@@ -1,13 +1,11 @@
 plugins {
-    id 'tiny.java.common'
-    id 'org.javamodularity.moduleplugin' apply true
+    id 'tiny.java.modules'
+    id 'tiny.java.test'
+    id 'tiny.license'
     id 'application'
 }
 
 dependencies {
-    compileOnly(
-            'org.projectlombok:lombok:1.18.24'
-    )
     implementation(
             'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
             project(':com.codeaffine.tiny.star'),
@@ -16,32 +14,12 @@ dependencies {
     runtimeOnly(
             project(':com.codeaffine.tiny.star.cli.basic'),
             project(':com.codeaffine.tiny.star.log4j'),
-//            project(':com.codeaffine.tiny.star.undertow'),
-            project(':com.codeaffine.tiny.star.tomcat'),
+            project(':com.codeaffine.tiny.star.undertow'),
+//            project(':com.codeaffine.tiny.star.tomcat'),
     )
     testImplementation(
-            platform('org.junit:junit-bom:5.9.1'),
-            'org.junit.jupiter:junit-jupiter',
-            'org.assertj:assertj-core:3.23.1',
-            'org.mockito:mockito-core:4.8.1',
             'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0'
     )
-    testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.9.1'
-    )
-}
-
-compileTestJava {
-    moduleOptions {
-        compileOnClasspath = true
-    }
-}
-
-test {
-    useJUnitPlatform()
-    moduleOptions {
-        runOnClasspath = true
-    }
 }
 
 application {

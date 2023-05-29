@@ -1,3 +1,10 @@
+/**
+ * <p>Copyright (c) 2022-2023 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
@@ -95,7 +102,6 @@ class TerminatorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void runIfConstructorArgumentDirectoryToDeleteCannotBeDeleted(SystemErrCaptor systemErrCaptor) {
         File unDeletableFile = fakeFileThatCannotBeDeleted();
         Terminator terminator = new Terminator(unDeletableFile, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);
@@ -128,7 +134,6 @@ class TerminatorTest {
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
-    @SuppressWarnings("JUnitMalformedDeclaration")
     void runOnShutdownHookWithLoggingFrameworkControlErrorOnHalt(SystemErrCaptor systemErrCaptor) {
         stubLoggingFrameworkControlWithErrorOnHalt();
         Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, DELETE_WORKING_DIRECTORY_ON_SHUTDOWN);

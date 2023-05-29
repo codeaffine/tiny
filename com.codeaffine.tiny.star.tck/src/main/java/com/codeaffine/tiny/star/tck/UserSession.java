@@ -122,7 +122,7 @@ class UserSession {
 
     @SneakyThrows({URISyntaxException.class})
     private URI urlToUriWithCidParameter(String cid) {
-        return new URI(url.getProtocol(), null, url.getHost(), url.getPort(), url.getFile() + "?cid=" + cid, null, null);
+        return new URI(url.getProtocol(), null, url.getHost(), url.getPort(), url.getFile(), "cid=" + cid, null);
     }
 
     private String parseCid() {

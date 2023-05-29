@@ -7,6 +7,24 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
+import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.PathHandler;
+import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.servlet.api.DeploymentInfo;
+import io.undertow.servlet.api.DeploymentManager;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.File;
+import java.net.ConnectException;
+import java.net.URI;
+import java.net.URLConnection;
+import java.util.Scanner;
+
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.Protocol.HTTP;
 import static com.codeaffine.tiny.star.undertow.DeploymentOperation.CONTEXT_PATH;
@@ -14,35 +32,11 @@ import static com.codeaffine.tiny.star.undertow.HttpHandlerStarter.PREFIX_PATH;
 import static io.undertow.Handlers.path;
 import static io.undertow.servlet.Servlets.defaultContainer;
 import static io.undertow.servlet.Servlets.deployment;
-
 import static java.lang.String.format;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.catchException;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import static java.nio.file.Files.writeString;
 import static java.util.Objects.nonNull;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.PathHandler;
-import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import java.io.File;
-import java.net.ConnectException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Scanner;
-import lombok.SneakyThrows;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class UndertowLifecycleTest {
 

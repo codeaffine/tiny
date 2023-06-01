@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    sources 'org.apache.tomcat.embed:tomcat-embed-core:10.1.1:sources'
+    sources "${libs.tomcat.embed.core.get()}:sources"
     configurations.sources {
         includes = ['**/*.java']
         excludes = ['jakarta/servlet/**', 'module-info.java', 'META-INF/**', '/**/*.class']
@@ -17,22 +17,14 @@ dependencies {
             }
         }
     }
-    resources 'org.apache.tomcat.embed:tomcat-embed-core:10.1.1'
+    resources libs.tomcat.embed.core
     configurations.resources {
         includes = ['META-INF/**']
         excludes = ['META-INF/MANIFEST.MF']
         sourceExcludes = ['jakarta/servlet/**', '/**/*.java', '/**/*.class']
     }
     implementation(
-        'jakarta.servlet:jakarta.servlet-api:6.0.0',
-        'jakarta.annotation:jakarta.annotation-api:2.1.1',
-        'jakarta.ejb:jakarta.ejb-api:4.0.1',
-        'jakarta.mail:jakarta.mail-api:2.1.1',
-        'jakarta.persistence:jakarta.persistence-api:3.1.0',
-        'jakarta.xml.rpc:jakarta.xml.rpc-api:1.1.4',
-        'jakarta.xml.ws:jakarta.xml.ws-api:4.0.0',
-        'wsdl4j:wsdl4j:1.6.3',
-        'org.apache.tomcat:jakartaee-migration:1.0.6',
+        libs.bundles.tomcat.embed.dependencies,
         project(':com.codeaffine.tiny.star.tomcat.bnd.dummy')
     )
 }

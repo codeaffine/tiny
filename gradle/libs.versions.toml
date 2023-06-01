@@ -1,0 +1,65 @@
+[versions]
+ant-version = "1.10.13"
+assertj = "3.23.1"
+ecj = "3.32.0"
+jackson = "2.13.4.2"
+jakarta-annotation = "2.1.1"
+jakarta-ejb = "4.0.1"
+jakarta-el = "5.0.1"
+jakarta-mail = "2.1.1"
+jakarta-persistence = "3.1.0"
+jakarta-servlet = "6.0.0"
+jakarta-servlet-jsp = "3.1.1"
+jakarta-xml-rpc = "1.1.4"
+jakarta-xml-ws = "4.0.0"
+javax-servlet = "4.0.1"
+junit = "5.9.1"
+log4j = "2.19.0"
+mockito = "4.8.1"
+rap = "3.22.0"
+slf4j = "2.0.3"
+tomcat-embed = "10.1.1"
+tomcat-jakartaee = "1.0.6"
+undertow = "2.3.2.Final"
+wsdl4j = "1.6.3"
+
+[libraries]
+ant = { group = "org.apache.ant", name = "ant", version.ref = "ant-version" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+jakarta-annotation-api = { group = "jakarta.annotation", name = "jakarta.annotation-api", version.ref = "jakarta-annotation" }
+jakarta-ejb-api = { group = "jakarta.ejb", name = "jakarta.ejb-api", version.ref = "jakarta-ejb" }
+jakarta-el-api = { group = "jakarta.el", name = "jakarta.el-api", version.ref = "jakarta-el" }
+jakarta-mail-api = { group = "jakarta.mail", name = "jakarta.mail-api", version.ref = "jakarta-mail" }
+jakarta-persistence-api = { group = "jakarta.persistence", name = "jakarta.persistence-api", version.ref = "jakarta-persistence" }
+jakarta-servlet-api = { group = "jakarta.servlet", name = "jakarta.servlet-api", version.ref = "jakarta-servlet" }
+jakarta-servlet-jsp-api = { group = "jakarta.servlet.jsp", name = "jakarta.servlet.jsp-api", version.ref = "jakarta-servlet-jsp" }
+jakarta-xml-rpc-api = { group = "jakarta.xml.rpc", name = "jakarta.xml.rpc-api", version.ref = "jakarta-xml-rpc" }
+jakarta-xml-ws-api = { group = "jakarta.xml.ws", name = "jakarta.xml.ws-api", version.ref = "jakarta-xml-ws" }
+javax-servlet-api = { group = "javax.servlet", name = "javax.servlet-api", version.ref = "javax-servlet" }
+jdt-ecj = { group = "org.eclipse.jdt", name = "ecj", version.ref = "ecj" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit" }
+log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j" }
+log4j-slf4j2-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j" }
+log4j-appserver = { group = "org.apache.logging.log4j", name = "log4j-appserver", version.ref = "log4j" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+rap-rwt = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt", version.ref = "rap" }
+rap-rwt-test = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt.testfixture", version.ref = "rap" }
+slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+tomcat-embed-core = { group = "org.apache.tomcat.embed", name = "tomcat-embed-core", version.ref = "tomcat-embed" }
+tomcat-embed-el = { group = "org.apache.tomcat.embed", name = "tomcat-embed-el", version.ref = "tomcat-embed" }
+tomcat-embed-jasper = { group = "org.apache.tomcat.embed", name = "tomcat-embed-jasper", version.ref = "tomcat-embed" }
+tomcat-jakartaee-migration = { group = "org.apache.tomcat", name = "jakartaee-migration", version.ref = "tomcat-jakartaee" }
+undertow-core = { group = "io.undertow", name = "undertow-core", version.ref = "undertow" }
+undertow-servlet = { group = "io.undertow", name = "undertow-servlet", version.ref = "undertow" }
+wsdl4j = { group = "wsdl4j", name = "wsdl4j", version.ref = "wsdl4j" }
+
+[bundles]
+junit-jupiter-implementation = ["junit-jupiter", "junit-jupiter-api", "junit-jupiter-params"]
+slf4j-log4j = ["log4j-core", "log4j-slf4j2-impl", "log4j-appserver"]
+tomcat-embed-dependencies = ["jakarta-annotation-api", "jakarta-ejb-api", "jakarta-mail-api", "jakarta-persistence-api", "jakarta-servlet-api", "jakarta-xml-rpc-api", "jakarta-xml-ws-api", "tomcat-jakartaee-migration", "wsdl4j"]
+tomcat-embed-jasper-dependencies = ["jakarta-el-api", "jakarta-servlet-api", "jakarta-servlet-jsp-api", "jdt-ecj"]
+undertow-embed-dependencies = ["undertow-core", "undertow-servlet"]

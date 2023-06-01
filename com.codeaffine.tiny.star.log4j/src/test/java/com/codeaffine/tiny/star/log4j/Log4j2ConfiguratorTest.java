@@ -7,8 +7,6 @@
  */
 package com.codeaffine.tiny.star.log4j;
 
-import org.eclipse.rap.rwt.application.Application;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -58,10 +56,7 @@ class Log4j2ConfiguratorTest {
         }
     }
 
-    static class TestConfiguration implements ApplicationConfiguration {
-        @Override
-        public void configure(Application application) {}
-    }
+    static class TestConfiguration {}
 
     @BeforeEach
     void setUp() {

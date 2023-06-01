@@ -9,11 +9,10 @@ dependencies {
     implementation(
             project(':com.codeaffine.tiny.shared'),
             project(':com.codeaffine.tiny.star'),
-            platform('org.junit:junit-bom:5.9.1'),
-            'org.junit.jupiter:junit-jupiter',
-            'org.assertj:assertj-core:3.23.1',
-            'org.mockito:mockito-core:4.8.1',
-            'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0',
+            libs.bundles.junit.jupiter.implementation,
+            libs.assertj.core,
+            libs.mockito.core,
+            libs.rap.rwt
     )
 }
 

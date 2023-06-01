@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     implementation(
-            'org.eclipse.rap:org.eclipse.rap.rwt:3.22.0',
+            libs.rap.rwt,
             project(':com.codeaffine.tiny.star'),
             project(':com.codeaffine.tiny.star.cli'),
     )
@@ -18,7 +18,7 @@ dependencies {
 //            project(':com.codeaffine.tiny.star.tomcat'),
     )
     testImplementation(
-            'org.eclipse.rap:org.eclipse.rap.rwt.testfixture:3.22.0'
+            libs.rap.rwt.test
     )
 }
 

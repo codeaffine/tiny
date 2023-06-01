@@ -4,15 +4,15 @@ plugins {
 }
 
 dependencies {
-    sources 'org.apache.tomcat.embed:tomcat-embed-el:10.1.1:sources'
+    sources "${libs.tomcat.embed.el.get()}:sources"
     configurations.sources.excludes = ['jakarta/**', 'module-info.java', 'META-INF/**', '/**/*.class']
-    resources 'org.apache.tomcat.embed:tomcat-embed-el:10.1.1'
+    resources libs.tomcat.embed.el
     configurations.resources {
         includes = ['META-INF/**']
         excludes = ['META-INF/MANIFEST.MF']
     }
     implementation(
-        'jakarta.el:jakarta.el-api:5.0.1',
+        libs.jakarta.el.api,
         project(':com.codeaffine.tiny.star.tomcat.bnd.dummy')
     )
 }

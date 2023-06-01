@@ -6,19 +6,17 @@ plugins {
 
 dependencies {
     testImplementation(
-            platform('org.junit:junit-bom:5.9.1'),
-            'org.junit.jupiter:junit-jupiter',
-            'org.assertj:assertj-core:3.23.1',
-            'org.mockito:mockito-core:4.8.1',
+        libs.bundles.junit.jupiter.implementation,
+        libs.assertj.core,
+        libs.mockito.core,
     )
     testFixturesImplementation(
-            platform('org.junit:junit-bom:5.9.1'),
-            'org.junit.jupiter:junit-jupiter',
-            'org.assertj:assertj-core:3.23.1',
-            'org.mockito:mockito-core:4.8.1'
+        libs.bundles.junit.jupiter.implementation,
+        libs.assertj.core,
+        libs.mockito.core
     )
     testRuntimeOnly(
-            'org.junit.jupiter:junit-jupiter-engine:5.9.1',
+        libs.junit.jupiter.engine,
     )
 }
 

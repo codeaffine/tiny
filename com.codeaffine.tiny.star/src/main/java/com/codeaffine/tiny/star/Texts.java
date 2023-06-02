@@ -19,6 +19,7 @@ class Texts {
         +------------------------------------------------------------------------
         |  TINY STAR
         |  STand-Alone-Runner for RAP Applications
+        |  https://github.com/fappel/tiny
         |
         |  Launching: %s
         |
@@ -37,7 +38,8 @@ class Texts {
     static final String ENFORCING_APPLICATION_TERMINATION = "Enforcing application server shutdown.";
     static final String DEBUG_APPLICATION_NOT_HALTED = "Application process is not halted.";
     static final String DEBUG_APPLICATION_NOT_RUNNING = "Application process is not running.";
-    static final String INFO_SHUTDOWN_CONFIRMATION = "Stopping application server instance of {} took {} ms.";
+    static final String INFO_SHUTDOWN_START = "Shutdown of {} application server instance requested.";
+    static final String INFO_SHUTDOWN_CONFIRMATION = "Shutdown request of {} application server instance took {} ms.";
     static final String INFO_STARTUP_CONFIRMATION = "Starting {} application process took {} ms.";
     static final String INFO_CREATION_CONFIRMATION = "Creation of {} application process took {} ms.";
     static final String INFO_ENTRYPOINT_URL = "Application Entrypoint URL: {}";

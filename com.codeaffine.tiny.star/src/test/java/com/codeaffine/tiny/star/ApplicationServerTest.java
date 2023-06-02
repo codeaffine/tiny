@@ -295,7 +295,10 @@ class ApplicationServerTest {
         assertThat(CURRENT_SERVER.get().isStopped()).isTrue();
         assertThat(getCurrentServerConfiguration().getWorkingDirectory()).doesNotExist();
         assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
-        verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationServer.getIdentifier()), anyLong());
+        InOrder order = inOrder(logger);
+        order.verify(logger).info(INFO_SHUTDOWN_START, applicationServer.getIdentifier());
+        order.verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationServer.getIdentifier()), anyLong());
+        order.verifyNoMoreInteractions();
     }
 
     @Test

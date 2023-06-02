@@ -17,6 +17,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 
 import static com.codeaffine.tiny.shared.Texts.*;
+import static com.codeaffine.tiny.shared.Threads.*;
 import static java.lang.String.format;
 import static java.nio.file.Files.*;
 import static lombok.AccessLevel.PRIVATE;
@@ -57,7 +58,20 @@ public class IoUtils {
             if (toDelete.isDirectory()) {
                 doDeleteDirectory(toDelete);
             }
+            deleteWithPotentialRacingCondition(toDelete);
+        }
+    }
+
+    /* This method is a workaround for file deletion racing conditions which might occur
+    when an RWT application cleans up its dynamically registered resources on application shutdown. */
+    private static void deleteWithPotentialRacingCondition(File toDelete) throws IOException {
+        try {
             delete(toDelete.toPath());
+        } catch (Exception e) {
+            sleepFor(10L);
+            if(toDelete.exists()) { // check if the exception was caused by a racing condition on file deletion. If not, throw the exception.
+                throw e;
+            }
         }
     }
 

@@ -137,6 +137,7 @@ public class ApplicationServer {
     ApplicationServer stopInternal(Logger logger) {
         ApplicationProcess process = processHolder.getAndUpdate(currentProcess -> null);
         if (nonNull(process)) {
+            logger.info(INFO_SHUTDOWN_START, getIdentifier());
             measureDuration(process::stop)
                 .report(duration -> logger.info(INFO_SHUTDOWN_CONFIRMATION, getIdentifier(), duration));
         }

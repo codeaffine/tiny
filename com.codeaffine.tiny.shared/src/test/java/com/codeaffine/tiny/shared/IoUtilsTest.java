@@ -19,6 +19,7 @@ import java.util.UUID;
 import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
 import static java.lang.System.getProperty;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class IoUtilsTest {
 
@@ -97,6 +98,7 @@ class IoUtilsTest {
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining(unDeletableFile.toString());
+        verify(unDeletableFile, times(2)).exists();  // ensure racing condition workaround is in place
     }
 
     @Test
@@ -106,11 +108,11 @@ class IoUtilsTest {
     }
 
     private static File fakeFileThatCannotBeDeleted() {
-        return new File("unknown") {
+        return spy(new File("unknown") {
             @Override
             public boolean exists() {
                 return true;
             }
-        };
+        });
     }
 }

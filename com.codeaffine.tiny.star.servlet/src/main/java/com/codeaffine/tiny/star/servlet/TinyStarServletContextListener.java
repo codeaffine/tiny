@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star.servlet;
 
+import lombok.NonNull;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.application.ApplicationRunner;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TinyStarServletContextListener implements ServletContextListener {
 
+    @NonNull
     private final ApplicationConfiguration configuration;
 
     private ApplicationRunner applicationRunner;

@@ -11,6 +11,9 @@ dependencies {
             libs.jakarta.servlet.api,
             libs.rap.rwt
     )
+    testImplementation(
+            libs.rap.rwt.test
+    )
 }
 
 publishing {
@@ -18,5 +21,11 @@ publishing {
         tinyStarServlet(MavenPublication) {
             from components.java
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.exclusions", "src/main/java/**/JakartaToJavax*.java, src/main/java/**/JavaxToJakarta*.java"
     }
 }

@@ -7,21 +7,27 @@
  */
 package com.codeaffine.tiny.star.servlet;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.rap.rwt.engine.RWTServlet;
 
 import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.Serial;
 
+import static lombok.AccessLevel.PACKAGE;
+
+@RequiredArgsConstructor(access = PACKAGE)
 public class RwtServletAdapter extends jakarta.servlet.http.HttpServlet {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
+    @NonNull
     private final RWTServlet delegate;
 
     public RwtServletAdapter() {
-        delegate = new RWTServlet();
+        this(new RWTServlet());
     }
 
     @Override
@@ -40,11 +46,11 @@ public class RwtServletAdapter extends jakarta.servlet.http.HttpServlet {
     }
 
     @Override
-    protected void service(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp)
+    protected void service(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response)
         throws ServletException, IOException
     {
         try {
-            delegate.service(new JakartaToJavaxServletRequestAdapter(req), new JakartaToJavaxServletResponseAdapter(resp));
+            delegate.service(new JakartaToJavaxServletRequestAdapter(request), new JakartaToJavaxServletResponseAdapter(response));
         } catch (javax.servlet.ServletException e) {
             throw new ServletException(e);
         }

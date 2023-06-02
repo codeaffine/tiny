@@ -8,14 +8,13 @@
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.Server;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerFactory;
 import lombok.Getter;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,13 +30,7 @@ public class ApplicationServerTestContext implements ServerFactory, Server, Invo
     @Getter
     private boolean stopped;
     @Getter
-    private int port;
-    @Getter
-    private String host;
-    @Getter
-    private File workingDirectory;
-    @Getter
-    private ApplicationConfiguration configuration;
+    private ServerConfiguration configuration;
 
     public ApplicationServerTestContext() {
         CURRENT_SERVER.set(this);
@@ -75,11 +68,12 @@ public class ApplicationServerTestContext implements ServerFactory, Server, Invo
     }
 
     @Override
-    public Server create(int port, String host, File workingDirectory, ApplicationConfiguration configuration) {
-        this.port = port;
-        this.host = host;
-        this.workingDirectory = workingDirectory;
+    public Server create(ServerConfiguration configuration) {
         this.configuration = configuration;
         return this;
+    }
+
+    public static ServerConfiguration getCurrentServerConfiguration() {
+        return CURRENT_SERVER.get().getConfiguration();
     }
 }

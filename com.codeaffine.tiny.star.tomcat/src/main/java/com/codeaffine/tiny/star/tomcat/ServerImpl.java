@@ -8,13 +8,11 @@
 package com.codeaffine.tiny.star.tomcat;
 
 import com.codeaffine.tiny.star.spi.Server;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
-
-import java.io.File;
 
 import static com.codeaffine.tiny.star.tomcat.Texts.SERVER_NAME;
 import static lombok.AccessLevel.PACKAGE;
@@ -33,16 +31,16 @@ class ServerImpl implements Server {
     @NonNull
     private final TomcatLifeCycleControl tomcatLifeCycleControl;
 
-    ServerImpl(int port, String host, File workingDirectory, ApplicationConfiguration applicationConfiguration) {
-        this(new Tomcat(), port, host, workingDirectory, applicationConfiguration);
+    ServerImpl(ServerConfiguration configuration) {
+        this(new Tomcat(), configuration);
     }
 
-    ServerImpl(Tomcat tomcat, int port, String host, File workingDirectory, ApplicationConfiguration applicationConfiguration) {
+    ServerImpl(Tomcat tomcat, ServerConfiguration configuration) {
         this(
-            new ContextRegistrar(workingDirectory, tomcat),
-            new ConnectorRegistrar(tomcat, host, port),
+            new ContextRegistrar(configuration, tomcat),
+            new ConnectorRegistrar(tomcat, configuration),
             new ResourcesServletRegistrar(),
-            new RwtServletRegistrar(tomcat, applicationConfiguration),
+            new RwtServletRegistrar(tomcat, configuration),
             new TomcatLifeCycleControl(tomcat)
         );
     }

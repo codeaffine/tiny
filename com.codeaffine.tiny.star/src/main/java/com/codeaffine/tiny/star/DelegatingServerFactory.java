@@ -13,7 +13,7 @@ import static java.lang.String.format;
 import static lombok.AccessLevel.PACKAGE;
 
 import com.codeaffine.tiny.shared.ServiceLoaderAdapter;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 
 import com.codeaffine.tiny.star.spi.Server;
 import com.codeaffine.tiny.star.spi.ServerFactory;
@@ -38,11 +38,11 @@ class DelegatingServerFactory implements ServerFactory {
     }
 
     Server create(File workingDirectory) {
-        return create(applicationServer.port, applicationServer.host, workingDirectory, applicationServer.applicationConfiguration);
+        return create(new ApplicationServerConfiguration(workingDirectory, applicationServer));
     }
 
     @Override
-    public Server create(int port, String host, File workingDirectory, ApplicationConfiguration configuration) {
+    public Server create(ServerConfiguration configuration) {
         List<ServerFactory> serverFactories = serviceLoaderAdapter.collectServiceTypeFactories();
         if (serverFactories.isEmpty()) {
             throw new IllegalStateException(ERROR_NO_SERVER_FACTORY_FOUND);
@@ -52,6 +52,6 @@ class DelegatingServerFactory implements ServerFactory {
         }
         return serverFactories
             .get(0)
-            .create(port, host, workingDirectory, configuration);
+            .create(configuration);
     }
 }

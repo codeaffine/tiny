@@ -9,10 +9,12 @@ dependencies {
     implementation(
             project(':com.codeaffine.tiny.shared'),
             project(':com.codeaffine.tiny.star'),
+            project(':com.codeaffine.tiny.star.servlet'),
             libs.bundles.junit.jupiter.implementation,
             libs.assertj.core,
             libs.mockito.core,
-            libs.rap.rwt
+            libs.rap.rwt,
+            libs.jakarta.servlet.api,
     )
 }
 

@@ -8,14 +8,13 @@
 package com.codeaffine.tiny.star.undertow;
 
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.servlet.api.ServletInfo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 
 import java.util.Set;
 
-import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static io.undertow.servlet.Servlets.servlet;
 import static lombok.AccessLevel.PACKAGE;
 
@@ -26,11 +25,11 @@ class ServletInfoFactory {
     static final String ALL_SUB_PATHS_PATTERN = "/*";
 
     @NonNull
-    private final ApplicationConfiguration applicationConfiguration;
+    private final ServerConfiguration configuration;
 
     ServletInfo createRwtServletInfo() {
         ServletInfo result = servlet(SERVLET_NAME, RwtServletAdapter.class);
-        Set<String> entrypointPaths = captureEntrypointPaths(applicationConfiguration);
+        Set<String> entrypointPaths = configuration.getEntryPointPaths();
         entrypointPaths.forEach(path -> result.addMapping(path + ALL_SUB_PATHS_PATTERN));
         return result;
     }

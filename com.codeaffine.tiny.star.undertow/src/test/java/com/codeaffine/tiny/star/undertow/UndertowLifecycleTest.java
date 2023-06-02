@@ -26,7 +26,8 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.Protocol.HTTP;
+import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.stubServerConfiguration;
 import static com.codeaffine.tiny.star.undertow.DeploymentOperation.CONTEXT_PATH;
 import static com.codeaffine.tiny.star.undertow.HttpHandlerStarter.PREFIX_PATH;
 import static io.undertow.Handlers.path;
@@ -64,18 +65,19 @@ class UndertowLifecycleTest {
 
     @Test
     void construct() {
-        assertDoesNotThrow(() -> new UndertowLifecycle(HOST, port));
+        assertDoesNotThrow(() -> new UndertowLifecycle(stubServerConfiguration(HOST, port)));
     }
 
     @Test
-    void constructWithNullAsHostArgument() {
-        assertThatThrownBy(() -> new UndertowLifecycle(null, port))
+    void constructWithNullAsConfigurationArgument() {
+        assertThatThrownBy(() -> new UndertowLifecycle(null))
             .isInstanceOf(NullPointerException.class);
     }
     
     @Test
     void startWithNullAsPathArgument() {
-        lifecycle = new UndertowLifecycle(HOST, port);
+        lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
+
         assertThatThrownBy(() -> lifecycle.startUndertow(null))
             .isInstanceOf(NullPointerException.class);
     }
@@ -85,7 +87,7 @@ class UndertowLifecycleTest {
 
         @BeforeEach
         void setUp() {
-            lifecycle = new UndertowLifecycle(HOST, port);
+            lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
             lifecycle.startUndertow(setupBasicPathHandler());
         }
 
@@ -122,7 +124,7 @@ class UndertowLifecycleTest {
 
         @BeforeEach
         void setUp() {
-            lifecycle = new UndertowLifecycle(HOST, port);
+            lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
             lifecycle.startUndertow(setupBasicPathHandler());
             lifecycle.stopUndertow();
         }

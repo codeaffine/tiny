@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.stubServerConfiguration;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -32,7 +34,7 @@ class ContextRegistrarTest {
 
     @Test
     void addContext() {
-        ContextRegistrar registrar = new ContextRegistrar(workingDirectory, tomcat);
+        ContextRegistrar registrar = new ContextRegistrar(stubServerConfiguration(workingDirectory), tomcat);
 
         Context actual = registrar.addContext();
 
@@ -45,7 +47,7 @@ class ContextRegistrarTest {
     @Test
     void addContextIfDocBaseAlreadyExists() {
         boolean successCreatingDocBase = expectedDocBase().mkdirs();
-        ContextRegistrar registrar = new ContextRegistrar(workingDirectory, tomcat);
+        ContextRegistrar registrar = new ContextRegistrar(stubServerConfiguration(workingDirectory), tomcat);
 
         Context actual = registrar.addContext();
 
@@ -59,7 +61,7 @@ class ContextRegistrarTest {
     @Test
     void addContextIfDocBaseCannotBeCreated() {
         File notExistingWorkingDirectory = new File("notExisting");
-        ContextRegistrar registrar = new ContextRegistrar(notExistingWorkingDirectory, tomcat);
+        ContextRegistrar registrar = new ContextRegistrar(stubServerConfiguration(notExistingWorkingDirectory), tomcat);
 
         Exception actual = catchException(registrar::addContext);
 
@@ -77,7 +79,9 @@ class ContextRegistrarTest {
 
     @Test
     void constructWithNullAsTomcatArgument() {
-        assertThatThrownBy(() -> new ContextRegistrar(workingDirectory, null))
+        ServerConfiguration configuration = stubServerConfiguration(workingDirectory);
+
+        assertThatThrownBy(() -> new ContextRegistrar(configuration, null))
             .isInstanceOf(NullPointerException.class);
     }
 

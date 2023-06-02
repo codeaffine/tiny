@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
 import lombok.NonNull;
@@ -18,13 +19,11 @@ import static java.util.Objects.nonNull;
 class UndertowLifecycle {
 
     private final AtomicReference<Undertow> serverHolder;
-    private final String host;
-    private final int port;
+    private final ServerConfiguration configuration;
 
-    UndertowLifecycle(@NonNull String host, int port) {
+    UndertowLifecycle(@NonNull ServerConfiguration configuration) {
         this.serverHolder = new AtomicReference<>();
-        this.host = host;
-        this.port = port;
+        this.configuration = configuration;
     }
 
     void startUndertow(@NonNull PathHandler path) {
@@ -44,7 +43,7 @@ class UndertowLifecycle {
 
     private Undertow doStart(PathHandler path) {
         Undertow result = Undertow.builder()
-            .addHttpListener(port, host)
+            .addHttpListener(configuration.getPort(), configuration.getHost())
             .setHandler(path)
             .build();
         result.start();

@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Connector;
@@ -20,13 +21,12 @@ class ConnectorRegistrar {
     @NonNull
     private final Tomcat tomcat;
     @NonNull
-    private final String host;
-    private final int port;
+    private final ServerConfiguration configuration;
 
     void addConnector() {
         Connector connector = new Connector();
-        connector.setPort(port);
-        tomcat.getHost().setName(host);
+        connector.setPort(configuration.getPort());
+        tomcat.getHost().setName(configuration.getHost());
         tomcat.getService().addConnector(connector);
     }
 }

@@ -24,7 +24,7 @@ import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public class EntrypointPathCaptor {
+class EntrypointPathCaptor {
 
     @RequiredArgsConstructor(access = PACKAGE)
     static class PathCaptor implements Application {
@@ -88,7 +88,7 @@ public class EntrypointPathCaptor {
         }
     }
 
-    public static Set<String> captureEntrypointPaths(ApplicationConfiguration applicationConfiguration) {
+    static Set<String> captureEntrypointPaths(ApplicationConfiguration applicationConfiguration) {
         Set<String> result = new HashSet<>();
         applicationConfiguration.configure(new PathCaptor(result));
         return result;

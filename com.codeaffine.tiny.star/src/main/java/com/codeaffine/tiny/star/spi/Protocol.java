@@ -5,15 +5,8 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-package com.codeaffine.tiny.star.undertow;
+package com.codeaffine.tiny.star.spi;
 
-import com.codeaffine.tiny.star.spi.ServerConfiguration;
-import com.codeaffine.tiny.star.spi.ServerFactory;
-
-public class ServerFactoryImpl implements ServerFactory {
-
-    @Override
-    public ServerImpl create(ServerConfiguration configuration) {
-        return new ServerImpl(configuration);
-    }
+public enum Protocol {
+  HTTP,
 }

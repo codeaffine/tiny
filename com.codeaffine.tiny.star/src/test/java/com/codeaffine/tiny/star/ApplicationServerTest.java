@@ -27,11 +27,13 @@ import java.net.URL;
 import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
+import static com.codeaffine.tiny.star.ApplicationServerTestContext.*;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
+import static com.codeaffine.tiny.star.EntrypointPathCaptor.*;
 import static com.codeaffine.tiny.star.Texts.*;
 import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.Protocol.HTTP;
+import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.util.Objects.nonNull;
@@ -48,6 +50,7 @@ class ApplicationServerTest {
     private static final String ENTRY_POINT_PATH_1 = "/ep1";
     private static final String ENTRY_POINT_PATH_2 = "/ep2";
     private static final String PROTOCOL = HTTP.name().toLowerCase();
+
     private static final ApplicationConfiguration MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION = application -> {
         application.addEntryPoint(ENTRY_POINT_PATH_1, () -> null, null);
         application.addEntryPoint(ENTRY_POINT_PATH_2, () -> null, null);
@@ -108,10 +111,11 @@ class ApplicationServerTest {
         order.verifyNoMoreInteractions();
         assertThat(CURRENT_SERVER.get().isStarted()).isTrue();
         assertThat(CURRENT_SERVER.get().isStopped()).isFalse();
-        assertThat(CURRENT_SERVER.get().getHost()).isEqualTo(DEFAULT_HOST);
-        assertThat(CURRENT_SERVER.get().getPort()).isNotNegative();
-        assertThat(CURRENT_SERVER.get().getConfiguration()).isSameAs(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION);
-        assertThat(CURRENT_SERVER.get().getWorkingDirectory())
+        assertThat(getCurrentServerConfiguration().getHost()).isEqualTo(DEFAULT_HOST);
+        assertThat(getCurrentServerConfiguration().getPort()).isNotNegative();
+        assertThat(getCurrentServerConfiguration().getContextClassLoader()).isSameAs(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION.getClass().getClassLoader());
+        assertThat(getCurrentServerConfiguration().getEntryPointPaths()).isEqualTo(captureEntrypointPaths(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION));
+            assertThat(getCurrentServerConfiguration().getWorkingDirectory())
             .isEqualTo(workingDirectory)
             .isDirectory()
             .exists();
@@ -131,7 +135,7 @@ class ApplicationServerTest {
 
         File createdWorkingDirectory = new File(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
         assertThat(isCreated).isTrue();
-        assertThat(CURRENT_SERVER.get().getWorkingDirectory())
+        assertThat(getCurrentServerConfiguration().getWorkingDirectory())
             .isEqualTo(givenWorkingDirectory)
             .isEqualTo(createdWorkingDirectory)
             .isDirectory()
@@ -180,7 +184,7 @@ class ApplicationServerTest {
 
         applicationServer.start();
 
-        assertThat(CURRENT_SERVER.get().getPort()).isEqualTo(CUSTOM_PORT);
+        assertThat(getCurrentServerConfiguration().getPort()).isEqualTo(CUSTOM_PORT);
     }
 
     @Test
@@ -191,7 +195,7 @@ class ApplicationServerTest {
 
         applicationServer.start();
 
-        assertThat(CURRENT_SERVER.get().getHost()).isEqualTo(CUSTOM_HOST);
+        assertThat(getCurrentServerConfiguration().getHost()).isEqualTo(CUSTOM_HOST);
     }
 
     @Test
@@ -205,7 +209,7 @@ class ApplicationServerTest {
         applicationServer.stop();
 
         assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
-        assertThat(CURRENT_SERVER.get().getWorkingDirectory())
+        assertThat(getCurrentServerConfiguration().getWorkingDirectory())
             .exists()
             .isEqualTo(persistentWorkingDirectory);
     }
@@ -227,7 +231,7 @@ class ApplicationServerTest {
         order.verifyNoMoreInteractions();
         assertThat(captor.getValue()).isEqualTo(APPLICATION_IDENTIFIER);
         assertThat(workingDirectory.getName()).startsWith(APPLICATION_IDENTIFIER);
-        assertThat(CURRENT_SERVER.get().getWorkingDirectory())
+        assertThat(getCurrentServerConfiguration().getWorkingDirectory())
             .isEqualTo(workingDirectory)
             .isDirectory()
             .exists();
@@ -289,7 +293,7 @@ class ApplicationServerTest {
         applicationServer.stopInternal(logger);
 
         assertThat(CURRENT_SERVER.get().isStopped()).isTrue();
-        assertThat(CURRENT_SERVER.get().getWorkingDirectory()).doesNotExist();
+        assertThat(getCurrentServerConfiguration().getWorkingDirectory()).doesNotExist();
         assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
         verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationServer.getIdentifier()), anyLong());
     }
@@ -310,7 +314,7 @@ class ApplicationServerTest {
         assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
         assertThat(isCreated).isTrue();
         assertThat(CURRENT_SERVER.get().isStopped()).isTrue();
-        assertThat(CURRENT_SERVER.get().getWorkingDirectory())
+        assertThat(getCurrentServerConfiguration().getWorkingDirectory())
             .isEqualTo(givenWorkingDirectory)
             .exists();
     }
@@ -373,6 +377,6 @@ class ApplicationServerTest {
     }
 
     private static String expectedEntrypointUrl(String entryPointPath) {
-        return format("%s://%s:%s%s", DEFAULT_PROTOCOL.name().toLowerCase(), DEFAULT_HOST, CURRENT_SERVER.get().getPort(), entryPointPath);
+        return format("%s://%s:%s%s", DEFAULT_PROTOCOL.name().toLowerCase(), DEFAULT_HOST, getCurrentServerConfiguration().getPort(), entryPointPath);
     }
 }

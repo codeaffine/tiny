@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.Protocol;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
@@ -30,7 +31,7 @@ import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironment
 import static com.codeaffine.tiny.star.Texts.*;
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
 import static com.codeaffine.tiny.shared.Metric.measureDuration;
-import static com.codeaffine.tiny.star.Protocol.HTTP;
+import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;

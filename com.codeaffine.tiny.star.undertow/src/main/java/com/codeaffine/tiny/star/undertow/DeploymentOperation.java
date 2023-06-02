@@ -7,16 +7,13 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
-
-import java.io.File;
 
 import static io.undertow.servlet.Servlets.defaultContainer;
 import static io.undertow.servlet.Servlets.deployment;
@@ -25,13 +22,11 @@ import static lombok.AccessLevel.PACKAGE;
 @RequiredArgsConstructor(access = PACKAGE)
 class DeploymentOperation {
 
-    static final String CONTEXT_PATH = "/";
     static final String DEPLOYMENT_NAME = "application.war";
+    static final String CONTEXT_PATH = "/";
 
     @NonNull
-    private final ApplicationConfiguration applicationConfiguration;
-    @NonNull
-    private final File workingDirectory;
+    private final ServerConfiguration configuration;
 
     DeploymentManager deployRwtApplication(@NonNull ServletInfo servletInfo) {
         DeploymentManager result = defaultContainer()
@@ -42,11 +37,11 @@ class DeploymentOperation {
 
     private DeploymentInfo configureDeployment(ServletInfo servletInfo) {
         return deployment()
-            .setClassLoader(applicationConfiguration.getClass().getClassLoader())
+            .setClassLoader(configuration.getContextClassLoader())
             .setContextPath(CONTEXT_PATH)
-            .addDeploymentCompleteListener(new TinyStarServletContextListener(applicationConfiguration))
+            .addDeploymentCompleteListener(configuration.getContextListener())
             .setDeploymentName(DEPLOYMENT_NAME)
             .addServlets(servletInfo)
-            .setResourceManager(new FileResourceManager(workingDirectory, 1));
+            .setResourceManager(new FileResourceManager(configuration.getWorkingDirectory(), 1));
     }
 }

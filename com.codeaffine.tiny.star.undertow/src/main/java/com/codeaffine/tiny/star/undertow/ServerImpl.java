@@ -8,14 +8,12 @@
 package com.codeaffine.tiny.star.undertow;
 
 import com.codeaffine.tiny.star.spi.Server;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.servlet.api.DeploymentManager;
 import io.undertow.servlet.api.ServletInfo;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
-
-import java.io.File;
 
 import static com.codeaffine.tiny.star.undertow.Texts.SERVER_NAME;
 import static lombok.AccessLevel.PACKAGE;
@@ -32,12 +30,12 @@ class ServerImpl implements Server {
     @NonNull
     private final UndertowLifecycle undertowLifecycle;
 
-    ServerImpl(int port, String host, File workingDirectory, ApplicationConfiguration applicationConfiguration) {
+    ServerImpl(ServerConfiguration configuration) {
         this(
-            new ServletInfoFactory(applicationConfiguration),
-            new DeploymentOperation(applicationConfiguration, workingDirectory),
+            new ServletInfoFactory(configuration),
+            new DeploymentOperation(configuration),
             new HttpHandlerStarter(),
-            new UndertowLifecycle(host, port)
+            new UndertowLifecycle(configuration)
         );
     }
 

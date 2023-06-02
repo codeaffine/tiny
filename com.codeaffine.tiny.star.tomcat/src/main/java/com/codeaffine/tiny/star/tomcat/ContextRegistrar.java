@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
@@ -24,16 +25,16 @@ class ContextRegistrar {
     static final String DOC_BASE = "doc-base";
 
     @NonNull
-    private final File workingDirectory;
+    private final ServerConfiguration configuration;
     @NonNull
     private final Tomcat tomcat;
 
     Context addContext() {
-        File docBase = new File(workingDirectory, DOC_BASE);
+        File docBase = new File(configuration.getWorkingDirectory(), DOC_BASE);
         if (!docBase.exists() && !docBase.mkdir()) {
             throw new IllegalStateException(format(Texts.ERROR_CREATE_DOC_BASE, docBase.getAbsolutePath()));
         }
-        tomcat.setBaseDir(workingDirectory.getAbsolutePath());
+        tomcat.setBaseDir(configuration.getWorkingDirectory().getAbsolutePath());
         return tomcat.addContext(CONTEXT_PATH, docBase.getAbsolutePath());
     }
 }

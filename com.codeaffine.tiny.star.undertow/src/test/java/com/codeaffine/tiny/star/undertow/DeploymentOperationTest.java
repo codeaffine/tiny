@@ -17,7 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.MULTI_ENTRYPOINT_CONFIGURATION;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -28,7 +28,7 @@ class DeploymentOperationTest {
 
     @Test
     void deployRwtApplication() {
-        DeploymentOperation deploymentOperation = new DeploymentOperation(MULTI_ENTRYPOINT_CONFIGURATION, workingDirectory);
+        DeploymentOperation deploymentOperation = new DeploymentOperation(stubServerConfiguration(workingDirectory, ENTRYPOINT_PATH_1, ENTRYPOINT_PATH_2));
         ServletInfoFactory servletInfoFactory = new ServletInfoFactory(MULTI_ENTRYPOINT_CONFIGURATION);
         ServletInfo servletInfo = servletInfoFactory.createRwtServletInfo();
 
@@ -51,21 +51,15 @@ class DeploymentOperationTest {
 
     @Test
     void deployRwtApplicationWithNullAsArgumentNameArgument() {
-        DeploymentOperation deploymentOperation = new DeploymentOperation(MULTI_ENTRYPOINT_CONFIGURATION, workingDirectory);
+        DeploymentOperation deploymentOperation = new DeploymentOperation(stubServerConfiguration(workingDirectory, ENTRYPOINT_PATH_1, ENTRYPOINT_PATH_2));
 
         assertThatThrownBy(() -> deploymentOperation.deployRwtApplication(null))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void constructWithNullAsApplicationConfigurationArgument() {
-        assertThatThrownBy(() -> new DeploymentOperation(null, workingDirectory))
-            .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    void constructWithNullAsWorkingDirectoryArgument() {
-        assertThatThrownBy(() -> new DeploymentOperation(MULTI_ENTRYPOINT_CONFIGURATION, null))
+    void constructWithNullAsConfigurationArgument() {
+        assertThatThrownBy(() -> new DeploymentOperation(null))
             .isInstanceOf(NullPointerException.class);
     }
 }

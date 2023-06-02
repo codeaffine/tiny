@@ -8,18 +8,17 @@
 package com.codeaffine.tiny.star.tomcat;
 
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.http.HttpServlet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 
 import java.util.Set;
 
-import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -31,18 +30,18 @@ class RwtServletRegistrar {
     @NonNull
     private final Tomcat tomcat;
     @NonNull
-    private final ApplicationConfiguration applicationConfiguration;
+    private final ServerConfiguration configuration;
     @NonNull
-    private final TinyStarServletContextListener listener;
+    private final ServletContextListener listener;
 
-    RwtServletRegistrar(Tomcat tomcat, ApplicationConfiguration applicationConfiguration) {
-        this(tomcat, applicationConfiguration, new TinyStarServletContextListener(applicationConfiguration));
+    RwtServletRegistrar(Tomcat tomcat, ServerConfiguration configuration) {
+        this(tomcat, configuration, configuration.getContextListener());
     }
 
     void addRwtServlet(Context context) {
         HttpServlet servlet = new RwtServletAdapter();
         tomcat.addServlet(context.getPath(), SERVLET_NAME, servlet);
-        Set<String> entrypointPaths = captureEntrypointPaths(applicationConfiguration);
+        Set<String> entrypointPaths = configuration.getEntryPointPaths();
         entrypointPaths.forEach(path -> context.addServletMappingDecoded(path + ALL_SUB_PATHS_PATTERN, SERVLET_NAME));
         context.addServletContainerInitializer((classes, servletContext) -> listener.contextInitialized(new ServletContextEvent(servletContext)), null);
     }

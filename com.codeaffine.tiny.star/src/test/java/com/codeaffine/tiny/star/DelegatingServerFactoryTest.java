@@ -20,6 +20,8 @@ import java.io.File;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
 import static com.codeaffine.tiny.shared.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
+import static com.codeaffine.tiny.star.ApplicationServerTestContext.getCurrentServerConfiguration;
+import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.ERROR_NO_SERVER_FACTORY_FOUND;
 import static org.assertj.core.api.Assertions.*;
 
@@ -44,10 +46,10 @@ class DelegatingServerFactoryTest {
         Server actual = factory.create(workingDirectory);
 
         assertThat(actual).isSameAs(CURRENT_SERVER.get());
-        assertThat(CURRENT_SERVER.get().getPort()).isEqualTo(PORT);
-        assertThat(CURRENT_SERVER.get().getHost()).isEqualTo(HOST);
-        assertThat(CURRENT_SERVER.get().getWorkingDirectory()).isEqualTo(workingDirectory);
-        assertThat(CURRENT_SERVER.get().getConfiguration()).isEqualTo(APPLICATION_CONFIGURATION);
+        assertThat(getCurrentServerConfiguration().getPort()).isEqualTo(PORT);
+        assertThat(getCurrentServerConfiguration().getHost()).isEqualTo(HOST);
+        assertThat(getCurrentServerConfiguration().getWorkingDirectory()).isEqualTo(workingDirectory);
+        assertThat(getCurrentServerConfiguration().getEntryPointPaths()).isEqualTo(captureEntrypointPaths(APPLICATION_CONFIGURATION));
     }
 
     @Test
@@ -66,8 +68,8 @@ class DelegatingServerFactoryTest {
     @Test
     void createIfMoreThanOneServerFactoryIsRegisteredOnClasspath() {
         ApplicationServer applicationServer = newApplicationServerBuilder(APPLICATION_CONFIGURATION).build();
-        ServerFactory factory1 = (port, host, workingDirectory, configuration) -> null;
-        ServerFactory factory2 = (port, host, workingDirectory, configuration) -> null;
+        ServerFactory factory1 = configuration -> null;
+        ServerFactory factory2 = configuration -> null;
         ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter = fakeServiceLoaderAdapter(factory1, factory2);
         DelegatingServerFactory factory = new DelegatingServerFactory(applicationServer, serviceLoaderAdapter);
 

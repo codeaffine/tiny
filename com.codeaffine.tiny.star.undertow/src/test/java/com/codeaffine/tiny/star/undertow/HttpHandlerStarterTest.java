@@ -17,7 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.MULTI_ENTRYPOINT_CONFIGURATION;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
 import static io.undertow.Handlers.path;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,7 +33,7 @@ class HttpHandlerStarterTest {
     @BeforeEach
     void setUp() {
         ServletInfoFactory servletInfoFactory = new ServletInfoFactory(MULTI_ENTRYPOINT_CONFIGURATION);
-        DeploymentOperation deploymentOperation = new DeploymentOperation(MULTI_ENTRYPOINT_CONFIGURATION, workingDirectory);
+        DeploymentOperation deploymentOperation = new DeploymentOperation(stubServerConfiguration(workingDirectory, ENTRYPOINT_PATH_1, ENTRYPOINT_PATH_2));
         spyPathHandler = spy(path());
         starter = new HttpHandlerStarter(() -> spyPathHandler);
         manager = deploymentOperation.deployRwtApplication(servletInfoFactory.createRwtServletInfo());

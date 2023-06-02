@@ -15,6 +15,8 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.function.Supplier;
 
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.CONFIGURATION;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.PORT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -22,13 +24,10 @@ import static org.mockito.Mockito.*;
 
 class ConnectorRegistrarTest {
 
-    private static final String HOST = "localhost";
-    private static final int PORT = 1234;
-
     @Test
     void addConnector() {
         Tomcat tomcat = stubTomcatWithServiceSpy(Tomcat::new);
-        ConnectorRegistrar connectorRegistrar = new ConnectorRegistrar(tomcat, HOST, PORT);
+        ConnectorRegistrar connectorRegistrar = new ConnectorRegistrar(tomcat, CONFIGURATION);
         
         connectorRegistrar.addConnector();
 
@@ -39,13 +38,13 @@ class ConnectorRegistrarTest {
 
     @Test
     void constructWithNullAsTomcatArgument() {
-        assertThatThrownBy(() -> new ConnectorRegistrar(null, HOST, PORT))
+        assertThatThrownBy(() -> new ConnectorRegistrar(null, CONFIGURATION))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    void constructWithNullAsHostArgument() {
-        assertThatThrownBy(() -> new ConnectorRegistrar(mock(Tomcat.class), null, PORT))
+    void constructWithNullAsConfigurationArgument() {
+        assertThatThrownBy(() -> new ConnectorRegistrar(mock(Tomcat.class), null))
             .isInstanceOf(NullPointerException.class);
     }
 

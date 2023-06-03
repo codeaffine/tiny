@@ -15,6 +15,7 @@ jakarta-xml-ws = "4.0.0"
 javax-servlet = "4.0.1"
 junit = "5.9.3"
 log4j = "2.20.0"
+lombok-version = "1.18.22"
 mockito = "5.3.1"
 rap = "3.24.0"
 slf4j = "2.0.7"
@@ -45,6 +46,7 @@ junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-para
 log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j" }
 log4j-slf4j2-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j" }
 log4j-appserver = { group = "org.apache.logging.log4j", name = "log4j-appserver", version.ref = "log4j" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok-version" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 rap-rwt = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt", version.ref = "rap" }
 rap-rwt-test = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt.testfixture", version.ref = "rap" }

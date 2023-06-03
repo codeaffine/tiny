@@ -105,6 +105,10 @@ public class ApplicationServer {
     @Retention(RUNTIME)
     public @interface Stopped {}
 
+    public static class ApplicationServerBuilder { // NOSONAR
+        // needed for javadoc generation with lombok
+    }
+
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
         return newDefaultApplicationServerBuilder()
             .withApplicationConfiguration(applicationConfiguration);

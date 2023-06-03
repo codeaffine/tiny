@@ -24,13 +24,6 @@ tasks.register('addMainLicense', Copy) {
     }
 }
 
-tasks.register('addTestFixturesLicense', Copy) {
-    if(needLicenceFile(project, 'testFixtures', "${projectDir}/src/testFixtures/")) {
-        from(project.parent.file('LICENSE'))
-        into("${projectDir}/src/testFixtures/resources/META-INF")
-    }
-}
-
 private static boolean needLicenceFile(Project project, sourceSetName, sourceSetDir) {
     def result = false
     project.sourceSets.each {
@@ -41,14 +34,8 @@ private static boolean needLicenceFile(Project project, sourceSetName, sourceSet
 
 updateLicenses {
     dependsOn addMainLicense
-    dependsOn addTestFixturesLicense
 }
-
 
 updateLicenseMain {
     dependsOn addMainLicense
-}
-
-updateLicenseTestFixtures {
-    dependsOn addTestFixturesLicense
 }

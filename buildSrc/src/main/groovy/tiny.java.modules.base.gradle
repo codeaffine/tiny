@@ -1,0 +1,23 @@
+import org.gradle.api.tasks.javadoc.Javadoc
+
+plugins {
+    id 'tiny.java.artefacts'
+    id 'org.javamodularity.moduleplugin'
+}
+
+java {
+    modularity.inferModulePath.set(false)
+}
+
+compileTestJava {
+    moduleOptions {
+        compileOnClasspath = true
+    }
+}
+
+test {
+    useJUnitPlatform()
+    moduleOptions {
+        runOnClasspath = true
+    }
+}

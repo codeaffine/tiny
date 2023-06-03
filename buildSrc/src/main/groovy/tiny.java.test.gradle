@@ -1,6 +1,5 @@
 plugins {
     id 'tiny.java.common'
-    id "java-test-fixtures"
     id "jacoco"
 }
 
@@ -9,11 +8,6 @@ dependencies {
         libs.bundles.junit.jupiter.implementation,
         libs.assertj.core,
         libs.mockito.core,
-    )
-    testFixturesImplementation(
-        libs.bundles.junit.jupiter.implementation,
-        libs.assertj.core,
-        libs.mockito.core
     )
     testRuntimeOnly(
         libs.junit.jupiter.engine,

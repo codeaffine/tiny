@@ -1,5 +1,5 @@
 plugins {
-    id 'tiny.java.modules'
+    id 'tiny.java.modules.base'
 }
 
 java {
@@ -19,7 +19,6 @@ java {
 }
 
 project.afterEvaluate {
-    generateEffectiveLombokConfig.dependsOn(extractSources)
     processResources.dependsOn(extractResources)
     compileJava.dependsOn(extractSources)
     sourcesJar.dependsOn(extractSources)

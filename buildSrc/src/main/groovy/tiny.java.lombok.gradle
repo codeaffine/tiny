@@ -1,0 +1,15 @@
+plugins {
+    id 'tiny.java.common'
+    id 'io.freefair.lombok'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly(
+            libs.lombok
+    )
+}

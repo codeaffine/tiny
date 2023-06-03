@@ -1,33 +1,4 @@
-import org.gradle.api.tasks.javadoc.Javadoc
-
 plugins {
-    id 'tiny.java.artefacts'
-    id 'org.javamodularity.moduleplugin'
-}
-
-compileTestJava {
-    moduleOptions {
-        compileOnClasspath = true
-    }
-}
-
-test {
-    useJUnitPlatform()
-    moduleOptions {
-        runOnClasspath = true
-    }
-}
-
-//javadoc {
-//    inputs.property("moduleName", moduleName)
-//    doFirst {
-//        options.addStringOption('-module-path', classpath.asPath)
-//    }
-//}
-
-tasks.withType(Javadoc) {
-    doFirst {
-        options.modulePath = [] + classpath.files
-        options.classpath = []
-    }
+    id 'tiny.java.modules.base'
+    id 'tiny.java.lombok'
 }

@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'io.freefair.lombok'
 }
 
 group 'com.codeaffine.tiny'
@@ -11,16 +10,9 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-    modularity.inferModulePath.set(false)
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-}
-
-dependencies {
-    compileOnly(
-        'org.projectlombok:lombok:1.18.24'
-    )
 }

@@ -1,6 +1,6 @@
 module org.apache.tomcat.embed.jasper {
     requires ant;
-    requires ecj;
+    requires org.eclipse.jdt.core.compiler.batch;
     requires java.base;
     requires java.desktop;
     requires java.xml;

@@ -40,3 +40,7 @@ publishing {
         }
     }
 }
+
+javadoc {
+    enabled = false
+}

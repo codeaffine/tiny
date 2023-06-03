@@ -31,7 +31,3 @@ publishing {
         }
     }
 }
-
-javadoc {
-    enabled = false
-}

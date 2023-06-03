@@ -11,7 +11,6 @@
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.undertow.main" />
         <module name="tiny.com.codeaffine.tiny.test.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.bnd.dummy.test" />
-        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.core.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.cli.basic.main" />
@@ -22,12 +21,8 @@
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.cli.basic.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.bnd.dummy.main" />
-        <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.embed.el.main" />
-        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.jasper.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.test.testFixtures" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.log4j.main" />
-        <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.embed.core.main" />
-        <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.embed.jasper.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tck.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.tomcat.test" />
@@ -38,7 +33,6 @@
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.cli.main" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.test.test" />
-        <module name="tiny.com.codeaffine.tiny.star.tomcat.embed.el.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.undertow.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.shared.test" />
         <module name="com.codeaffine.tiny.tiny.com.codeaffine.tiny.star.log4j.test" />

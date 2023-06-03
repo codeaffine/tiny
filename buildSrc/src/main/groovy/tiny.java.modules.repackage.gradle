@@ -65,3 +65,7 @@ clean {
         }
     }
 }
+
+javadoc {
+    enabled = false
+}

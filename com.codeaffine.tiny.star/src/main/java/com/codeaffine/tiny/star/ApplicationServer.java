@@ -43,12 +43,42 @@ import static java.util.Objects.nonNull;
 import static lombok.Builder.Default;
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * <p>{@link jakarta.servlet.http.HttpServlet} engine adapter that controls the lifecycle of standalone RAP/RWT applications. It allows to {@link #start()}
+ * and {@link #stop()} an {@link org.eclipse.rap.rwt.application.Application} instance specified by an {@link ApplicationConfiguration} implementation.</p>
+ * <p>The actual servlet engine is provided as a service that implements the {@link com.codeaffine.tiny.star.spi.Server} interface. Clients simply define
+ * an appropriate module dependency to use one of the available server implementations. Note that the server implementations are not part of the public API.
+ * They may be subject to change without notice. Note also that only one server implementation at a time must be available on the module-/classpath.</p>
+ * <p>The {@link ApplicationServer} notifies lifecycle listeners about {@link State} changes. Listeners receive notifications via callback methods
+ * annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. These methods have to be either parameterless or
+ * expect the {@link ApplicationServer} as single injection parameter.</p>
+ * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure an instance of this class.</p>
+ * <pre>
+ *     public static void main(String[] args) {
+ *         newApplicationServerBuilder(new DemoApplicationConfiguration())
+ *             .withLifecycleListener(new DemoLifecycleListener())
+ *             .withApplicationIdentifier("com.codeaffine.tiny.star.demo.DemoApplication")
+ *             .build()
+ *             .start();
+ *     }
+ * </pre>
+ * <p>See {@link ApplicationServerBuilder} for details.</p>
+ * <p>Providing an own server implementation is possible by implementing the {@link com.codeaffine.tiny.star.spi.Server} interface and registering it as a
+ * service via the {@link java.util.ServiceLoader} mechanism using an {@link com.codeaffine.tiny.star.spi.ServerFactory}. Ensure that the implementation
+ * passes the contract tests provided by the com.codeaffine.tiny.star.tck module.</p>
+ * <p>Example:</p>
+ */
 @Builder(
     builderMethodName = "newDefaultApplicationServerBuilder",
     setterPrefix = "with"
 )
 public class ApplicationServer {
 
+    /**
+     * The environment variable name for the application server configuration json.
+     *
+     * @see ApplicationServerBuilder
+     */
     public static final String ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION = ServerConfigurationReader.ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION;
     public static final String CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = "delete-working-directory-on-shutdown";
     public static final String CONFIGURATION_ATTRIBUTE_PROTOCOL = "http";
@@ -63,6 +93,9 @@ public class ApplicationServer {
 
     private static final String ILLEGAL_FILENAME_CHARACTERS = "[^a-zA-Z0-9.\\-]";
 
+    /**
+     * The {@link ApplicationConfiguration} implementation that defines the RAP/RWT application to start. Mandatory, must not be {@code null}.
+     */
     @NonNull
     final ApplicationConfiguration applicationConfiguration;
     @NonNull
@@ -105,6 +138,21 @@ public class ApplicationServer {
     @Retention(RUNTIME)
     public @interface Stopped {}
 
+    /**
+     * <p>The {@link ApplicationServerBuilder} allows to configure and create an instance of {@link ApplicationServer}. The builder uses a fluent API
+     * paradigm for concise configuration. The attribute setter methods use the {@code with} prefix followed by the attribute name and return the builder
+     * instance itself to allow the fluent programming style. The actual application server instance is created by calling the
+     * {@link ApplicationServerBuilder}'s build method. Note that at least the {@link ApplicationConfiguration} must be specified to start the application
+     * server. Hence, the {@link #newApplicationServerBuilder(ApplicationConfiguration)} method is usually the preferred way to begin the configuration
+     * chain.</p>
+     * <p>Many configuration attributes may be set by an environment variable. To do so specify the ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION
+     * environment variable at execution time. The variable's value exists of a json that contains the name/value map for the attributes to configure.</p>
+     * <p>Example configuration that specifies a particular port to use:</p>
+     * <pre>
+     *     com.codeaffine.tiny.star.configuration={"port":12000}
+     * </pre>
+     * <p>Setting an attribute value programmatically will override the value provided by the environment variable.</p>
+     */
     public static class ApplicationServerBuilder { // NOSONAR
         // needed for javadoc generation with lombok
     }

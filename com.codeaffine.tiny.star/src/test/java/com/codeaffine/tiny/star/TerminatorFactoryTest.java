@@ -32,7 +32,6 @@ class TerminatorFactoryTest {
     @BeforeEach
     void setUp() {
         ApplicationServer applicationServer = newApplicationServerBuilder(application -> {})
-            .withDeleteWorkingDirectoryOnShutdown(true)
             .build();
         factory = new TerminatorFactory(applicationServer);
         shutdownHookRemover = mock(Runnable.class);

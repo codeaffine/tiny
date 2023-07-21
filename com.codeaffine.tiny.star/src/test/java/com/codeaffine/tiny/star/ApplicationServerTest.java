@@ -23,16 +23,17 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
+import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
-import static com.codeaffine.tiny.star.ApplicationServerTestContext.*;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.star.EntrypointPathCaptor.*;
+import static com.codeaffine.tiny.star.ApplicationServerTestContext.getCurrentServerConfiguration;
+import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
-import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
@@ -201,7 +202,7 @@ class ApplicationServerTest {
     @Test
     void startWithoutDeletingWorkingDirectoryOnShutdown() {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
-            .withDeleteWorkingDirectoryOnShutdown(false)
+            .keepWorkingDirectoryOnShutdown()
             .build();
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
         persistentWorkingDirectory = new File(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
@@ -257,6 +258,43 @@ class ApplicationServerTest {
     }
 
     @Test
+    void startWithMultipleLifecycleListeners() {
+        StateCaptor stateCaptor1 = spy(new StateCaptor());
+        StateCaptor stateCaptor2 = spy(new StateCaptor());
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withLifecycleListener(stateCaptor1)
+            .withLifecycleListener(stateCaptor2)
+            .build();
+
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+
+        InOrder order = inOrder(stateCaptor1, stateCaptor2);
+        order.verify(stateCaptor1).captureStarting(applicationServer);
+        order.verify(stateCaptor2).captureStarting(applicationServer);
+        order.verify(stateCaptor1).captureStarted(applicationServer);
+        order.verify(stateCaptor2).captureStarted(applicationServer);
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    void startWithMultipleLifecycleListenersRegisteredAtOnce() {
+        StateCaptor stateCaptor1 = spy(new StateCaptor());
+        StateCaptor stateCaptor2 = spy(new StateCaptor());
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withLifecycleListeners(List.of(stateCaptor1, stateCaptor2))
+            .build();
+
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+
+        InOrder order = inOrder(stateCaptor1, stateCaptor2);
+        order.verify(stateCaptor1).captureStarting(applicationServer);
+        order.verify(stateCaptor2).captureStarting(applicationServer);
+        order.verify(stateCaptor1).captureStarted(applicationServer);
+        order.verify(stateCaptor2).captureStarted(applicationServer);
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
     void startIfAlreadyStarted() {
         StateCaptor stateCaptor = new StateCaptor();
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
@@ -307,7 +345,7 @@ class ApplicationServerTest {
         boolean isCreated = givenWorkingDirectory.mkdirs();
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withWorkingDirectory(givenWorkingDirectory)
-            .withDeleteWorkingDirectoryOnShutdown(false)
+            .keepWorkingDirectoryOnShutdown()
             .build()
             .start();
         reset(logger);
@@ -362,15 +400,6 @@ class ApplicationServerTest {
         assertThat(stateCaptor.getStarting()).isNull();
         assertThat(stateCaptor.getStarted()).isNull();
         assertThat(stateCaptor.getStopping()).isNull();
-    }
-
-    @Test
-    void buildWithApplicationConfigurationNotSet() {
-        ApplicationServerBuilder builder = newDefaultApplicationServerBuilder();
-
-        assertThatThrownBy(builder::build)
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("applicationConfiguration");
     }
 
     @Test

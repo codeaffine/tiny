@@ -42,9 +42,11 @@ class ShutdownHookRemoverTest {
         "false, false, 1"
     })
     void run(boolean workingDirectoryInUseByLoggingFramework, boolean deleteWorkingDirectoryOnShutdown, int expectedNumberOfInvocations) {
-        ApplicationServer applicationServer = newApplicationServerBuilder(application -> {})
-            .withDeleteWorkingDirectoryOnShutdown(deleteWorkingDirectoryOnShutdown)
-            .build();
+        ApplicationServer.ApplicationServerBuilder applicationServerBuilder = newApplicationServerBuilder(application -> {});
+        if(!deleteWorkingDirectoryOnShutdown) {
+            applicationServerBuilder.keepWorkingDirectoryOnShutdown();
+        }
+        ApplicationServer applicationServer = applicationServerBuilder.build();
         stubLoggingFrameworkControlIsUsingWorkingDirectory(workingDirectoryInUseByLoggingFramework);
         ShutdownHookRemover shutdownHookRemover = new ShutdownHookRemover(
             applicationServer,

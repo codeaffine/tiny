@@ -10,6 +10,7 @@ package com.codeaffine.tiny.star;
 import com.codeaffine.tiny.star.spi.Protocol;
 import lombok.Builder;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
@@ -25,12 +26,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
+import static com.codeaffine.tiny.shared.Metric.measureDuration;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
 import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
-import static com.codeaffine.tiny.shared.Metric.measureDuration;
 import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
@@ -40,19 +41,19 @@ import static java.time.LocalDate.now;
 import static java.util.Arrays.stream;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.Builder.Default;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * <p>{@link jakarta.servlet.http.HttpServlet} engine adapter that controls the lifecycle of standalone RAP/RWT applications. It allows to {@link #start()}
- * and {@link #stop()} an {@link org.eclipse.rap.rwt.application.Application} instance specified by an {@link ApplicationConfiguration} implementation.</p>
- * <p>The actual servlet engine is provided as a service that implements the {@link com.codeaffine.tiny.star.spi.Server} interface. Clients simply define
- * an appropriate module dependency to use one of the available server implementations. Note that the server implementations are not part of the public API.
- * They may be subject to change without notice. Note also that only one server implementation at a time must be available on the module-/classpath.</p>
+ * <p>An {@link ApplicationServer} is a {@link jakarta.servlet.http.HttpServlet} engine adapter that controls the lifecycle of standalone RWT applications.
+ * It allows to {@link #start()} and {@link #stop()} {@link org.eclipse.rap.rwt.application.Application} instances defined by {@link ApplicationConfiguration}
+ * implementations.</p>
  * <p>The {@link ApplicationServer} notifies lifecycle listeners about {@link State} changes. Listeners receive notifications via callback methods
  * annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. These methods have to be either parameterless or
  * expect the {@link ApplicationServer} as single injection parameter.</p>
  * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure an instance of this class.</p>
+ * <p>Example:</p>
  * <pre>
  *     public static void main(String[] args) {
  *         newApplicationServerBuilder(new DemoApplicationConfiguration())
@@ -62,15 +63,19 @@ import static org.slf4j.LoggerFactory.getLogger;
  *             .start();
  *     }
  * </pre>
- * <p>See {@link ApplicationServerBuilder} for details.</p>
+ * <p>See {@link ApplicationServerBuilder} for configuration details.</p>
+ * <p>The actual servlet engine is provided as a service that implements the {@link com.codeaffine.tiny.star.spi.Server} interface. Clients specify
+ * an appropriate runtime dependency to use one of the available server implementations. Note that the server implementations are not part of the public API.
+ * They may be subject to change without notice. Note also that only one server implementation at a time must be available on the module-/classpath.</p>
  * <p>Providing an own server implementation is possible by implementing the {@link com.codeaffine.tiny.star.spi.Server} interface and registering it as a
  * service via the {@link java.util.ServiceLoader} mechanism using an {@link com.codeaffine.tiny.star.spi.ServerFactory}. Ensure that the implementation
  * passes the contract tests provided by the com.codeaffine.tiny.star.tck module.</p>
- * <p>Example:</p>
  */
 @Builder(
+    builderClassName = "InternalApplicationServerBuilder",
     builderMethodName = "newDefaultApplicationServerBuilder",
-    setterPrefix = "with"
+    setterPrefix = "with",
+    access = PRIVATE
 )
 public class ApplicationServer {
 
@@ -140,12 +145,12 @@ public class ApplicationServer {
 
     /**
      * <p>The {@link ApplicationServerBuilder} allows to configure and create an instance of {@link ApplicationServer}. The builder uses a fluent API
-     * paradigm for concise configuration. The attribute setter methods use the {@code with} prefix followed by the attribute name and return the builder
-     * instance itself to allow the fluent programming style. The actual application server instance is created by calling the
-     * {@link ApplicationServerBuilder}'s build method. Note that at least the {@link ApplicationConfiguration} must be specified to start the application
-     * server. Hence, the {@link #newApplicationServerBuilder(ApplicationConfiguration)} method is usually the preferred way to begin the configuration
-     * chain.</p>
-     * <p>Many configuration attributes may be set by an environment variable. To do so specify the ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION
+     * paradigm for concise configuration. The attribute setter methods mostly use the {@code with} prefix followed by the attribute name and return
+     * the builder instance itself which facilitates the easy to read fluent attribute assignments. The actual application server instance is created by
+     * calling the {@link ApplicationServerBuilder}'s build method. Note that at least the {@link ApplicationConfiguration} must be specified to start
+     * the application server. Therefore, the {@link #newApplicationServerBuilder(ApplicationConfiguration)} method is the starting point of the
+     * configuration chain.</p>
+     * <p>Most configuration attributes may be set by an environment variable. To do so specify the ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION
      * environment variable at execution time. The variable's value exists of a json that contains the name/value map for the attributes to configure.</p>
      * <p>Example configuration that specifies a particular port to use:</p>
      * <pre>
@@ -153,24 +158,175 @@ public class ApplicationServer {
      * </pre>
      * <p>Setting an attribute value programmatically will override the value provided by the environment variable.</p>
      */
-    public static class ApplicationServerBuilder { // NOSONAR
-        // needed for javadoc generation with lombok
+    @RequiredArgsConstructor(access = PRIVATE)
+    public static class ApplicationServerBuilder {
+
+        @NonNull
+        private final InternalApplicationServerBuilder delegate;
+
+        /**
+         * Creates a new {@link ApplicationServerBuilder} instance that uses its configured parameters to create an {@link ApplicationServer} instance.
+         *
+         * @return a new {@link ApplicationServer} instance. Never {@code null}.
+         */
+        public ApplicationServer build() {
+            return delegate.build();
+        }
+
+        /**
+         * Define a particular port to use. If not specified the server will use a random port.
+         *
+         * @param port the port to use. Must be within the range of allowed ports of the underlying system.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified port set. Never {@code null}.
+         */
+        public ApplicationServerBuilder withPort(int port) {
+            return new ApplicationServerBuilder(delegate.withPort(port));
+        }
+
+        /**
+         * Define a particular host name to use. If not specified the server will use the {@link ApplicationServer#DEFAULT_HOST} value.
+         *
+         * @param host the host to use. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified host set. Never {@code null}.
+         */
+        public ApplicationServerBuilder withHost(@NonNull String host) {
+            return new ApplicationServerBuilder(delegate.withHost(host));
+        }
+
+        /**
+         * Define a working directory to use. If not specified the server will use a temporary directory.
+         *
+         * @param workingDirectory the working directory to use. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified working directory set. Never {@code null}.
+         * @throws IllegalArgumentException if the specified working directory does not exist.
+         */
+        public ApplicationServerBuilder withWorkingDirectory(@NonNull File workingDirectory) {
+            return new ApplicationServerBuilder(delegate.withWorkingDirectory(workingDirectory));
+        }
+
+        /**
+         * Define an identifier for the application server. If not specified the server will use an identifier derived of the {@link ApplicationConfiguration}
+         * class name.
+         *
+         * @param applicationIdentifier the identifier to use. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified identifier set. Never {@code null}.
+         */
+        public ApplicationServerBuilder withApplicationIdentifier(@NonNull String applicationIdentifier) {
+            return new ApplicationServerBuilder(delegate.withApplicationIdentifier(applicationIdentifier));
+        }
+
+        /**
+         * Register a lifecycle listener that will be notified about {@link State} changes of the {@link ApplicationServer}. The listener will be notified
+         * via callback methods annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. These methods have to
+         * be either parameterless or expect the {@link ApplicationServer} as single injection parameter.
+         * <p>Example:</p>
+         * <pre>
+         *     &#64;Starting
+         *     void captureStarting(ApplicationServer applicationServer) {
+         *     // ...
+         *     }
+         * </pre>
+         * <p>Listeners are notified in the order they have been registered.</p>
+         *
+         * @param lifecycleListener the listener to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified lifecycle listener registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withLifecycleListener(@NonNull Object lifecycleListener) {
+            return new ApplicationServerBuilder(delegate.withLifecycleListener(lifecycleListener ));
+        }
+
+        /**
+         * Register multiple lifecycle listeners that will be notified about {@link State} changes of the {@link ApplicationServer}. The listeners will be
+         * notified via callback methods annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. These methods
+         * have to be either parameterless or expect the {@link ApplicationServer} as single injection parameter.
+         * <p>Example:</p>
+         * <pre>
+         *     &#64;Starting
+         *     void captureStarting(ApplicationServer applicationServer) {
+         *     // ...
+         *     }
+         * </pre>
+         * <p>Listeners are notified in the order they occur in the given listener List.</p>
+         *
+         * @param lifecycleListeners the listeners to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified lifecycle listeners registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withLifecycleListeners(List<Object> lifecycleListeners) {
+            return new ApplicationServerBuilder(delegate.withLifecycleListeners(lifecycleListeners));
+        }
+
+        /**
+         * Define whether the working directory should be deleted on shutdown. If not specified the server will delete the working directory on shutdown.
+         *
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified delete working directory on shutdown flag set. Never
+         * {@code null}.
+         */
+        public ApplicationServerBuilder keepWorkingDirectoryOnShutdown() {
+            return new ApplicationServerBuilder(delegate.withDeleteWorkingDirectoryOnShutdown(false));
+        }
+
+        /**
+         * Define a provider function for an info message shown on the console before the application server starts. If not specified the server will
+         * show a default about message.
+         *
+         * @param startInfoProvider the provider function for the start info message. {@code null} will omit the info message on application
+         *                          server start.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified start info provider set. Never {@code null}.
+         */
+        public ApplicationServerBuilder withStartInfoProvider( Function<ApplicationServer, String> startInfoProvider) {
+            return new ApplicationServerBuilder(delegate.withStartInfoProvider(startInfoProvider));
+        }
     }
 
+    /**
+     * Create a new {@link ApplicationServerBuilder} instance representing the starting point of a fluent API configuration chain that eventually
+     * uses the configured parameters to {@link ApplicationServerBuilder#build()} an {@link ApplicationServer} instance.
+     * <p>Example:</p>
+     * <pre>
+     *     public static void main(String[] args) {
+     *         newApplicationServerBuilder(new DemoApplicationConfiguration())
+     *             .withLifecycleListener(new DemoLifecycleListener())
+     *             .withApplicationIdentifier("com.codeaffine.tiny.star.demo.DemoApplication")
+     *             .build()
+     *             .start();
+     *     }
+     * </pre>
+     *
+     * @param applicationConfiguration the {@link ApplicationConfiguration} implementation that defines the RWT application to start. Must not be
+     *                                 {@code null}.
+     * @return a new {@link ApplicationServer} instance. Never {@code null}.
+     * @see ApplicationServerBuilder
+     */
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
-        return newDefaultApplicationServerBuilder()
-            .withApplicationConfiguration(applicationConfiguration);
+        return new ApplicationServerBuilder(newDefaultApplicationServerBuilder()
+            .withApplicationConfiguration(applicationConfiguration));
     }
 
+    /**
+     * returns the identifier of the application server. Can be specified by the {@link ApplicationServerBuilder#withApplicationIdentifier(String)} method.
+     *
+     * @return the identifier of the application server. Never {@code null}.
+     */
     public String getIdentifier() {
         return isNull(applicationIdentifier) ? encode(applicationConfiguration.getClass().getName()) : applicationIdentifier;
     }
 
+    /**
+     * returns the current lifecycle {@link State} of the application server.
+     *
+     * @return the current lifecycle {@link State} of the application server. Never {@code null}.
+     */
     public State getState() {
         ApplicationProcess applicationProcess = processHolder.get();
         return isNull(applicationProcess) ? HALTED :  applicationProcess.getState();
     }
 
+    /**
+     * returns the {@link URL}s to the RWT application's entry points. The entry points are defined by the {@link ApplicationConfiguration} implementation
+     * that has been specified by the {@link ApplicationServer#newApplicationServerBuilder(ApplicationConfiguration)} method.
+     *
+     * @return the {@link URL}s to the RWT application's entry points. Never {@code null}.
+     */
     public URL[] getUrls() {
         return captureEntrypointPaths(applicationConfiguration)
             .stream()
@@ -178,10 +334,22 @@ public class ApplicationServer {
             .toArray(URL[]::new);
     }
 
+    /**
+     * start this {@link ApplicationServer} instance with the {@link ApplicationConfiguration} implementation and configuration settings specified by the
+     * {@link ApplicationServerBuilder} instance that has been used to create this {@link ApplicationServer} instance. Does nothing if the application
+     * server is already running.
+     *
+     * @return this {@link ApplicationServer} instance. Never {@code null}.
+     */
     public ApplicationServer start() {
         return startInternal(new ApplicationProcessFactory(this), getLogger(getClass()));
     }
 
+    /**
+     * stop this {@link ApplicationServer} instance. Does nothing if the application server is already stopped.
+     *
+     * @return this {@link ApplicationServer} instance. Never {@code null}.
+     */
     public ApplicationServer stop() {
         return stopInternal(getLogger(getClass()));
     }

@@ -46,24 +46,86 @@ import static lombok.Builder.Default;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * <p>An {@link ApplicationServer} is a {@link jakarta.servlet.http.HttpServlet} engine adapter that controls the lifecycle of standalone RWT applications.
- * It allows to {@link #start()} and {@link #stop()} {@link org.eclipse.rap.rwt.application.Application} instances defined by {@link ApplicationConfiguration}
- * implementations.</p>
+ * <p>An {@link ApplicationServer} instance is an {@link jakarta.servlet.http.HttpServlet} engine adapter that controls the lifecycle of a standalone
+ * <a href="https://eclipse.dev/rap/developers-guide/devguide.php?topic=rwt.html" target="_blank">RWT application</a>. It allows to {@link #start()} and
+ * {@link #stop()} an RWT {@link org.eclipse.rap.rwt.application.Application} defined by a given RWT
+ * <a href="https://eclipse.dev/rap/developers-guide/devguide.php?topic=application-configuration.html">{@link ApplicationConfiguration}</a>.</p>
  * <p>The {@link ApplicationServer} notifies lifecycle listeners about {@link State} changes. Listeners receive notifications via callback methods
- * annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. These methods have to be either parameterless or
- * expect the {@link ApplicationServer} as single injection parameter.</p>
- * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure an instance of this class.</p>
- * <p>Example:</p>
+ * annotated with {@link Starting}, {@link Started}, {@link Stopping}, and/or {@link Stopped}. Such callbacks have to be either parameterless or
+ * expect the observed {@link ApplicationServer} instance as the only injection parameter.</p>
+ * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure an new {@link ApplicationServer} instance.</p>
+ * <p>Example that demonstrates the general concepts:</p>
  * <pre>
- *     public static void main(String[] args) {
- *         newApplicationServerBuilder(new DemoApplicationConfiguration())
- *             .withLifecycleListener(new DemoLifecycleListener())
- *             .withApplicationIdentifier("com.codeaffine.tiny.star.demo.DemoApplication")
+ * public class DemoApplication extends AbstractEntryPoint {
+ *
+ *     // observer of ApplicationServer lifecycle state changes
+ *     public static class StateChangeObserver {
+ *         &#64;ApplicationServer.Starting
+ *         public void reportStarting() {
+ *             System.out.println("Server is starting.");
+ *         }
+ *         &#64;ApplicationServer.Started
+ *         public void reportStarted(ApplicationServer server) {
+ *             System.out.println("Server is running with the following entrypoint URLs:");
+ *             stream(server.getUrls()).forEach(System.out::println);
+ *         }
+ *         &#64;ApplicationServer.Stopping
+ *         public void reportStopping() {
+ *             System.out.println("Server is stopping.");
+ *         }
+ *         &#64;ApplicationServer.Stopped
+ *         public void reportStopped() {
+ *             System.out.println("Server is halted.");
+ *         }
+ *     }
+ *
+ *     // Main method to create, start and stop the ApplicationServer instance
+ *     public static void main(String[] args) throws InterruptedException {
+ *         ApplicationServer server = newApplicationServerBuilder(DemoApplication::configure)
+ *             .withLifecycleListener(new StateChangeObserver())
+ *             .withApplicationIdentifier(DemoApplication.class.getName())
  *             .build()
  *             .start();
+ *         // wait a second and then stop the server
+ *         Thread.sleep(1000L);
+ *         new Thread(server::stop)
+ *             .start();
  *     }
+ *
+ *     // RWT org.eclipse.rap.rwt.application.ApplicationConfiguration
+ *     private static void configure(Application application) {
+ *         application.addEntryPoint("/ui", DemoApplication.class, null);
+ *     }
+ *
+ *     // Hello World UI implementation extending org.eclipse.rap.rwt.application.AbstractEntrypoint
+ *     &#64;Override
+ *     protected void createContents(Composite parent) {
+ *         FillLayout layout = new FillLayout(SWT.VERTICAL);
+ *         layout.marginHeight = 20;
+ *         layout.marginWidth = 20;
+ *         parent.setLayout(layout);
+ *
+ *         String labelText = "Hello World!\n\nGive me something unique:";
+ *         Label label = new Label(parent, SWT.WRAP);
+ *         label.setText(labelText);
+ *
+ *         Button button = new Button(parent, SWT.PUSH);
+ *         button.setText("Push me");
+ *         button.addListener(SWT.Selection, event -> label.setText(labelText + "\n" + UUID.randomUUID()));
+ *     }
+ * }
  * </pre>
- * <p>See {@link ApplicationServerBuilder} for configuration details.</p>
+ * Launching the above example will produce something similar to the following output:
+ * <pre>
+ *      Server is starting
+ *      Server is running with the following entrypoint URLs:
+ *      http://localhost:53765/ui
+ *      Server is stopping.
+ *      Server is halted.
+ * </pre>
+ * <p>To play with the UI simply comment out the lines in the main method containing the thread that stops the application server instance. After launching
+ * the application open the entry point URL printed in the console in your favoured browser.</p>
+ * <p>See {@link ApplicationServerBuilder} for details on the {@link ApplicationServer}'s configuration possibilities.</p>
  * <p>The actual servlet engine is provided as a service that implements the {@link com.codeaffine.tiny.star.spi.Server} interface. Clients specify
  * an appropriate runtime dependency to use one of the available server implementations. Note that the server implementations are not part of the public API.
  * They may be subject to change without notice. Note also that only one server implementation at a time must be available on the module-/classpath.</p>
@@ -143,6 +205,10 @@ public class ApplicationServer {
     @Retention(RUNTIME)
     public @interface Stopped {}
 
+    private static class InternalApplicationServerBuilder { // NOSONAR
+        // needed to make javadoc with lombok happy
+    }
+
     /**
      * <p>The {@link ApplicationServerBuilder} allows to configure and create an instance of {@link ApplicationServer}. The builder uses a fluent API
      * paradigm for concise configuration. The attribute setter methods mostly use the {@code with} prefix followed by the attribute name and return
@@ -150,8 +216,9 @@ public class ApplicationServer {
      * calling the {@link ApplicationServerBuilder}'s build method. Note that at least the {@link ApplicationConfiguration} must be specified to start
      * the application server. Therefore, the {@link #newApplicationServerBuilder(ApplicationConfiguration)} method is the starting point of the
      * configuration chain.</p>
-     * <p>Most configuration attributes may be set by an environment variable. To do so specify the ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION
-     * environment variable at execution time. The variable's value exists of a json that contains the name/value map for the attributes to configure.</p>
+     * <p>Most configuration attributes may be set by an environment variable. To do so specify the
+     * {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable at execution time. The variable's value exists of a
+     * json that contains the name/value map for the attributes to configure.</p>
      * <p>Example configuration that specifies a particular port to use:</p>
      * <pre>
      *     com.codeaffine.tiny.star.configuration={"port":12000}

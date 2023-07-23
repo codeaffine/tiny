@@ -28,8 +28,7 @@ import java.util.List;
 import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
 import static com.codeaffine.tiny.star.ApplicationServer.*;
-import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.ApplicationServer.State.STARTING;
+import static com.codeaffine.tiny.star.ApplicationServer.State.*;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.getCurrentServerConfiguration;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
@@ -253,7 +252,7 @@ class ApplicationServerTest {
         order.verifyNoMoreInteractions();
         assertThat(stateCaptor.getHalted()).isNull();
         assertThat(stateCaptor.getStarting()).isSameAs(STARTING);
-        assertThat(stateCaptor.getStarted()).isSameAs(STARTING);
+        assertThat(stateCaptor.getStarted()).isSameAs(RUNNING);
         assertThat(stateCaptor.getStopping()).isNull();
     }
 

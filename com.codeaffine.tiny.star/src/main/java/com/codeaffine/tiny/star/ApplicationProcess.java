@@ -77,10 +77,10 @@ class ApplicationProcess {
             throw extractExceptionToReport(exception, LifecycleException::new, FORWARD_RUNTIME_EXCEPTIONS);
         });
         starter.run();
+        state.set(RUNNING);
         observerRegistry.notifyObservers(Started.class, exception -> {
             throw handleExceptionOnStartedListener(exception);
         });
-        state.set(RUNNING);
     }
 
     private RuntimeException handleExceptionOnStartedListener(Exception exception) {

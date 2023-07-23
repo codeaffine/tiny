@@ -85,7 +85,7 @@ class ApplicationProcessTest {
         assertThat(afterState).isSameAs(RUNNING);
         assertThat(stateCaptor.getHalted()).isNull();
         assertThat(stateCaptor.getStarting()).isSameAs(STARTING);
-        assertThat(stateCaptor.getStarted()).isSameAs(STARTING);
+        assertThat(stateCaptor.getStarted()).isSameAs(RUNNING);
         assertThat(stateCaptor.getStopping()).isNull();
         verifyStartProcedure();
     }
@@ -289,7 +289,8 @@ class ApplicationProcessTest {
         applicationProcess.start();
 
         verifyStartProcedure();
-        verify(logger).debug(DEBUG_APPLICATION_NOT_RUNNING);
+        verify(logger, never()).debug(anyString());
+        assertThat(applicationProcess.getState()).isEqualTo(HALTED);
     }
 
     @Test

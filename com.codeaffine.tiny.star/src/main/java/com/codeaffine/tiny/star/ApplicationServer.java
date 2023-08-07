@@ -142,20 +142,91 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class ApplicationServer {
 
     /**
-     * The environment variable name for the application server configuration json.
+     * The environment variable name that can be used to provide an application server configuration in json format.
      *
      * @see ApplicationServerBuilder
      */
     public static final String ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION = ServerConfigurationReader.ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION;
+
+    /**
+     * The attribute name used for the delete-working-directory-on-shutdown flag definition in the application server's configuration json. The
+     * attribute value is expected to be a boolean. Default is {@link #DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN}.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#keepWorkingDirectoryOnShutdown()
+     * @see ApplicationServerBuilder#deleteWorkingDirectoryOnShutdown()
+     */
     public static final String CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = "delete-working-directory-on-shutdown";
-    public static final String CONFIGURATION_ATTRIBUTE_PROTOCOL = "http";
+
+    /**
+     * The attribute name used for the protocol definition in the application server's configuration json. Attribute values are
+     * expected to be string representations of the {@link Protocol} enum constants. Default is {@link #DEFAULT_PROTOCOL}.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withProtocol(Protocol)
+     */
+    public static final String CONFIGURATION_ATTRIBUTE_PROTOCOL = "protocol";
+
+    /**
+     * The attribute name used for the host definition in the application server's configuration json. Attribute values are
+     * strings representing a valid host name. Default is {@link #DEFAULT_HOST}.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withHost(String)
+     */
     public static final String CONFIGURATION_ATTRIBUTE_HOST = "host";
+
+    /**
+     * The attribute name used for the port definition in the application server's configuration json. Appropriate values are
+     * integers within the range of allowed ports of the underlying system. If not specified the server will choose a port randomly.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withPort(int)
+     */
     public static final String CONFIGURATION_ATTRIBUTE_PORT = "port";
+
+    /**
+     * The attribute name used for the working-directory definition in the application server's configuration json. Attribute values are
+     * expected to denote an existing directory on disk.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withWorkingDirectory(File) 
+     */
     public static final String CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY = "working-directory";
+    
+    /**
+     * The attribute name used for the show-start-info definition in the application server's configuration json. The
+     * attribute value is expected to be a boolean. Default is {@link #DEFAULT_SHOW_START_INFO}.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withStartInfoProvider(Function) 
+     */
     public static final String CONFIGURATION_ATTRIBUTE_SHOW_START_INFO = "show-start-info";
+
+    /**
+     * Default value for {@link #CONFIGURATION_ATTRIBUTE_PROTOCOL}
+     */
     public static final Protocol DEFAULT_PROTOCOL = HTTP;
+
+    /**
+     * Default value for {@link #CONFIGURATION_ATTRIBUTE_HOST}
+     */
     public static final String DEFAULT_HOST = "localhost";
+
+    /**
+     * Default value for {@link #CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN}
+     */
     public static final boolean DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = true;
+
+    /**
+     * Default value for {@link #CONFIGURATION_ATTRIBUTE_SHOW_START_INFO}
+     */
+    public static final boolean DEFAULT_SHOW_START_INFO = true;
+
+    /**
+     * System property set during an application server's {@link State#STARTING} phase indicating the working directory location of the server's instance.
+     * The property gets cleared during server shutdown.
+     */
     public static final String SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY = "com.codeaffine.tiny.star.workingDirectory";
 
     private static final String ILLEGAL_FILENAME_CHARACTERS = "[^a-zA-Z0-9.\\-]";
@@ -190,17 +261,62 @@ public class ApplicationServer {
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 
-    public enum State { STARTING, RUNNING, STOPPING, HALTED }
+    /**
+     * The lifecycle states of an application server instance passes through.
+     */
+    public enum State {
+        /**
+         * this state signals the transition of the application server from (@link #HALTED} to {@link #RUNNING}. In this lifecycle phase
+         * the server attempts to allocate resources like communication port and working directory. In this phase the server cannot
+         * be expected to process requests.
+         */
+        STARTING,
+        /**
+         * this state signals the working phase of the application server's lifecycle. Resources have been allocated and the server is ready
+         * to process requests.
+         */
+        RUNNING,
+        /**
+         * this state signals the transition of the application server from {@link #RUNNING} to {@link #HALTED}. In this lifecycle phase
+         * the server attempts to release resources like communication port and working directory. In this phase the server cannot
+         * be expected to process requests.
+         */
+        STOPPING,
+        /**
+         * this state signals the final state of the application server's lifecycle. Resources have been released and the server does not
+         * process requests.
+         */
+        HALTED
+    }
 
+    /**
+     * Mark a method as a lifecycle state change listener which gets notified when an observed server enters the {@link State#STARTING} state.
+     * Observer objects can be registered via the {@link ApplicationServerBuilder#withLifecycleListener(Object)} configuration method.
+     */
     @Target({ METHOD })
     @Retention(RUNTIME)
     public @interface Starting {}
+
+    /**
+     * Mark a method as a lifecycle state change listener which gets notified when an observed server enters the {@link State#RUNNING} state.
+     * Observer objects can be registered via the {@link ApplicationServerBuilder#withLifecycleListener(Object)} configuration method.
+     */
     @Target({ METHOD })
     @Retention(RUNTIME)
     public @interface Started {}
+
+    /**
+     * Mark a method as a lifecycle state change listener which gets notified when an observed server enters the {@link State#STOPPING} state.
+     * Observer objects can be registered via the {@link ApplicationServerBuilder#withLifecycleListener(Object)} configuration method.
+     */
     @Target({ METHOD })
     @Retention(RUNTIME)
     public @interface Stopping {}
+
+    /**
+     * Mark a method as a lifecycle state change listener which gets notified when an observed server enters the {@link State#HALTED} state.
+     * Observer objects can be registered via the {@link ApplicationServerBuilder#withLifecycleListener(Object)} configuration method.
+     */
     @Target({ METHOD })
     @Retention(RUNTIME)
     public @interface Stopped {}
@@ -241,7 +357,17 @@ public class ApplicationServer {
         }
 
         /**
-         * Define a particular port to use. If not specified the server will use a random port.
+         * Define the protocol to use. If not specified the server will use (@link {@link Protocol#HTTP}
+         *
+         * @param protocol the protocol tu use must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified protocol set. Never {@code null}.
+         */
+        public ApplicationServerBuilder withProtocol(Protocol protocol) {
+            return new ApplicationServerBuilder(delegate.withProtocol(protocol));
+        }
+
+        /**
+         * Define a particular port to use. If not specified the server will choose a port randomly.
          *
          * @param port the port to use. Must be within the range of allowed ports of the underlying system.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified port set. Never {@code null}.
@@ -284,8 +410,11 @@ public class ApplicationServer {
 
         /**
          * Register a lifecycle listener that will be notified about {@link State} changes of the {@link ApplicationServer}. The listener will be notified
-         * via callback methods annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. These methods have to
-         * be either parameterless or expect the {@link ApplicationServer} as single injection parameter.
+         * via callback methods annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. One method might be
+         * annotated by multiple annotations.These methods have to be either parameterless or expect the {@link ApplicationServer} as single injection
+         * parameter. A given {@link ApplicationServer} instance is not guaranteed to be in the state the annotated method observes when the callback gets
+         * invoked as notification is done asynchronously.
+         *
          * <p>Example:</p>
          * <pre>
          *     &#64;Starting
@@ -293,7 +422,7 @@ public class ApplicationServer {
          *     // ...
          *     }
          * </pre>
-         * <p>Listeners are notified in the order they have been registered.</p>
+         * <p>Listener instances are notified in the order they have been registered.</p>
          *
          * @param lifecycleListener the listener to register. Must not be {@code null}.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified lifecycle listener registered. Never {@code null}.
@@ -323,13 +452,23 @@ public class ApplicationServer {
         }
 
         /**
-         * Define whether the working directory should be deleted on shutdown. If not specified the server will delete the working directory on shutdown.
+         * Keep the working directory after shutdown. If not specified the server will delete the working directory on shutdown.
          *
-         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified delete working directory on shutdown flag set. Never
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified delete working directory on shutdown flag reset. Never
          * {@code null}.
          */
         public ApplicationServerBuilder keepWorkingDirectoryOnShutdown() {
             return new ApplicationServerBuilder(delegate.withDeleteWorkingDirectoryOnShutdown(false));
+        }
+
+        /**
+         * Delete the working directory on shutdown. Default setting if not specified otherwise.
+         *
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified delete working directory on shutdown flag set.
+         * Never {@code null}.
+         */
+        public ApplicationServerBuilder deleteWorkingDirectoryOnShutdown() {
+            return new ApplicationServerBuilder(delegate.withDeleteWorkingDirectoryOnShutdown(true));
         }
 
         /**
@@ -340,7 +479,7 @@ public class ApplicationServer {
          *                          server start.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified start info provider set. Never {@code null}.
          */
-        public ApplicationServerBuilder withStartInfoProvider( Function<ApplicationServer, String> startInfoProvider) {
+        public ApplicationServerBuilder withStartInfoProvider(Function<ApplicationServer, String> startInfoProvider) {
             return new ApplicationServerBuilder(delegate.withStartInfoProvider(startInfoProvider));
         }
     }

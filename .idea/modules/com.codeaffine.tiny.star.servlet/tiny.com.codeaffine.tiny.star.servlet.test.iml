@@ -4,8 +4,8 @@
     <content url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star.servlet/build/generated/sources/annotationProcessor/java/test">
       <sourceFolder url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star.servlet/build/generated/sources/annotationProcessor/java/test" isTestSource="true" generated="true" />
     </content>
-    <content url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star.servlet/src/test" dumb="true">
-      <sourceFolder url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star.servlet/src/test/java" isTestSource="true" />
-    </content>
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="90432a8d-375f-4f1d-bfe7-e71beab27873" />
   </component>
 </module>

@@ -6,6 +6,6 @@
     </content>
   </component>
   <component name="SonarLintModuleSettings">
-    <option name="idePathPrefix" value="com.codeaffine.tiny.star.tomcat.bnd.dummy" />
+    <option name="uniqueId" value="5b1edea5-3e82-4f33-a83f-6332a7d0ea88" />
   </component>
 </module>

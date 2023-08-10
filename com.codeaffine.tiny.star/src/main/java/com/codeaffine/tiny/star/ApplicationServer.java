@@ -30,7 +30,6 @@ import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
 import static com.codeaffine.tiny.shared.Metric.measureDuration;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
-import static com.codeaffine.tiny.star.ServerConfigurationReader.readEnvironmentConfigurationAttribute;
 import static com.codeaffine.tiny.star.Texts.*;
 import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.Boolean.TRUE;
@@ -42,7 +41,6 @@ import static java.util.Arrays.stream;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
-import static lombok.Builder.Default;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
@@ -231,33 +229,16 @@ public class ApplicationServer {
 
     private static final String ILLEGAL_FILENAME_CHARACTERS = "[^a-zA-Z0-9.\\-]";
 
-    /**
-     * The {@link ApplicationConfiguration} implementation that defines the RAP/RWT application to start. Mandatory, must not be {@code null}.
-     */
-    @NonNull
-    final ApplicationConfiguration applicationConfiguration;
-    @NonNull
-    @Default
-    final Protocol protocol = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf);
-    @Default
-    final String host = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class);
-    @Default
-    final int port = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class);
-    @Default
-    final File workingDirectory = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new);
-    @Default
-    final boolean deleteWorkingDirectoryOnShutdown
-        = readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
-                                                DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
-                                                Boolean.class);
-    @Default
-    final Function<ApplicationServer, String> startInfoProvider
-        =   TRUE.equals(readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
-          ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier(), now().getYear())
-          : null;
+    ApplicationConfiguration applicationConfiguration;
+    Protocol protocol;
+    String host;
+    int port;
+    File workingDirectory;
+    boolean deleteWorkingDirectoryOnShutdown;
+    Function<ApplicationServer, String> startInfoProvider;
     @Singular
-    final List<Object> lifecycleListeners;
-    final String applicationIdentifier;
+    List<Object> lifecycleListeners;
+    String applicationIdentifier;
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 
@@ -504,8 +485,21 @@ public class ApplicationServer {
      * @see ApplicationServerBuilder
      */
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
+        ServerConfigurationReader configurer = new ServerConfigurationReader();
         return new ApplicationServerBuilder(newDefaultApplicationServerBuilder()
-            .withApplicationConfiguration(applicationConfiguration));
+            .withApplicationConfiguration(applicationConfiguration)
+            .withProtocol(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf))
+            .withHost(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class))
+            .withPort(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class))
+            .withWorkingDirectory(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new))
+            .withStartInfoProvider(
+                  TRUE.equals(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
+                ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier(), now().getYear())
+                : null)
+            .withDeleteWorkingDirectoryOnShutdown(
+                configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
+                                                                DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
+                                                                Boolean.class)));
     }
 
     /**

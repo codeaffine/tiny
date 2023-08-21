@@ -1,5 +1,5 @@
 [versions]
-ant-version = "1.10.13"
+ant-version = "1.10.14"
 assertj = "3.24.2"
 ecj = "3.34.0"
 jackson = "2.15.2"

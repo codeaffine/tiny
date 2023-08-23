@@ -80,7 +80,7 @@ public class Metric {
      * @param operation the operation to execute.
      * @return a reporting callback handler that allows to accept execution time and operation result. 
      */
-    public static <T> SupplierDurationReporter<T> measureDuration(@NonNull Supplier<T> operation) {
+    public static <T> SupplierDurationReporter<T> measureDuration(@NonNull Supplier<? extends T> operation) {
         long start = currentTimeMillis();
         T valueComputedByOperation = operation.get();
         long durationOfOperation = currentTimeMillis() - start;

@@ -10,9 +10,10 @@ package com.codeaffine.tiny.star;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchException;
+import static org.assertj.core.api.Assertions.*;
 
 class SingleServerConfigurationReaderTest implements ServerConfigurationReaderContract {
 
@@ -26,15 +27,6 @@ class SingleServerConfigurationReaderTest implements ServerConfigurationReaderCo
     @Override
     public String getSerialized() {
         return SERIALIZED;
-    }
-
-    @Test
-    void readEnvironmentConfigurationAttributeIfEnvironmentVariableIsNotSet() {
-        ServerConfigurationReader configurationReader = newServerConfigurationReader(null);
-
-        String actual = configurationReader.readEnvironmentConfigurationAttribute("unknown", ATTRIBUTE_DEFAULT_VALUE, String.class);
-
-        assertThat(actual).isEqualTo(ATTRIBUTE_DEFAULT_VALUE);
     }
 
     @Test
@@ -72,5 +64,11 @@ class SingleServerConfigurationReaderTest implements ServerConfigurationReaderCo
             .hasCauseInstanceOf(JsonProcessingException.class)
             .hasMessageContaining(ATTRIBUTE_NAME)
             .hasMessageContaining(INVALID_SERIALISATION_FORMAT);
+    }
+
+    @Test
+    void constructWithNullAsArgumentNameArgument() {
+        assertThatThrownBy(() -> new SingleServerConfigurationReader((Map<String, ?>) null))
+            .isInstanceOf(NullPointerException.class);
     }
 }

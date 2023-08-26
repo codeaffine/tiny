@@ -94,8 +94,7 @@ class ApplicationProcessFactoryTest {
     void createProcessInternals() {
         workingDirectory = new File(tempDir,"workingDirectory");
         boolean successCreatingWorkingDir = workingDirectory.mkdir();
-        ApplicationServer applicationServer = newApplicationServerBuilder(applicationConfiguration)
-            .withApplicationIdentifier(APPLICATION_IDENTIFIER)
+        ApplicationServer applicationServer = newApplicationServerBuilder(applicationConfiguration, APPLICATION_IDENTIFIER)
             .build();
         WorkingDirectoryPreparer workingDirectoryPreparer = fakeWorkingDirectoryPreparer(workingDirectory);
         LoggingFrameworkControl loggingFrameworkControl = mock(LoggingFrameworkControl.class);

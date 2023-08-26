@@ -7,19 +7,15 @@
  */
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
+
+import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 class StartInfoPrinterTest {
 
@@ -41,8 +37,7 @@ class StartInfoPrinterTest {
 
     @Test
     void printStartText() {
-        ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {})
-            .withApplicationIdentifier(APPLICATION_IDENTIFIER)
+        ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {}, APPLICATION_IDENTIFIER)
             .build();
         StartInfoPrinter printer = new StartInfoPrinter(applicationServer, logger);
 
@@ -53,9 +48,8 @@ class StartInfoPrinterTest {
 
     @Test
     void printStartTextWithParticularStartTextProviderSet() {
-        ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {})
+        ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {}, APPLICATION_IDENTIFIER)
             .withStartInfoProvider(server -> String.format(START_TEXT, server.getIdentifier()))
-            .withApplicationIdentifier(APPLICATION_IDENTIFIER)
             .build();
         StartInfoPrinter printer = new StartInfoPrinter(applicationServer, logger);
 
@@ -71,9 +65,8 @@ class StartInfoPrinterTest {
 
     @Test
     void printStartTextIfStartTextProviderIsSetToNull() {
-        ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {})
+        ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {}, APPLICATION_IDENTIFIER)
             .withStartInfoProvider(null)
-            .withApplicationIdentifier(APPLICATION_IDENTIFIER)
             .build();
         StartInfoPrinter printer = new StartInfoPrinter(applicationServer, logger);
 

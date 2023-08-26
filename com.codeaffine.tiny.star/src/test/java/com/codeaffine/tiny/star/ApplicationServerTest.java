@@ -216,8 +216,7 @@ class ApplicationServerTest {
 
     @Test
     void startWithApplicationIdentifier() {
-        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
-            .withApplicationIdentifier(APPLICATION_IDENTIFIER)
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION, APPLICATION_IDENTIFIER)
             .build();
 
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);

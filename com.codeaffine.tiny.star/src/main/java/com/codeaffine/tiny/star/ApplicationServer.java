@@ -81,7 +81,6 @@ import static org.slf4j.LoggerFactory.getLogger;
  *     public static void main(String[] args) throws InterruptedException {
  *         ApplicationServer server = newApplicationServerBuilder(DemoApplication::configure)
  *             .withLifecycleListener(new StateChangeObserver())
- *             .withApplicationIdentifier(DemoApplication.class.getName())
  *             .build()
  *             .start();
  *         // wait a second and then stop the server
@@ -311,15 +310,29 @@ public class ApplicationServer {
      * paradigm for concise configuration. The attribute setter methods mostly use the {@code with} prefix followed by the attribute name and return
      * the builder instance itself which facilitates the easy to read fluent attribute assignments. The actual application server instance is created by
      * calling the {@link ApplicationServerBuilder}'s build method. Note that at least the {@link ApplicationConfiguration} must be specified to start
-     * the application server. Therefore, the {@link #newApplicationServerBuilder(ApplicationConfiguration)} method is the starting point of the
+     * the application server. Therefore, either the {@link #newApplicationServerBuilder(ApplicationConfiguration)} or the
+     *  {@link #newApplicationServerBuilder(ApplicationConfiguration,String)} method serves as starting point of the
      * configuration chain.</p>
      * <p>Most configuration attributes may be set by an environment variable. To do so specify the
-     * {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable at execution time. The variable's value exists of a
-     * json that contains the name/value map for the attributes to configure.</p>
-     * <p>Example configuration that specifies a particular port to use:</p>
+     * {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable for execution. By using the
+     * {@link #newApplicationServerBuilder(ApplicationConfiguration)} method for building and launching an {@link ApplicationServer} instance
+     * the environment variable's value exists of a json that contains simply the name/value map for the attributes to configure. This approach
+     * assumes that the application server instance is the one and only instance running on the current machine and will be sufficient for
+     * simple use cases.</p>
+     * <p>Example configuration that specifies a particular port to use if no application server identifier is specified:</p>
      * <pre>
      *     com.codeaffine.tiny.star.configuration={"port":12000}
      * </pre>
+     * However, if multiple application server instances are running on the same machine or particular file mappings infos (e.g. to the server's working
+     * directory) are needed an application server identifier must be specified. This more general approach is done by using the
+     * {@link #newApplicationServerBuilder(ApplicationConfiguration, String)} method for building and launching an {@link ApplicationServer} instance. In this
+     * case the {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable's value exists of a json that contains
+     * a map of application server identifiers to name/value maps for the attributes to configure.</p>
+     * <p>Example configuration that specifies a particular port to use if an application server identifier is specified:</p>
+     * <pre>
+     *     com.codeaffine.tiny.star.configuration={"com.codeaffine.tiny.demo.DemoApplication": {"port": 4711}}
+     * </pre>
+     *
      * <p>Setting an attribute value programmatically will override the value provided by the environment variable.</p>
      */
     @RequiredArgsConstructor(access = PRIVATE)
@@ -376,17 +389,6 @@ public class ApplicationServer {
          */
         public ApplicationServerBuilder withWorkingDirectory(@NonNull File workingDirectory) {
             return new ApplicationServerBuilder(delegate.withWorkingDirectory(workingDirectory));
-        }
-
-        /**
-         * Define an identifier for the application server. If not specified the server will use an identifier derived of the {@link ApplicationConfiguration}
-         * class name.
-         *
-         * @param applicationIdentifier the identifier to use. Must not be {@code null}.
-         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified identifier set. Never {@code null}.
-         */
-        public ApplicationServerBuilder withApplicationIdentifier(@NonNull String applicationIdentifier) {
-            return new ApplicationServerBuilder(delegate.withApplicationIdentifier(applicationIdentifier));
         }
 
         /**
@@ -473,7 +475,6 @@ public class ApplicationServer {
      *     public static void main(String[] args) {
      *         newApplicationServerBuilder(new DemoApplicationConfiguration())
      *             .withLifecycleListener(new DemoLifecycleListener())
-     *             .withApplicationIdentifier("com.codeaffine.tiny.star.demo.DemoApplication")
      *             .build()
      *             .start();
      *     }
@@ -485,7 +486,43 @@ public class ApplicationServer {
      * @see ApplicationServerBuilder
      */
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
+        String applicationIdentifier = encode(applicationConfiguration.getClass().getName());
         SingleServerConfigurationReader configurator = new SingleServerConfigurationReader();
+        return newApplicationServerBuilder(configurator, applicationConfiguration, applicationIdentifier);
+    }
+
+    /**
+     * Create a new {@link ApplicationServerBuilder} instance representing the starting point of a fluent API configuration chain that eventually
+     * uses the configured parameters to {@link ApplicationServerBuilder#build()} an {@link ApplicationServer} instance.
+     * <p>Example:</p>
+     * <pre>
+     *     public static void main(String[] args) {
+     *         newApplicationServerBuilder(new DemoApplicationConfiguration(), "com.codeaffine.tiny.star.demo.DemoApplication")
+     *             .withLifecycleListener(new DemoLifecycleListener())
+     *             .build()
+     *             .start();
+     *     }
+     * </pre>
+     *
+     * @param applicationConfiguration the {@link ApplicationConfiguration} implementation that defines the RWT application to start. Must not be
+     *                                 {@code null}.
+     * @param applicationIdentifier   the identifier of the application server. Must not be {@code null}.
+     * @return a new {@link ApplicationServer} instance. Never {@code null}.
+     * @see ApplicationServerBuilder
+     */
+    public static ApplicationServerBuilder newApplicationServerBuilder(
+        @NonNull ApplicationConfiguration applicationConfiguration,
+        @NonNull String applicationIdentifier)
+    {
+        MultiServerConfigurationReader configurator = new MultiServerConfigurationReader(applicationIdentifier);
+        return newApplicationServerBuilder(configurator, applicationConfiguration, applicationIdentifier);
+    }
+
+    private static ApplicationServerBuilder newApplicationServerBuilder(
+        ServerConfigurationReader configurator,
+        ApplicationConfiguration applicationConfiguration,
+        String applicationIdentifier)
+    {
         return new ApplicationServerBuilder(newDefaultApplicationServerBuilder()
             .withApplicationConfiguration(applicationConfiguration)
             .withProtocol(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf))
@@ -493,22 +530,23 @@ public class ApplicationServer {
             .withPort(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class))
             .withWorkingDirectory(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new))
             .withStartInfoProvider(
-                  TRUE.equals(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
-                ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier(), now().getYear())
-                : null)
+                TRUE.equals(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
+                    ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier(), now().getYear())
+                    : null)
             .withDeleteWorkingDirectoryOnShutdown(
                 configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
-                                                                DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
-                                                                Boolean.class)));
+                    DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
+                    Boolean.class))
+            .withApplicationIdentifier(applicationIdentifier));
     }
 
     /**
-     * returns the identifier of the application server. Can be specified by the {@link ApplicationServerBuilder#withApplicationIdentifier(String)} method.
+     * returns the identifier of the application server. Can be specified by the {@link #newApplicationServerBuilder(ApplicationConfiguration, String)} method.
      *
      * @return the identifier of the application server. Never {@code null}.
      */
     public String getIdentifier() {
-        return isNull(applicationIdentifier) ? encode(applicationConfiguration.getClass().getName()) : applicationIdentifier;
+        return applicationIdentifier;
     }
 
     /**

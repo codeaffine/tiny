@@ -52,6 +52,15 @@ interface ServerConfigurationReaderContract {
     }
 
     @Test
+    default void readEnvironmentConfigurationAttributeIfEnvironmentVariableIsNotSet() {
+        ServerConfigurationReader configurationReader = newServerConfigurationReader(null);
+
+        String actual = configurationReader.readEnvironmentConfigurationAttribute("unknown", ATTRIBUTE_DEFAULT_VALUE, String.class);
+
+        assertThat(actual).isEqualTo(ATTRIBUTE_DEFAULT_VALUE);
+    }
+
+    @Test
     default void readEnvironmentConfigurationAttributeUsingFactoryArgument() {
         ServerConfigurationReader configurationReader = newServerConfigurationReader(getSerialized());
 

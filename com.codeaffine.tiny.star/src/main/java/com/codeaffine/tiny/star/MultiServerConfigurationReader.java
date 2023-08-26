@@ -18,6 +18,7 @@ import java.util.function.Supplier;
 
 import static com.codeaffine.tiny.star.Texts.ERROR_READING_SERVER_CONFIGURATION;
 import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static lombok.AccessLevel.PACKAGE;
 
@@ -51,12 +52,20 @@ class MultiServerConfigurationReader implements ServerConfigurationReader {
     private void ensureConfigurationReader() {
         if (isNull(configurationReader)) {
             String serialized = configurationLoader.get();
-            Map<String, Object> attributeMap = readServerAttributeMap(serialized);
-            if (isNull(attributeMap)) {
-                throw new IllegalArgumentException(format(ERROR_READING_SERVER_CONFIGURATION, applicationServerId, serialized));
+            if (isNull(serialized)) {
+                configurationReader = new SingleServerConfigurationReader(emptyMap());
+            } else {
+                configurationReader = initializeConfigurationReader(serialized);
             }
-            configurationReader = new SingleServerConfigurationReader(attributeMap);
         }
+    }
+
+    private SingleServerConfigurationReader initializeConfigurationReader(String serialized) {
+        Map<String, Object> attributeMap = readServerAttributeMap(serialized);
+        if (isNull(attributeMap)) {
+            throw new IllegalArgumentException(format(ERROR_READING_SERVER_CONFIGURATION, applicationServerId, serialized));
+        }
+        return new SingleServerConfigurationReader(attributeMap);
     }
 
     private Map<String, Object> readServerAttributeMap(String serialized) {

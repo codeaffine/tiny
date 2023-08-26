@@ -7,84 +7,14 @@
  */
 package com.codeaffine.tiny.star;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 
-import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import static com.codeaffine.tiny.star.Texts.ERROR_READING_ATTRIBUTE;
-import static java.lang.String.format;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+interface ServerConfigurationReader {
 
+    String ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION = "com.codeaffine.tiny.star.configuration";
 
-class ServerConfigurationReader {
-
-    static final String ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION = "com.codeaffine.tiny.star.configuration";
-
-    private static final Supplier<String> CONFIGURATION_READER = () -> System.getenv(ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION);
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-    private final Supplier<String> configurationLoader;
-
-    private Map<String, ?> attributeMap;
-
-    ServerConfigurationReader() {
-        this(CONFIGURATION_READER);
-    }
-
-    ServerConfigurationReader(@NonNull Supplier<String> configurationLoader) {
-        this.configurationLoader = configurationLoader;
-    }
-
-    @SuppressWarnings("unchecked")
-    <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Class<T> type) {
-        tryAttributeMapInitialization(attributeName);
-        if(isNull(attributeMap)) {
-            return defaultValue;
-        }
-        return type.cast(((Map<String, T>) attributeMap).getOrDefault(attributeName, defaultValue));
-    }
-
-    @SuppressWarnings("unchecked")
-    <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Function<String, T> factory) {
-        tryAttributeMapInitialization(attributeName);
-        if(isNull(attributeMap)) {
-            return defaultValue;
-        }
-        return readWithFactory(attributeName, defaultValue, factory, (Map<String, String>) attributeMap);
-    }
-
-    private void tryAttributeMapInitialization(String attributeName) {
-        if(isNull(attributeMap)) {
-            String serialized = readSerializedConfigurationFromEnvironment();
-            if(nonNull(serialized)) {
-                attributeMap = deserialize(attributeName, serialized);
-            }
-        }
-    }
-
-    private static <T> T readWithFactory(String attributeName, T defaultValue, Function<String, T> factory, Map<String, String> map) {
-        String value = map.get(attributeName);
-        if (nonNull(value)) {
-            return factory.apply(value);
-        }
-        return defaultValue;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <V> Map<String, V> deserialize(String attributeName, String serialized) throws IllegalArgumentException {
-        try {
-            return OBJECT_MAPPER.readValue(serialized, Map.class);
-        } catch (JsonProcessingException cause) {
-            throw new IllegalArgumentException(format(ERROR_READING_ATTRIBUTE, attributeName, serialized), cause);
-        }
-    }
-
-    private String readSerializedConfigurationFromEnvironment() {
-        return configurationLoader.get();
-    }
+    <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Class<T> type);
+    <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Function<String, T> factory);
 }

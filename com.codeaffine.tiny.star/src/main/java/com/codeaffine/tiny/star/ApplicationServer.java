@@ -247,7 +247,7 @@ public class ApplicationServer {
      */
     public enum State {
         /**
-         * this state signals the transition of the application server from (@link #HALTED} to {@link #RUNNING}. In this lifecycle phase
+         * this state signals the transition of the application server from {@link #HALTED} to {@link #RUNNING}. In this lifecycle phase
          * the server attempts to allocate resources like communication port and working directory. In this phase the server cannot
          * be expected to process requests.
          */
@@ -485,19 +485,19 @@ public class ApplicationServer {
      * @see ApplicationServerBuilder
      */
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
-        ServerConfigurationReader configurer = new ServerConfigurationReader();
+        SingleServerConfigurationReader configurator = new SingleServerConfigurationReader();
         return new ApplicationServerBuilder(newDefaultApplicationServerBuilder()
             .withApplicationConfiguration(applicationConfiguration)
-            .withProtocol(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf))
-            .withHost(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class))
-            .withPort(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class))
-            .withWorkingDirectory(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new))
+            .withProtocol(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf))
+            .withHost(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class))
+            .withPort(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class))
+            .withWorkingDirectory(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new))
             .withStartInfoProvider(
-                  TRUE.equals(configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
+                  TRUE.equals(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
                 ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier(), now().getYear())
                 : null)
             .withDeleteWorkingDirectoryOnShutdown(
-                configurer.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
+                configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
                                                                 DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
                                                                 Boolean.class)));
     }

@@ -15,7 +15,7 @@ import lombok.Singular;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.slf4j.Logger;
 
-import java.io.File;
+import java.io.*;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.net.MalformedURLException;
@@ -36,6 +36,7 @@ import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.LocalDate.now;
 import static java.util.Arrays.stream;
 import static java.util.Objects.isNull;
@@ -221,12 +222,10 @@ public class ApplicationServer {
     public static final boolean DEFAULT_SHOW_START_INFO = true;
 
     /**
-     * System property set during an application server's {@link State#STARTING} phase indicating the working directory location of the server's instance.
-     * The property gets cleared during server shutdown.
+     * Value returned by {@link #getIdentifier()} if not specified otherwise bu using the {@link #newApplicationServerBuilder(ApplicationConfiguration, String)}
+     * builder factory method.
      */
-    public static final String SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY = "com.codeaffine.tiny.star.workingDirectory";
-
-    private static final String ILLEGAL_FILENAME_CHARACTERS = "[^a-zA-Z0-9.\\-]";
+    public static final String DEFAULT_APPLICATION_IDENTIFIER = ApplicationServer.class.getName().toLowerCase();
 
     ApplicationConfiguration applicationConfiguration;
     Protocol protocol;
@@ -334,6 +333,13 @@ public class ApplicationServer {
      * </pre>
      *
      * <p>Setting an attribute value programmatically will override the value provided by the environment variable.</p>
+     * <p>Alternatively, the configuration can be specified programmatically by using the {@link #withConfiguration(String)} or
+     * {@link #withConfiguration(InputStream)} methods. The configuration string or stream must contain a json that contains a map of name/value
+     * pairs for the attributes to configure.</p>
+     * <p>Example configuration that specifies a particular port to use:</p>
+     * <pre>
+     *     {"port": 4711}
+     * </pre>
      */
     @RequiredArgsConstructor(access = PRIVATE)
     public static class ApplicationServerBuilder {
@@ -465,6 +471,38 @@ public class ApplicationServer {
         public ApplicationServerBuilder withStartInfoProvider(Function<ApplicationServer, String> startInfoProvider) {
             return new ApplicationServerBuilder(delegate.withStartInfoProvider(startInfoProvider));
         }
+
+        /**
+         * Allows to configure the application server by providing a json string that contains a map of name/value pairs for the attributes to configure.
+         * Note that this method will override any configuration provided by the {@link #ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable.
+         * Note also that any subsequent calls to {@link ApplicationServerBuilder} attribute setter methods will override settings made by this method.
+         *
+         * @param configuration the configuration string. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified configuration set. Never {@code null}.
+         */
+        public ApplicationServerBuilder withConfiguration(String configuration) {
+            SingleServerConfigurationReader configurator = new SingleServerConfigurationReader(() -> configuration);
+            return new ApplicationServerBuilder(configure(configurator, delegate));
+        }
+
+        /**
+         * Allows to configure the application server by providing a json stream that contains a map of name/value pairs for the attributes to configure.
+         * Note that this method will override any configuration provided by the {@link #ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable.
+         * Note also that any subsequent calls to {@link ApplicationServerBuilder} attribute setter methods will override settings made by this method.
+         *
+         * @param configuration the configuration stream. Must not be {@code null}. The encoding of the stream is expected to be UTF-8. The stream will
+         *                      not be closed by this method.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified configuration set. Never {@code null}.
+         */
+        public ApplicationServerBuilder withConfiguration(InputStream configuration) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try {
+                configuration.transferTo(out);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            return withConfiguration(out.toString(UTF_8));
+        }
     }
 
     /**
@@ -486,9 +524,8 @@ public class ApplicationServer {
      * @see ApplicationServerBuilder
      */
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
-        String applicationIdentifier = encode(applicationConfiguration.getClass().getName());
         SingleServerConfigurationReader configurator = new SingleServerConfigurationReader();
-        return newApplicationServerBuilder(configurator, applicationConfiguration, applicationIdentifier);
+        return newApplicationServerBuilder(configurator, applicationConfiguration, DEFAULT_APPLICATION_IDENTIFIER);
     }
 
     /**
@@ -523,8 +560,17 @@ public class ApplicationServer {
         ApplicationConfiguration applicationConfiguration,
         String applicationIdentifier)
     {
-        return new ApplicationServerBuilder(newDefaultApplicationServerBuilder()
+        InternalApplicationServerBuilder internalApplicationServerBuilder = newDefaultApplicationServerBuilder()
             .withApplicationConfiguration(applicationConfiguration)
+            .withApplicationIdentifier(applicationIdentifier);
+        return new ApplicationServerBuilder(configure(configurator, internalApplicationServerBuilder));
+    }
+
+    private static InternalApplicationServerBuilder configure(
+        ServerConfigurationReader configurator,
+        InternalApplicationServerBuilder internalApplicationServerBuilder)
+    {
+        return internalApplicationServerBuilder
             .withProtocol(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf))
             .withHost(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class))
             .withPort(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class))
@@ -536,12 +582,14 @@ public class ApplicationServer {
             .withDeleteWorkingDirectoryOnShutdown(
                 configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
                     DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
-                    Boolean.class))
-            .withApplicationIdentifier(applicationIdentifier));
+                    Boolean.class));
     }
 
     /**
      * returns the identifier of the application server. Can be specified by the {@link #newApplicationServerBuilder(ApplicationConfiguration, String)} method.
+     * If not specified otherwise the identifier is the value of the {@link #DEFAULT_APPLICATION_IDENTIFIER} constant. While the latter is sufficient for
+     * simple use cases it is not suitable if multiple application server instances are running on the same machine and particular file mappings infos (e.g.
+     * to the server's working directory) are needed.
      *
      * @return the identifier of the application server. Never {@code null}.
      */
@@ -592,6 +640,10 @@ public class ApplicationServer {
         return stopInternal(getLogger(getClass()));
     }
 
+    String getWorkingDirectorSystemProperty() {
+        return getIdentifier() + "." + CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY;
+    }
+
     ApplicationServer stopInternal(Logger logger) {
         ApplicationProcess process = processHolder.getAndUpdate(currentProcess -> null);
         if (nonNull(process)) {
@@ -632,9 +684,5 @@ public class ApplicationServer {
         } catch (URISyntaxException | MalformedURLException cause) {
             throw new IllegalArgumentException(cause);
         }
-    }
-
-    private static String encode(String name) {
-        return name.replaceAll(ILLEGAL_FILENAME_CHARACTERS, "_");
     }
 }

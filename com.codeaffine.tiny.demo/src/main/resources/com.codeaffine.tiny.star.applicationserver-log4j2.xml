@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration xmlns="http://logging.apache.org/log4j/2.0/config">
     <Properties>
-        <Property name="basePath">${sys:com.codeaffine.tiny.star.workingDirectory}/logs</Property>
+        <Property name="basePath">${sys:com.codeaffine.tiny.star.applicationserver.working-directory}/logs</Property>
         <Property name="file-pattern">%d | %-5p | %t | %m | %C (%F:%L)%n</Property>
         <Property name="console-pattern-default">%d{HH:mm:ss.SSS} | %p: %n  method (line): %C.%M(%F:%L)%n  message      : %m%n</Property>
         <Property name="console-pattern-info">%d{HH:mm:ss.SSS} | %p: %m%n</Property>

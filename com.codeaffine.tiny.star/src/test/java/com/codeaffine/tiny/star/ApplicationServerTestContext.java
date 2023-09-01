@@ -18,19 +18,15 @@ import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-
+@Getter
 public class ApplicationServerTestContext implements ServerFactory, Server, InvocationInterceptor {
 
     static final AtomicReference<ApplicationServerTestContext> CURRENT_SERVER = new AtomicReference<>();
     static final String TEST_SERVER = "TEST-SERVER";
 
-    @Getter
-    private boolean started;
-    @Getter
-    private boolean stopped;
-    @Getter
     private ServerConfiguration configuration;
+    private boolean started;
+    private boolean stopped;
 
     public ApplicationServerTestContext() {
         CURRENT_SERVER.set(this);
@@ -63,7 +59,6 @@ public class ApplicationServerTestContext implements ServerFactory, Server, Invo
             invocation.proceed();
         } finally {
             CURRENT_SERVER.set(null);
-            System.getProperties().remove(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY);
         }
     }
 

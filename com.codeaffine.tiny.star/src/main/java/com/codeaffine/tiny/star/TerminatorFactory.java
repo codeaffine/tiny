@@ -7,14 +7,14 @@
  */
 package com.codeaffine.tiny.star;
 
-import static lombok.AccessLevel.PACKAGE;
-
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.Server;
-
-import java.io.File;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.io.File;
+
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class TerminatorFactory {
@@ -23,6 +23,6 @@ class TerminatorFactory {
     private final ApplicationServer applicationServer;
 
     Terminator create(File workingDirectory, Server server, LoggingFrameworkControl loggingFrameworkControl, Runnable shutdownHookRemover) {
-        return new Terminator(workingDirectory, server, loggingFrameworkControl, shutdownHookRemover, applicationServer.deleteWorkingDirectoryOnShutdown);
+        return new Terminator(workingDirectory, server, loggingFrameworkControl, shutdownHookRemover, applicationServer);
     }
 }

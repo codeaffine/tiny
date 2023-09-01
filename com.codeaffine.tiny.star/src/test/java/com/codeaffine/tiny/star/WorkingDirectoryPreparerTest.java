@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star;
 
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,9 +16,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 
-import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
 
@@ -39,13 +39,18 @@ class WorkingDirectoryPreparerTest {
 
     @Test
     void prepareWorkingDirectory() {
-        ApplicationServer applicationServer = newApplicationServerBuilder(application -> {}).build();
+        ApplicationConfiguration applicationConfiguration = application -> {};
+        ApplicationServer applicationServer = newApplicationServerBuilder(applicationConfiguration).build();
         WorkingDirectoryPreparer preparer = new WorkingDirectoryPreparer(applicationServer);
 
         preparer.prepareWorkingDirectory();
-        workingDirectory = new File(System.getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        workingDirectory = new File(System.getProperty(applicationServer.getWorkingDirectorSystemProperty()));
 
-        assertThat(workingDirectory).exists();
+        assertThat(workingDirectory)
+            .exists();
+        assertThat(workingDirectory.getName())
+            .startsWith(applicationServer.getIdentifier().replaceAll(WorkingDirectoryPreparer.ILLEGAL_FILENAME_CHARACTERS, "_"))
+            .doesNotEndWith(applicationServer.getIdentifier().replaceAll(WorkingDirectoryPreparer.ILLEGAL_FILENAME_CHARACTERS, "_"));
     }
 
     @Test
@@ -60,7 +65,7 @@ class WorkingDirectoryPreparerTest {
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining(NON_EXISTING_FILE_NAME);
-        assertThat(System.getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY))
+        assertThat(System.getProperty(applicationServer.getIdentifier()))
             .isNull();
     }
 
@@ -80,7 +85,7 @@ class WorkingDirectoryPreparerTest {
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining(NON_EXISTING_FILE_NAME);
-        assertThat(System.getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY))
+        assertThat(System.getProperty(applicationServer.getIdentifier()))
             .isNull();
     }
 

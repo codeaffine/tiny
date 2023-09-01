@@ -25,7 +25,7 @@ public class DemoApplication extends AbstractEntryPoint {
     private static final String TEXT = "Hello World!\n\nGive me something unique:";
 
     public static void main(String[] args) {
-        newApplicationServerBuilder(DemoApplication::configure, DemoApplication.class.getName())
+        newApplicationServerBuilder(DemoApplication::configure)
             .withLifecycleListener(new CommandLineInterface())
             .build()
             .start();

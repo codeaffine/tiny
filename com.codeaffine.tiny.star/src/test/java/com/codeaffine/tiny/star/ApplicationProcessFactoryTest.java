@@ -7,26 +7,8 @@
  */
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
-import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
-import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
-import static com.codeaffine.tiny.star.Texts.INFO_SERVER_USAGE;
-import static com.codeaffine.tiny.star.Texts.INFO_WORKING_DIRECTORY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static java.lang.System.getProperty;
-import static java.util.Objects.nonNull;
-
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
+import com.codeaffine.tiny.star.spi.Server;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,11 +18,24 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
 
-import com.codeaffine.tiny.star.spi.Server;
-
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+
+import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.ApplicationServer.DEFAULT_APPLICATION_IDENTIFIER;
+import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
+import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
+import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
+import static com.codeaffine.tiny.star.Texts.INFO_SERVER_USAGE;
+import static com.codeaffine.tiny.star.Texts.INFO_WORKING_DIRECTORY;
+import static java.lang.System.getProperty;
+import static java.util.Objects.nonNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class ApplicationProcessFactoryTest {
 
@@ -74,14 +69,14 @@ class ApplicationProcessFactoryTest {
 
         ApplicationProcess actual = factory.createProcess();
 
-        workingDirectory = new File(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        workingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         ArgumentCaptor<String> applicationIdentifierCaptor = forClass(String.class);
         InOrder order = inOrder(logger);
-        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         order.verify(logger).info(eq(INFO_SERVER_USAGE), applicationIdentifierCaptor.capture(), eq(CURRENT_SERVER.get().getName()));
         order.verifyNoMoreInteractions();
         assertThat(applicationIdentifierCaptor.getAllValues())
-            .allMatch(value -> value.startsWith(getClass().getName()));
+            .allMatch(DEFAULT_APPLICATION_IDENTIFIER::equals);
         assertThat(workingDirectory)
             .exists()
             .isDirectory();

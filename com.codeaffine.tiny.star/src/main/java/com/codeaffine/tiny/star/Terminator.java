@@ -7,19 +7,18 @@
  */
 package com.codeaffine.tiny.star;
 
-import static com.codeaffine.tiny.star.ApplicationServer.SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY;
-import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
-import static com.codeaffine.tiny.shared.Threads.saveRun;
-import static lombok.AccessLevel.PACKAGE;
-
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.Server;
-
-import java.io.File;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
+import java.io.File;
+
+import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.shared.Threads.saveRun;
+import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class Terminator implements Runnable {
@@ -32,7 +31,8 @@ class Terminator implements Runnable {
     private final LoggingFrameworkControl loggingFrameworkControl;
     @NonNull
     private final Runnable shutdownHookRemover;
-    private final boolean deleteWorkingDirectoryOnShutdown;
+    @NonNull
+    private final ApplicationServer applicationServer;
 
     @Getter
     @Setter
@@ -41,13 +41,13 @@ class Terminator implements Runnable {
     @Override
     public void run() {
         server.stop();
-        System.getProperties().remove(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY);
+        System.getProperties().remove(applicationServer.getWorkingDirectorSystemProperty());
         deleteWorkingDirectory();
         shutdownHookRemover.run();
     }
 
     void deleteWorkingDirectory() {
-        if (deleteWorkingDirectoryOnShutdown) {
+        if (applicationServer.deleteWorkingDirectoryOnShutdown) {
             if (isShutdownHookExecution()) {
                 saveRun(loggingFrameworkControl::halt);
                 deleteDirectory(applicationWorkingDirectory);

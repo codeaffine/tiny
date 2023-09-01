@@ -17,12 +17,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
@@ -99,10 +101,10 @@ class ApplicationServerTest {
 
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
 
-        File workingDirectory = new File(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        File workingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         ArgumentCaptor<String> applicationIdentifierCaptor = forClass(String.class);
         InOrder order = inOrder(logger);
-        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         order.verify(logger).info(eq(INFO_SERVER_USAGE), applicationIdentifierCaptor.capture(), eq(CURRENT_SERVER.get().getName()));
         order.verify(logger).info(eq(INFO_CREATION_CONFIRMATION), eq(applicationIdentifierCaptor.getValue()), anyLong());
         order.verify(logger).info(INFO_ENTRYPOINT_URL, expectedEntrypointUrl(ENTRY_POINT_PATH_1));
@@ -120,7 +122,7 @@ class ApplicationServerTest {
             .isDirectory()
             .exists();
         assertThat(applicationIdentifierCaptor.getAllValues())
-            .allMatch(value -> value.startsWith(getClass().getName()));
+            .allMatch(DEFAULT_APPLICATION_IDENTIFIER::equals);
     }
 
     @Test
@@ -133,7 +135,7 @@ class ApplicationServerTest {
 
         applicationServer.start();
 
-        File createdWorkingDirectory = new File(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        File createdWorkingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         assertThat(isCreated).isTrue();
         assertThat(getCurrentServerConfiguration().getWorkingDirectory())
             .isEqualTo(givenWorkingDirectory)
@@ -155,7 +157,7 @@ class ApplicationServerTest {
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining(givenWorkingDirectory.getAbsolutePath());
         assertThat(CURRENT_SERVER.get()).isNull();
-        assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
+        assertThat(getProperty(server.getWorkingDirectorSystemProperty())).isNull();
     }
 
     @Test
@@ -173,7 +175,7 @@ class ApplicationServerTest {
             .hasMessageContaining(givenWorkingDirectory.getAbsolutePath());
         assertThat(fileCreated).isTrue();
         assertThat(CURRENT_SERVER.get()).isNull();
-        assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
+        assertThat(getProperty(server.getWorkingDirectorSystemProperty())).isNull();
     }
 
     @Test
@@ -204,11 +206,11 @@ class ApplicationServerTest {
             .keepWorkingDirectoryOnShutdown()
             .build();
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
-        persistentWorkingDirectory = new File(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        persistentWorkingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
 
         applicationServer.stop();
 
-        assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
+        assertThat(getProperty(applicationServer.getWorkingDirectorSystemProperty())).isNull();
         assertThat(getCurrentServerConfiguration().getWorkingDirectory())
             .exists()
             .isEqualTo(persistentWorkingDirectory);
@@ -221,10 +223,10 @@ class ApplicationServerTest {
 
         applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
 
-        File workingDirectory = new File(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        File workingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         ArgumentCaptor<String> captor = forClass(String.class);
         InOrder order = inOrder(logger);
-        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY));
+        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         order.verify(logger).info(eq(INFO_SERVER_USAGE), captor.capture(), eq(CURRENT_SERVER.get().getName()));
         order.verify(logger).info(eq(INFO_STARTUP_CONFIRMATION), eq(captor.getValue()), anyLong());
         order.verifyNoMoreInteractions();
@@ -293,6 +295,30 @@ class ApplicationServerTest {
     }
 
     @Test
+    void startWithConfigurationWithJsonString() {
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withConfiguration(format("{\"port\": %s}", CUSTOM_PORT))
+            .build();
+
+        applicationServer.start();
+
+        assertThat(getCurrentServerConfiguration().getPort()).isEqualTo(CUSTOM_PORT);
+    }
+
+    @Test
+    void startWithConfigurationWithJsonInputStream() throws IOException {
+        ByteArrayInputStream configuration = spy(new ByteArrayInputStream(format("{\"port\": %s}", CUSTOM_PORT).getBytes(StandardCharsets.UTF_8)));
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withConfiguration(configuration)
+            .build();
+
+        applicationServer.start();
+
+        assertThat(getCurrentServerConfiguration().getPort()).isEqualTo(CUSTOM_PORT);
+        verify(configuration, never()).close();
+    }
+
+    @Test
     void startIfAlreadyStarted() {
         StateCaptor stateCaptor = new StateCaptor();
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
@@ -330,7 +356,7 @@ class ApplicationServerTest {
 
         assertThat(CURRENT_SERVER.get().isStopped()).isTrue();
         assertThat(getCurrentServerConfiguration().getWorkingDirectory()).doesNotExist();
-        assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
+        assertThat(getProperty(applicationServer.getWorkingDirectorSystemProperty())).isNull();
         InOrder order = inOrder(logger);
         order.verify(logger).info(INFO_SHUTDOWN_START, applicationServer.getIdentifier());
         order.verify(logger).info(eq(INFO_SHUTDOWN_CONFIRMATION), eq(applicationServer.getIdentifier()), anyLong());
@@ -350,7 +376,7 @@ class ApplicationServerTest {
 
         applicationServer.stop();
 
-        assertThat(getProperty(SYSTEM_PROPERTY_APPLICATION_WORKING_DIRECTORY)).isNull();
+        assertThat(getProperty(applicationServer.getWorkingDirectorSystemProperty())).isNull();
         assertThat(isCreated).isTrue();
         assertThat(CURRENT_SERVER.get().isStopped()).isTrue();
         assertThat(getCurrentServerConfiguration().getWorkingDirectory())

@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-module com.codeaffine.tiny.demo {
+open module com.codeaffine.tiny.demo {
     requires com.codeaffine.tiny.star;
     requires com.codeaffine.tiny.star.cli;
     requires org.eclipse.rap.rwt;

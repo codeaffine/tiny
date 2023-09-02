@@ -63,7 +63,7 @@ class MultiServerConfigurationReader implements ServerConfigurationReader {
     private SingleServerConfigurationReader initializeConfigurationReader(String serialized) {
         Map<String, Object> attributeMap = readServerAttributeMap(serialized);
         if (isNull(attributeMap)) {
-            throw new IllegalArgumentException(format(ERROR_READING_SERVER_CONFIGURATION, applicationServerId, serialized));
+            attributeMap = emptyMap();
         }
         return new SingleServerConfigurationReader(attributeMap);
     }

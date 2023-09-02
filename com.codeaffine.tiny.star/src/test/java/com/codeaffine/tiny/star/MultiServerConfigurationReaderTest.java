@@ -36,14 +36,9 @@ class MultiServerConfigurationReaderTest implements ServerConfigurationReaderCon
     void readEnvironmentConfigurationAttributeIfApplicationServerIdCannotBeFound() {
         ServerConfigurationReader configurationReader = newServerConfigurationReader(CONFIGURATION_WITHOUT_APPLICATION_SERVER_ID);
 
-        Exception actual
-            = catchException(() -> configurationReader.readEnvironmentConfigurationAttribute(ATTRIBUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String.class));
+        String actual = configurationReader.readEnvironmentConfigurationAttribute(ATTRIBUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String.class);
 
-        assertThat(actual)
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasNoCause()
-            .hasMessageContaining(APPLICATION_SERVER_ID)
-            .hasMessageContaining(CONFIGURATION_WITHOUT_APPLICATION_SERVER_ID);
+        assertThat(actual).isEqualTo(ATTRIBUTE_DEFAULT_VALUE);
     }
 
     @Test

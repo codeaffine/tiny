@@ -12,6 +12,7 @@ import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import jakarta.servlet.ServletException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,8 @@ import static java.nio.file.Files.writeString;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class UndertowLifecycleTest {
 
@@ -78,17 +81,20 @@ class UndertowLifecycleTest {
     void startWithNullAsPathArgument() {
         lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
 
-        assertThatThrownBy(() -> lifecycle.startUndertow(null))
+        assertThatThrownBy(() -> lifecycle.startUndertow(null, mock(DeploymentManager.class)))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Nested
     class Started {
 
+        private DeploymentManager manager;
+
         @BeforeEach
         void setUp() {
+            manager = mock(DeploymentManager.class);
             lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
         }
 
         @Test
@@ -99,7 +105,7 @@ class UndertowLifecycleTest {
         }
 
         @Test
-        void requestServerAfterStopped() {
+        void requestServerAfterStopped() throws ServletException {
             lifecycle.stopUndertow();
 
             Exception actual = catchException(UndertowLifecycleTest.this::readIndexContent);
@@ -107,11 +113,12 @@ class UndertowLifecycleTest {
             assertThat(actual)
                 .isInstanceOf(ConnectException.class)
                 .hasMessageContaining(CONNECTION_REFUSED);
+            verify(manager).stop();
         }
 
         @Test
         void requestServerAfterRestartAlreadyRunningServer() {
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
 
             String actual = readIndexContent();
 
@@ -122,10 +129,13 @@ class UndertowLifecycleTest {
     @Nested
     class Stopped {
 
+        private DeploymentManager manager;
+
         @BeforeEach
         void setUp() {
+            manager = mock(DeploymentManager.class);
             lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
             lifecycle.stopUndertow();
         }
 
@@ -140,7 +150,7 @@ class UndertowLifecycleTest {
 
         @Test
         void requestServerAfterRestart() {
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
 
             String actual = readIndexContent();
 

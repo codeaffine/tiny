@@ -11,6 +11,7 @@ import com.codeaffine.tiny.star.ApplicationServer;
 
 import static com.codeaffine.tiny.demo.ApplicationServerContextRegistry.getApplicationServerContextRegistry;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 class ShutdownHandler {
 
@@ -24,7 +25,11 @@ class ShutdownHandler {
 
     @ApplicationServer.Stopping
     void stopAllServers() {
-        ApplicationServerContextRegistry.stopAllServers(registry);
+        synchronized (lock) {
+            if (nonNull(registry)) {
+                ApplicationServerContextRegistry.stopAllServers(registry);
+            }
+        }
     }
 
     public void registerShutdownHook() {

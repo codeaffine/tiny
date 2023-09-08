@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.shared;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,9 +16,41 @@ import java.util.function.Function;
 
 import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.shared.Texts.*;
+import static lombok.AccessLevel.PACKAGE;
 import static org.assertj.core.api.Assertions.*;
 
 class ReflectionsTest {
+
+    static class Operation implements Runnable {
+        @Override
+        public void run() {
+        }
+    }
+
+    @RequiredArgsConstructor(access = PACKAGE)
+    static class OperationWithConstructorArgument implements Runnable {
+
+        final String argument;
+
+        @Override
+        public void run() {
+
+        }
+    }
+
+    static class OperationWithConstructorThrowingException implements Runnable {
+
+        private static final RuntimeException RUNTIME_EXCEPTION = new RuntimeException();
+
+        OperationWithConstructorThrowingException() {
+            throw RUNTIME_EXCEPTION;
+        }
+
+        @Override
+        public void run() {
+
+        }
+    }
 
     @Test
     void extractExceptionToReportWithArbitraryCheckedExceptionAsExceptionArgument() {
@@ -163,6 +196,36 @@ class ReflectionsTest {
 
         //noinspection ThrowableNotThrown
         assertThatThrownBy(() -> extractExceptionToReport(exception, RuntimeException::new, null))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void newInstance() {
+        Runnable actual = Reflections.newInstance(Operation.class);
+
+        assertThat(actual).isNotNull();
+    }
+
+    @Test
+    void newInstanceWithTypeArgumentExpectingConstructorArgument() {
+        Exception actual = catchException(() -> Reflections.newInstance(OperationWithConstructorArgument.class));
+
+        assertThat(actual)
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasCauseInstanceOf(NoSuchMethodException.class);
+    }
+
+    @Test
+    void newInstanceWithTypeArgumentHavingConstructorThrowingException() {
+        Exception actual = catchException(() -> Reflections.newInstance(OperationWithConstructorThrowingException.class));
+
+        assertThat(actual)
+            .isSameAs(OperationWithConstructorThrowingException.RUNTIME_EXCEPTION);
+    }
+
+    @Test
+    void newInstanceWithNullAsTypeArgument() {
+        assertThatThrownBy(() -> Reflections.newInstance(null))
             .isInstanceOf(NullPointerException.class);
     }
 }

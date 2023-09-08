@@ -10,6 +10,7 @@ dependencies {
             libs.jakarta.servlet.api,
             libs.rap.rwt,
             libs.slf4j.api,
+            project(':com.codeaffine.tiny.shared'),
             project(':com.codeaffine.tiny.star'),
             project(':com.codeaffine.tiny.star.servlet'),
             project(':com.codeaffine.tiny.star.tomcat.embed.core'),

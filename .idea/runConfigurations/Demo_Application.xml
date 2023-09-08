@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="tiny [run]" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="Demo Application" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="env">
         <map>

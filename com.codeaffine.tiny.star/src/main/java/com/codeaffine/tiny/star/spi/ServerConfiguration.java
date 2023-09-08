@@ -10,6 +10,7 @@ package com.codeaffine.tiny.star.spi;
 import jakarta.servlet.ServletContextListener;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 public interface ServerConfiguration {
@@ -21,4 +22,5 @@ public interface ServerConfiguration {
     ServletContextListener getContextListener();
     File getWorkingDirectory();
     Set<String> getEntryPointPaths();
+    List<FilterDefinition> getFilterDefinitions();
 }

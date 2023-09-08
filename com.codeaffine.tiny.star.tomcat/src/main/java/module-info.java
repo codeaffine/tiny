@@ -10,6 +10,7 @@ module com.codeaffine.tiny.star.tomcat {
 
     requires jakarta.servlet;
     requires com.codeaffine.tiny.star;
+    requires com.codeaffine.tiny.shared;
     requires com.codeaffine.tiny.star.servlet;
     requires org.eclipse.rap.rwt;
     requires org.apache.tomcat.embed.core;

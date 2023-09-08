@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.Protocol;
 import lombok.Builder;
 import lombok.NonNull;
@@ -23,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -222,7 +224,7 @@ public class ApplicationServer {
     public static final boolean DEFAULT_SHOW_START_INFO = true;
 
     /**
-     * Value returned by {@link #getIdentifier()} if not specified otherwise bu using the {@link #newApplicationServerBuilder(ApplicationConfiguration, String)}
+     * Value returned by {@link #getIdentifier()} if not specified otherwise by using the {@link #newApplicationServerBuilder(ApplicationConfiguration, String)}
      * builder factory method.
      */
     public static final String DEFAULT_APPLICATION_IDENTIFIER = ApplicationServer.class.getName().toLowerCase();
@@ -237,6 +239,8 @@ public class ApplicationServer {
     @Singular
     List<Object> lifecycleListeners;
     String applicationIdentifier;
+    @Singular
+    List<FilterDefinition> filterDefinitions;
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 
@@ -395,6 +399,41 @@ public class ApplicationServer {
          */
         public ApplicationServerBuilder withWorkingDirectory(@NonNull File workingDirectory) {
             return new ApplicationServerBuilder(delegate.withWorkingDirectory(workingDirectory));
+        }
+
+        /**
+         * register the given  {@link FilterDefinition} to the application server instance to create. Filter-mappings will be added to the web application
+         * in the order the filter definitions are registered.
+         *
+         * @param filterDefinition the filter definition to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified filter definition registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withFilterDefinition(@NonNull FilterDefinition filterDefinition) {
+            return new ApplicationServerBuilder(delegate.withFilterDefinition(filterDefinition));
+        }
+
+        /**
+         * register the given  {@link FilterDefinition}s to the application server instance to create. Filter-mappings will be added to the web application
+         * in the order of the given filter definitions argument.
+         *
+         * @param filterDefinitions the filter definitions to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified filter definitions registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withFilterDefinitions(FilterDefinition ... filterDefinitions) {
+            return new ApplicationServerBuilder(delegate.withFilterDefinitions(stream(filterDefinitions)
+                .filter(Objects::nonNull)
+                .toList()));
+        }
+
+        /**
+         * register the given  {@link FilterDefinition}s to the application server instance to create. Filter-mappings will be added to the web application
+         * in the order of the given filter definitions argument.
+         *
+         * @param filterDefinitions the filter definitions to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified filter definitions registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withFilterDefinitions(@NonNull List<FilterDefinition> filterDefinitions) {
+            return new ApplicationServerBuilder(delegate.withFilterDefinitions(filterDefinitions));
         }
 
         /**

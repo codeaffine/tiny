@@ -8,12 +8,16 @@
 package com.codeaffine.tiny.star.tck;
 
 import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
+import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
+import jakarta.servlet.Filter;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
+import static com.codeaffine.tiny.star.spi.FilterDefinition.of;
 import static lombok.AccessLevel.PRIVATE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,6 +32,18 @@ public class ApplicationServerTestHelper {
     public static final int PORT = 1234;
     public static final ServerConfiguration CONFIGURATION = stubServerConfiguration(ENTRYPOINT_PATH_1);
     public static final ServerConfiguration MULTI_ENTRYPOINT_CONFIGURATION = stubServerConfiguration(ENTRYPOINT_PATH_1, ENTRYPOINT_PATH_2);
+    public static final String FILTER_NAME_1 = "filter1";
+    public static final String FILTER_NAME_2 = "filter2";
+    public static final String FILTER_NAME_3 = "filter3";
+    public static final FilterDefinition FILTER_DEFINITION_1 = of(FILTER_NAME_1, mock(Filter.class));
+    public static final FilterDefinition FILTER_DEFINITION_2 = of(FILTER_NAME_2, mock(Filter.class), ENTRYPOINT_PATH_1);
+    public static final FilterDefinition FILTER_DEFINITION_3 = of(FILTER_NAME_3, mock(Filter.class), ENTRYPOINT_PATH_1, ENTRYPOINT_PATH_2);
+
+    public static ServerConfiguration stubServerConfiguration(File workingDirectory, List<FilterDefinition> filterDefinitions, List<String> entryPointPaths) {
+        ServerConfiguration result = stubServerConfiguration(workingDirectory, entryPointPaths.toArray(new String[0]));
+        when(result.getFilterDefinitions()).thenReturn(filterDefinitions);
+        return result;
+    }
 
     public static ServerConfiguration stubServerConfiguration(File workingDirectory, String ... entryPointPaths) {
         ServerConfiguration result = stubServerConfiguration(entryPointPaths);

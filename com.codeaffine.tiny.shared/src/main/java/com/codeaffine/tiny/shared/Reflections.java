@@ -10,6 +10,7 @@ package com.codeaffine.tiny.shared;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -25,7 +26,17 @@ public class Reflections {
 
     public enum Mode {
         FORWARD_RUNTIME_EXCEPTIONS,
-        WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS
+        WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS;
+    }
+
+    public static <T> T newInstance(@NonNull Class<T> type) {
+        try {
+            Constructor<T> constructor = type.getDeclaredConstructor();
+            constructor.setAccessible(true); // NOSONAR
+            return type.cast(constructor.newInstance());
+        } catch (Exception cause) {
+            throw extractExceptionToReport(cause, IllegalArgumentException::new, FORWARD_RUNTIME_EXCEPTIONS);
+        }
     }
 
     public static <T extends RuntimeException> RuntimeException extractExceptionToReport(

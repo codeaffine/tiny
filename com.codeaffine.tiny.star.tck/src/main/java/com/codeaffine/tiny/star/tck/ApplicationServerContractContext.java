@@ -8,6 +8,7 @@
 package com.codeaffine.tiny.star.tck;
 
 import com.codeaffine.tiny.star.ApplicationServer;
+import jakarta.servlet.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.rap.rwt.application.Application;
@@ -16,6 +17,7 @@ import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.junit.jupiter.api.extension.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,7 +27,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.Stopping;
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import static org.junit.jupiter.api.extension.ExtensionContext.Store;
 
-public class ApplicationServerContractContext implements ParameterResolver, BeforeAllCallback, EntryPointFactory {
+public class ApplicationServerContractContext implements ParameterResolver, BeforeAllCallback, EntryPointFactory, Filter {
 
     static final Namespace NAMESPACE = Namespace.create(ApplicationServerCompatibilityContract.class);
     static final String CONTEXT_STORAGE_KEY = ApplicationServerContractContext.class.getName();
@@ -35,6 +37,12 @@ public class ApplicationServerContractContext implements ParameterResolver, Befo
     @Setter
     @Getter
     private File workingDirectory;
+    @Getter
+    private boolean filterInitialized;
+    @Getter
+    private boolean filterDestroyed;
+    @Getter
+    private boolean doFilterCalled;
 
     ApplicationServerContractContext() {
         entryPointFactoryHub = new AtomicReference<>();
@@ -86,5 +94,21 @@ public class ApplicationServerContractContext implements ParameterResolver, Befo
 
     void configure(Application application) {
         application.addEntryPoint("/ui", this, null);
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        filterInitialized = true;
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        doFilterCalled = true;
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    public void destroy() {
+        filterDestroyed = true;
     }
 }

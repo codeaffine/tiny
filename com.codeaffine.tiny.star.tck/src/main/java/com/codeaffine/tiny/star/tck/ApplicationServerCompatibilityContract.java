@@ -12,12 +12,13 @@ import com.codeaffine.tiny.star.ApplicationServer;
 import java.io.File;
 import java.net.URL;
 
+import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
 import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
+import static com.codeaffine.tiny.star.spi.FilterDefinition.of;
 import static com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContractUtil.*;
-import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ApplicationServerCompatibilityTest
@@ -32,6 +33,7 @@ public interface ApplicationServerCompatibilityContract {
         ApplicationServer applicationServer = newApplicationServerBuilder(context::configure)
             .withLifecycleListener(context)
             .withWorkingDirectory(context.getWorkingDirectory())
+            .withFilterDefinition(of(context))
             .build();
 
         State initialState = applicationServer.getState();
@@ -81,6 +83,9 @@ public interface ApplicationServerCompatibilityContract {
         assertThat(context.getWorkingDirectory())
             .describedAs("Working directory %s still exists.", context.getWorkingDirectory())
             .doesNotExist();
+        assertThat(context.isFilterInitialized()).isTrue();
+        assertThat(context.isFilterDestroyed()).isTrue();
+        assertThat(context.isDoFilterCalled()).isTrue();
     }
 
     @RequestApplicationServer

@@ -10,51 +10,65 @@ package com.codeaffine.tiny.star.undertow;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
+import io.undertow.servlet.api.DeploymentManager;
+import jakarta.servlet.ServletException;
 import lombok.NonNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.codeaffine.tiny.shared.Reflections.*;
 import static java.util.Objects.nonNull;
 
 class UndertowLifecycle {
 
-    private final AtomicReference<Undertow> serverHolder;
+    private final AtomicReference<UndertowInstance> serverHolder;
     private final ServerConfiguration configuration;
+
+    record UndertowInstance(Undertow undertow, DeploymentManager manager) {}
 
     UndertowLifecycle(@NonNull ServerConfiguration configuration) {
         this.serverHolder = new AtomicReference<>();
         this.configuration = configuration;
     }
 
-    void startUndertow(@NonNull PathHandler path) {
-        serverHolder.getAndUpdate(current -> doStart(path, current));
+    void startUndertow(@NonNull PathHandler path, DeploymentManager manager) {
+        serverHolder.getAndUpdate(current -> doStart(path, manager, current));
     }
 
     void stopUndertow() {
-        serverHolder.getAndUpdate(UndertowLifecycle::doStop);
+        serverHolder.getAndUpdate(this::doStop);
     }
 
-    private Undertow doStart(PathHandler path, Undertow current) {
+    private UndertowInstance doStart(PathHandler path, DeploymentManager manager, UndertowInstance current) {
         if(nonNull(current)) {
             return current;
         }
-        return doStart(path);
+        return doStart(path, manager);
     }
 
-    private Undertow doStart(PathHandler path) {
-        Undertow result = Undertow.builder()
+    private UndertowInstance doStart(PathHandler path, DeploymentManager manager) {
+        Undertow undertow = Undertow.builder()
             .addHttpListener(configuration.getPort(), configuration.getHost())
             .setHandler(path)
             .build();
-        result.start();
-        return result;
+        undertow.start();
+        return new UndertowInstance(undertow, manager);
     }
 
     @SuppressWarnings("SameReturnValue")
-    private static Undertow doStop(Undertow current) {
+    private UndertowInstance doStop(UndertowInstance current) {
         if(nonNull(current)) {
-            current.stop();
+            stopManager(current);
+            current.undertow().stop();
         }
         return null;
+    }
+
+    private static void stopManager(UndertowInstance current) {
+        try {
+            current.manager().stop();
+        } catch (ServletException servletException) {
+            throw extractExceptionToReport(servletException, IllegalStateException::new);
+        }
     }
 }

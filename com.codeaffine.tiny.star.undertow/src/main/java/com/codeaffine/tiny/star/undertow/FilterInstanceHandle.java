@@ -7,14 +7,20 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.spi.Server;
-import com.codeaffine.tiny.star.spi.ServerConfiguration;
-import com.codeaffine.tiny.star.spi.ServerFactory;
+import com.codeaffine.tiny.star.spi.FilterDefinition;
+import io.undertow.servlet.api.InstanceHandle;
+import jakarta.servlet.Filter;
+import lombok.NonNull;
 
-public class ServerFactoryImpl implements ServerFactory {
+record FilterInstanceHandle(@NonNull FilterDefinition filterDefinition) implements InstanceHandle<Filter> {
 
     @Override
-    public Server create(ServerConfiguration configuration) {
-        return new ServerImpl(configuration);
+    public Filter getInstance() {
+        return filterDefinition.getFilter();
+    }
+
+    @Override
+    public void release() {
+        // Nothing to do
     }
 }

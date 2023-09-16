@@ -50,7 +50,7 @@ class ApplicationServerCompatibilityContractUtil {
         }
     }
 
-    static String  readContent(URL entryPointUrl) {
+    static String readContent(URL entryPointUrl) {
         try (Scanner scanner = new Scanner(entryPointUrl.openStream())) {
             return readContent(scanner);
         } catch (IOException cause) {

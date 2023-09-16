@@ -15,7 +15,7 @@ import java.util.Set;
 
 public interface ServerConfiguration {
 
-    Protocol getProtocol();
+    SecureSocketLayerConfiguration getSecureSocketLayerConfiguration();
     String getHost();
     int getPort();
     ClassLoader getContextClassLoader();

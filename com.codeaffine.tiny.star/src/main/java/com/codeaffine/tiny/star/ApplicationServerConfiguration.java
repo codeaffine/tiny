@@ -9,7 +9,7 @@ package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.FilterDefinition;
-import com.codeaffine.tiny.star.spi.Protocol;
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import jakarta.servlet.ServletContextListener;
 import lombok.NonNull;
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
-import static com.codeaffine.tiny.star.spi.Protocol.*;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -32,8 +31,8 @@ class ApplicationServerConfiguration implements ServerConfiguration {
     private final ApplicationServer applicationServer;
 
     @Override
-    public Protocol getProtocol() {
-        return HTTP;
+    public SecureSocketLayerConfiguration getSecureSocketLayerConfiguration() {
+        return applicationServer.secureSocketLayerConfiguration;
     }
 
     @Override

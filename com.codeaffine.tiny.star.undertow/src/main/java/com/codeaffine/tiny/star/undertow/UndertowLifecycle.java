@@ -16,19 +16,19 @@ import lombok.NonNull;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.shared.Reflections.*;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static java.util.Objects.nonNull;
 
 class UndertowLifecycle {
 
     private final AtomicReference<UndertowInstance> serverHolder;
-    private final ServerConfiguration configuration;
+    private final ProtocolListenerApplicator protocolListenerApplicator;
 
     record UndertowInstance(Undertow undertow, DeploymentManager manager) {}
 
     UndertowLifecycle(@NonNull ServerConfiguration configuration) {
         this.serverHolder = new AtomicReference<>();
-        this.configuration = configuration;
+        this.protocolListenerApplicator = new ProtocolListenerApplicator(configuration);
     }
 
     void startUndertow(@NonNull PathHandler path, DeploymentManager manager) {
@@ -47,8 +47,7 @@ class UndertowLifecycle {
     }
 
     private UndertowInstance doStart(PathHandler path, DeploymentManager manager) {
-        Undertow undertow = Undertow.builder()
-            .addHttpListener(configuration.getPort(), configuration.getHost())
+        Undertow undertow = protocolListenerApplicator.addListener(Undertow.builder())
             .setHandler(path)
             .build();
         undertow.start();
@@ -71,4 +70,5 @@ class UndertowLifecycle {
             throw extractExceptionToReport(servletException, IllegalStateException::new);
         }
     }
+
 }

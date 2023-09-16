@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 
+import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -22,11 +23,20 @@ class ConnectorRegistrar {
     private final Tomcat tomcat;
     @NonNull
     private final ServerConfiguration configuration;
+    @NonNull
+    private SslConnectorConfigurator sslConnectorConfigurator;
+
+    ConnectorRegistrar(Tomcat tomcat, ServerConfiguration configuration) {
+        this(tomcat, configuration, new SslConnectorConfigurator(configuration));
+    }
 
     void addConnector() {
         Connector connector = new Connector();
         connector.setPort(configuration.getPort());
         tomcat.getHost().setName(configuration.getHost());
+        if (nonNull(configuration.getSecureSocketLayerConfiguration())) {
+            sslConnectorConfigurator.configureSsl(connector);
+        }
         tomcat.getService().addConnector(connector);
     }
 }

@@ -24,19 +24,22 @@ module org.apache.tomcat.embed.core {
 
     opens org.apache.catalina.core;
 
+    exports org.apache.catalina;
+    exports org.apache.catalina.connector;
+    exports org.apache.catalina.servlets;
+    exports org.apache.catalina.startup;
+    exports org.apache.coyote;
+    exports org.apache.coyote.http11;
     exports org.apache.juli.logging;
     exports org.apache.tomcat;
     exports org.apache.tomcat.util.descriptor;
     exports org.apache.tomcat.util.descriptor.tagplugin;
     exports org.apache.tomcat.util.descriptor.web;
     exports org.apache.tomcat.util.digester;
+    exports org.apache.tomcat.util.net;
     exports org.apache.tomcat.util.res;
     exports org.apache.tomcat.util.scan;
     exports org.apache.tomcat.util.security;
-    exports org.apache.catalina;
-    exports org.apache.catalina.connector;
-    exports org.apache.catalina.servlets;
-    exports org.apache.catalina.startup;
 
     uses org.apache.juli.logging.Log;
 }

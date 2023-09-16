@@ -27,7 +27,6 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.stubServerConfiguration;
 import static com.codeaffine.tiny.star.undertow.DeploymentOperation.CONTEXT_PATH;
 import static com.codeaffine.tiny.star.undertow.HttpHandlerStarter.PREFIX_PATH;
@@ -180,7 +179,7 @@ class UndertowLifecycleTest {
 
     @SneakyThrows
     private String readIndexContent() {
-        URI uri = new URI(HTTP.name().toLowerCase(), null, HOST, port, CONTEXT_PATH + INDEX, null, null);
+        URI uri = new URI("http", null, HOST, port, CONTEXT_PATH + INDEX, null, null);
         URLConnection connection = uri.toURL().openConnection();
         String result;
         try(Scanner scanner = new Scanner(connection.getInputStream())) {

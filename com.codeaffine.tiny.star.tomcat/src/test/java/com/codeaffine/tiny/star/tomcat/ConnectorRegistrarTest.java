@@ -7,16 +7,18 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.io.InputStream;
 import java.util.function.Supplier;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.CONFIGURATION;
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.PORT;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;
@@ -34,6 +36,23 @@ class ConnectorRegistrarTest {
         ArgumentCaptor<Connector> captor = forClass(Connector.class);
         verify(tomcat.getService()).addConnector(captor.capture());
         assertThat(captor.getValue().getPort()).isEqualTo(PORT);
+        assertThat(captor.getValue().getScheme()).isEqualTo("http");
+    }
+
+    @Test
+    void addConnectorWithSslConfigured() {
+        Tomcat tomcat = stubTomcatWithServiceSpy(Tomcat::new);
+        InputStream keyStore = getClass().getClassLoader().getResourceAsStream("tiny.jks");
+        SecureSocketLayerConfiguration sslConfiguration = new SecureSocketLayerConfiguration(keyStore, KEY_STORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD);
+        ServerConfiguration configuration = stubServerConfiguration(HOST, PORT, sslConfiguration);
+        ConnectorRegistrar connectorRegistrar = new ConnectorRegistrar(tomcat, configuration);
+
+        connectorRegistrar.addConnector();
+
+        ArgumentCaptor<Connector> captor = forClass(Connector.class);
+        verify(tomcat.getService()).addConnector(captor.capture());
+        assertThat(captor.getValue().getPort()).isEqualTo(PORT);
+        assertThat(captor.getValue().getScheme()).isEqualTo(SslConnectorConfigurator.SCHEME);
     }
 
     @Test
@@ -54,5 +73,4 @@ class ConnectorRegistrarTest {
         when(result.getService()).thenReturn(service);
         return result;
     }
-
 }

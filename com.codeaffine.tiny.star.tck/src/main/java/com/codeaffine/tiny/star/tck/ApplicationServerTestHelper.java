@@ -9,6 +9,7 @@ package com.codeaffine.tiny.star.tck;
 
 import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.FilterDefinition;
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import jakarta.servlet.Filter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,9 @@ public class ApplicationServerTestHelper {
     public static final FilterDefinition FILTER_DEFINITION_1 = of(FILTER_NAME_1, mock(Filter.class));
     public static final FilterDefinition FILTER_DEFINITION_2 = of(FILTER_NAME_2, mock(Filter.class), ENTRYPOINT_PATH_1);
     public static final FilterDefinition FILTER_DEFINITION_3 = of(FILTER_NAME_3, mock(Filter.class), ENTRYPOINT_PATH_1, ENTRYPOINT_PATH_2);
+    public static final String KEY_STORE_PASSWORD = "store-password"; // common password for all test keystores
+    public static final String KEY_ALIAS = "tiny"; // common alias for test keystores that use an alias
+    public static final String KEY_PASSWORD = "key-password"; // common password for test keystores that use a password that is different from the store password
 
     public static ServerConfiguration stubServerConfiguration(File workingDirectory, List<FilterDefinition> filterDefinitions, List<String> entryPointPaths) {
         ServerConfiguration result = stubServerConfiguration(workingDirectory, entryPointPaths.toArray(new String[0]));
@@ -48,6 +52,12 @@ public class ApplicationServerTestHelper {
     public static ServerConfiguration stubServerConfiguration(File workingDirectory, String ... entryPointPaths) {
         ServerConfiguration result = stubServerConfiguration(entryPointPaths);
         when(result.getWorkingDirectory()).thenReturn(workingDirectory);
+        return result;
+    }
+
+    public static ServerConfiguration stubServerConfiguration(String host, int port, SecureSocketLayerConfiguration secureSocketLayerConfiguration) {
+        ServerConfiguration result = stubServerConfiguration(host, port);
+        when(result.getSecureSocketLayerConfiguration()).thenReturn(secureSocketLayerConfiguration);
         return result;
     }
 

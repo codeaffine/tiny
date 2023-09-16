@@ -8,7 +8,7 @@
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.FilterDefinition;
-import com.codeaffine.tiny.star.spi.Protocol;
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,6 @@ import static com.codeaffine.tiny.shared.Metric.measureDuration;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;
@@ -159,15 +158,6 @@ public class ApplicationServer {
     public static final String CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = "delete-working-directory-on-shutdown";
 
     /**
-     * The attribute name used for the protocol definition in the application server's configuration json. Attribute values are
-     * expected to be string representations of the {@link Protocol} enum constants. Default is {@link #DEFAULT_PROTOCOL}.
-     *
-     * @see ApplicationServerBuilder
-     * @see ApplicationServerBuilder#withProtocol(Protocol)
-     */
-    public static final String CONFIGURATION_ATTRIBUTE_PROTOCOL = "protocol";
-
-    /**
      * The attribute name used for the host definition in the application server's configuration json. Attribute values are
      * strings representing a valid host name. Default is {@link #DEFAULT_HOST}.
      *
@@ -204,11 +194,6 @@ public class ApplicationServer {
     public static final String CONFIGURATION_ATTRIBUTE_SHOW_START_INFO = "show-start-info";
 
     /**
-     * Default value for {@link #CONFIGURATION_ATTRIBUTE_PROTOCOL}
-     */
-    public static final Protocol DEFAULT_PROTOCOL = HTTP;
-
-    /**
      * Default value for {@link #CONFIGURATION_ATTRIBUTE_HOST}
      */
     public static final String DEFAULT_HOST = "localhost";
@@ -230,7 +215,7 @@ public class ApplicationServer {
     public static final String DEFAULT_APPLICATION_IDENTIFIER = ApplicationServer.class.getName().toLowerCase();
 
     ApplicationConfiguration applicationConfiguration;
-    Protocol protocol;
+    SecureSocketLayerConfiguration secureSocketLayerConfiguration;
     String host;
     int port;
     File workingDirectory;
@@ -361,13 +346,15 @@ public class ApplicationServer {
         }
 
         /**
-         * Define the protocol to use. If not specified the server will use (@link {@link Protocol#HTTP}
+         * Specify the secure socket layer configuration to use. If not specified the server will not use a secure transport layer. Note that the
+         * ssl handling is done by the underlying servlet engine. Therefore, it is important to verify that the chosen server binding supports
+         * the given configuration as expected.
          *
-         * @param protocol the protocol tu use must not be {@code null}.
-         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified protocol set. Never {@code null}.
+         * @param secureSocketLayerConfiguration the secure socket layer configuration to use. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified secure socket layer configuration set. Never {@code null}.
          */
-        public ApplicationServerBuilder withProtocol(Protocol protocol) {
-            return new ApplicationServerBuilder(delegate.withProtocol(protocol));
+        public ApplicationServerBuilder withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration secureSocketLayerConfiguration) {
+            return new ApplicationServerBuilder(delegate.withSecureSocketLayerConfiguration(secureSocketLayerConfiguration));
         }
 
         /**
@@ -610,7 +597,6 @@ public class ApplicationServer {
         InternalApplicationServerBuilder internalApplicationServerBuilder)
     {
         return internalApplicationServerBuilder
-            .withProtocol(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf))
             .withHost(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class))
             .withPort(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class))
             .withWorkingDirectory(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new))
@@ -718,7 +704,8 @@ public class ApplicationServer {
 
     private URL toUrl(String path) {
         try {
-            URI uri = new URI(protocol.name().toLowerCase(), null, host, port, path, null, null);
+            String scheme = isNull(secureSocketLayerConfiguration) ? "http" : "https";
+            URI uri = new URI(scheme, null, host, port, path, null, null);
             return uri.toURL();
         } catch (URISyntaxException | MalformedURLException cause) {
             throw new IllegalArgumentException(cause);

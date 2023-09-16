@@ -15,4 +15,5 @@ import static lombok.AccessLevel.PRIVATE;
 class Texts {
 
     static final String SERVER_NAME = "Undertow";
+    static final String ERROR_ALIAS_NOT_FOUND = "Key store does not contain key entry with alias '%s'";
 }

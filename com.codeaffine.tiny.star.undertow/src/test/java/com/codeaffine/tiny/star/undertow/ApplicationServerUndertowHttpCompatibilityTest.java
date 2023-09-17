@@ -7,8 +7,12 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContract;
+import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContractTest;
 
-class ApplicationServerCompatibilityTest implements ApplicationServerCompatibilityContract {
+class ApplicationServerUndertowHttpCompatibilityTest implements ApplicationServerCompatibilityContractTest {
 
+    @Override
+    public boolean useSecureSocketLayerConfiguration() {
+        return false;
+    }
 }

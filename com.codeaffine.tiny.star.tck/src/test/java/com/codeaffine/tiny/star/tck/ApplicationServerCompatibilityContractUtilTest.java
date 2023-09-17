@@ -52,7 +52,7 @@ class ApplicationServerCompatibilityContractUtilTest {
         String expected = "Hello\nWorld!";
         URL url = createUrlToContent(expected);
 
-        String actual = ApplicationServerCompatibilityContractUtil.readContent(url);
+        String actual = ApplicationServerCompatibilityContractUtil.readContent(url, null);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -61,7 +61,7 @@ class ApplicationServerCompatibilityContractUtilTest {
     void readContentFromUrlWithIoProblem() throws IOException {
         URL url = new File("doesNotExist").toURI().toURL();
 
-        Exception actual = catchException(() -> ApplicationServerCompatibilityContractUtil.readContent(url));
+        Exception actual = catchException(() -> ApplicationServerCompatibilityContractUtil.readContent(url, null));
 
         assertThat(actual).isInstanceOf(IllegalArgumentException.class)
             .hasCauseInstanceOf(FileNotFoundException.class);

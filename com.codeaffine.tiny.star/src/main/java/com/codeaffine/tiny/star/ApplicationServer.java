@@ -350,7 +350,7 @@ public class ApplicationServer {
          * ssl handling is done by the underlying servlet engine. Therefore, it is important to verify that the chosen server binding supports
          * the given configuration as expected.
          *
-         * @param secureSocketLayerConfiguration the secure socket layer configuration to use. Must not be {@code null}.
+         * @param secureSocketLayerConfiguration the secure socket layer configuration to use. Null will be interpreted as no secure socket layer usage.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified secure socket layer configuration set. Never {@code null}.
          */
         public ApplicationServerBuilder withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration secureSocketLayerConfiguration) {

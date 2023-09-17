@@ -37,7 +37,6 @@ import static javax.net.ssl.KeyManagerFactory.getInstance;
  * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">Customizing Stores</a>,
  *      <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyStore">KeyStore</a>.
  */
-@Getter
 public class SecureSocketLayerConfiguration {
 
     /**
@@ -49,17 +48,22 @@ public class SecureSocketLayerConfiguration {
     static final int SEQUENCE = 0x30000000;
 
     /**
-     * The supported key store types.
+     * The supported key store types. The key store type is detected automatically. This enum defines the supported key store types.
+     * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyStore">KeyStore</a>
      */
     public enum KeyStoreType {
         JKS,
         PKCS12
     }
 
-    private final InputStream keyStore;
+    private final byte[] bytes;
+    @Getter
     private final KeyStoreType keyStoreType;
+    @Getter
     private final String keyStorePassword;
+    @Getter
     private final String keyAlias;
+    @Getter
     private final String keyPassword;
 
     /**
@@ -77,8 +81,7 @@ public class SecureSocketLayerConfiguration {
         String keyAlias,
         String keyPassword)
     {
-        byte[] bytes = readAllBytes(keyStore);
-        this.keyStore = new ByteArrayInputStream(bytes);
+        bytes = readAllBytes(keyStore);
         this.keyStoreType = extractKeyStoreType(bytes);
         this.keyStorePassword = keyStorePassword;
         this.keyAlias = keyAlias;
@@ -86,6 +89,10 @@ public class SecureSocketLayerConfiguration {
         KeyStore loadedKeyStore = verifyKeyStorePassword(bytes, keyStorePassword, keyStoreType);
         verifyKeyPassword(loadedKeyStore, this.keyPassword);
         verifyAlias(loadedKeyStore, this.keyAlias);
+    }
+
+    public InputStream getKeyStore() {
+        return new ByteArrayInputStream(bytes);
     }
 
     private static byte[] readAllBytes(InputStream keyStore) {

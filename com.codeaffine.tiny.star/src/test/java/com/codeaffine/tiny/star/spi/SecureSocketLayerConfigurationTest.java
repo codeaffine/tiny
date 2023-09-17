@@ -46,11 +46,13 @@ class SecureSocketLayerConfigurationTest implements ArgumentConverter {
         SecureSocketLayerConfiguration configuration
             = new SecureSocketLayerConfiguration(new ByteArrayInputStream(bytes), KEY_STORE_PASSWORD, ALIAS, KEY_PASSWORD);
 
-        assertThat(configuration.getKeyStore().readAllBytes()).isEqualTo(bytes);
         assertThat(configuration.getKeyStoreType()).isSameAs(JKS);
         assertThat(configuration.getKeyStorePassword()).isEqualTo(KEY_STORE_PASSWORD);
         assertThat(configuration.getKeyAlias()).isEqualTo(ALIAS);
         assertThat(configuration.getKeyPassword()).isEqualTo(KEY_PASSWORD);
+        assertThat(configuration.getKeyStore().readAllBytes())
+            .isEqualTo(configuration.getKeyStore().readAllBytes())
+            .isEqualTo(bytes);
     }
 
     @ParameterizedTest

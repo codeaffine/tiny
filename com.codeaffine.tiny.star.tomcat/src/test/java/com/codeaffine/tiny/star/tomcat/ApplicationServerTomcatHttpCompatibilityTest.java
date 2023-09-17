@@ -7,8 +7,12 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
-import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContract;
+import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContractTest;
 
-class ApplicationServerCompatibilityTest implements ApplicationServerCompatibilityContract {
+class ApplicationServerTomcatHttpCompatibilityTest implements ApplicationServerCompatibilityContractTest {
 
+    @Override
+    public boolean useSecureSocketLayerConfiguration() {
+        return false;
+    }
 }

@@ -9,6 +9,9 @@ package com.codeaffine.tiny.star;
 
 import lombok.NoArgsConstructor;
 
+import static com.codeaffine.tiny.star.ApplicationServer.KeyStoreLocationType.CLASSPATH;
+import static com.codeaffine.tiny.star.ApplicationServer.KeyStoreLocationType.FILESYSTEM;
+import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -51,7 +54,12 @@ class Texts {
     static final String ERROR_NO_SERVER_FACTORY_FOUND = "No server factory found.";
     static final String THREAD_NAME_APPLICATION_SERVER_SHUTDOWN_HOOK = "Application Server Shutdown Hook";
     static final String ERROR_READING_SERVER_CONFIGURATION = "unable to read configuration for application server with id '%s' from environment configuration '%s'";
-    static final String ERROR_READING_ATTRIBUTE = "unable to read attribute '%s' from environment configuration '%s'";
+    static final String ERROR_READING_ATTRIBUTE = "unable to read attribute '%s' from environment configuration '%s'.";
     static final String ERROR_MORE_THAN_ONE_LOGGING_FRAMEWORK_CONTROL_FACTORY
         = "More than one LoggingFrameworkControlFactory implementation found on classpath: %s";
+    static final String ERROR_WRONG_KEY_STORE_FILE_FORMAT = format(
+        "Wrong key store location format. Must be either '%s:<path-to-key-store-file>' or '%s:<path-to-key-store-file>'.",
+        CLASSPATH.name().toLowerCase(),
+        FILESYSTEM.name().toLowerCase()
+    );
 }

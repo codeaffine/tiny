@@ -7,10 +7,12 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -28,13 +30,23 @@ class MultiServerConfigurationReader implements ServerConfigurationReader {
     private static final Supplier<String> CONFIGURATION_READER = () -> System.getenv(ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    @NonNull
     private final String applicationServerId;
+    @NonNull
     private final Supplier<String> configurationLoader;
+    @NonNull
+    private final ApplicationConfiguration applicationConfiguration;
 
     private SingleServerConfigurationReader configurationReader;
 
-    MultiServerConfigurationReader(String applicationServerId) {
-        this(applicationServerId, CONFIGURATION_READER);
+    MultiServerConfigurationReader(String applicationServerId, ApplicationConfiguration applicationConfiguration) {
+        this(applicationServerId, CONFIGURATION_READER, applicationConfiguration);
+    }
+
+    @Override
+    public SecureSocketLayerConfiguration readSecureSocketLayerConfiguration() {
+        ensureConfigurationReader();
+        return configurationReader.readSecureSocketLayerConfiguration();
     }
 
     @Override
@@ -53,7 +65,7 @@ class MultiServerConfigurationReader implements ServerConfigurationReader {
         if (isNull(configurationReader)) {
             String serialized = configurationLoader.get();
             if (isNull(serialized)) {
-                configurationReader = new SingleServerConfigurationReader(emptyMap());
+                configurationReader = new SingleServerConfigurationReader(emptyMap(), applicationConfiguration);
             } else {
                 configurationReader = initializeConfigurationReader(serialized);
             }
@@ -65,7 +77,7 @@ class MultiServerConfigurationReader implements ServerConfigurationReader {
         if (isNull(attributeMap)) {
             attributeMap = emptyMap();
         }
-        return new SingleServerConfigurationReader(attributeMap);
+        return new SingleServerConfigurationReader(attributeMap, applicationConfiguration);
     }
 
     private Map<String, Object> readServerAttributeMap(String serialized) {

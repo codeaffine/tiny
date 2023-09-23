@@ -5,8 +5,14 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-package com.codeaffine.tiny.star.spi;
+package com.codeaffine.tiny.star.undertow;
 
-public enum Protocol {
-  HTTP,
+import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContractTest;
+
+class ApplicationServerUndertowHttpCompatibilityTest implements ApplicationServerCompatibilityContractTest {
+
+    @Override
+    public boolean useSecureSocketLayerConfiguration() {
+        return false;
+    }
 }

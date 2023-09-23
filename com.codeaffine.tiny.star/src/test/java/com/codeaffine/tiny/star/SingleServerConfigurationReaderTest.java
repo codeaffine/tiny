@@ -8,25 +8,26 @@
 package com.codeaffine.tiny.star;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static java.lang.String.format;
+import static com.codeaffine.tiny.star.ApplicationServer.KeyStoreLocationType;
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
-class SingleServerConfigurationReaderTest implements ServerConfigurationReaderContract {
-
-    private static final String SERIALIZED = format("{\"%s\":\"%s\"}", ATTRIBUTE_NAME, ATTRIBUTE_VALUE);
+class SingleServerConfigurationReaderTest implements ServerConfigurationReaderContractTest {
 
     @Override
     public ServerConfigurationReader newServerConfigurationReader(String serialized) {
-        return new SingleServerConfigurationReader(() -> serialized);
+        return new SingleServerConfigurationReader(() -> serialized, mock(ApplicationConfiguration.class));
     }
 
     @Override
-    public String getSerialized() {
-        return SERIALIZED;
+    public String getConfigurationJson(KeyStoreLocationType keyStoreLocationType, String keyStoreFile) {
+        return createConfigurationJson(keyStoreLocationType, keyStoreFile);
     }
 
     @Test
@@ -68,7 +69,15 @@ class SingleServerConfigurationReaderTest implements ServerConfigurationReaderCo
 
     @Test
     void constructWithNullAsArgumentNameArgument() {
-        assertThatThrownBy(() -> new SingleServerConfigurationReader((Map<String, ?>) null))
+        assertThatThrownBy(() -> new SingleServerConfigurationReader((Map<String, ?>) null, mock(ApplicationConfiguration.class)))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void constructWithNullAsApplicationConfigurationArgument() {
+        Map<String, Object> attributeMap = emptyMap();
+
+        assertThatThrownBy(() -> new SingleServerConfigurationReader(attributeMap, null))
             .isInstanceOf(NullPointerException.class);
     }
 }

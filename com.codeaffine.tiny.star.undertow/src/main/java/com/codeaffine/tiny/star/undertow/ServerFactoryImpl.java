@@ -7,13 +7,14 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
+import com.codeaffine.tiny.star.spi.Server;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerFactory;
 
 public class ServerFactoryImpl implements ServerFactory {
 
     @Override
-    public ServerImpl create(ServerConfiguration configuration) {
+    public Server create(ServerConfiguration configuration) {
         return new ServerImpl(configuration);
     }
 }

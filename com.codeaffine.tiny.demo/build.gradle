@@ -7,6 +7,7 @@ plugins {
 
 dependencies {
     implementation(
+            libs.jakarta.servlet.api,
             libs.rap.rwt,
             project(':com.codeaffine.tiny.star'),
             project(':com.codeaffine.tiny.star.cli'),

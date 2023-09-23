@@ -5,10 +5,14 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-package com.codeaffine.tiny.star.tomcat;
+package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContract;
+import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContractTest;
 
-class ApplicationServerCompatibilityTest implements ApplicationServerCompatibilityContract {
+class ApplicationServerUndertowHttpsCompatibilityTest implements ApplicationServerCompatibilityContractTest {
 
+    @Override
+    public boolean useSecureSocketLayerConfiguration() {
+        return true;
+    }
 }

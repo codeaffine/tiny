@@ -49,7 +49,7 @@ class ServerImpl implements Server {
         ServletInfo servletInfo = servletInfoFactory.createRwtServletInfo();
         DeploymentManager manager = deploymentOperation.deployRwtApplication(servletInfo);
         PathHandler path = httpHandlerStarter.startRwtApplicationHttpHandler(manager);
-        undertowLifecycle.startUndertow(path);
+        undertowLifecycle.startUndertow(path, manager);
     }
 
     @Override

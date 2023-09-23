@@ -7,34 +7,48 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.ApplicationServer.KeyStoreLocationType;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.Test;
 
+import static com.codeaffine.tiny.star.ApplicationServer.KeyStoreLocationType.CLASSPATH;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
+import static org.mockito.Mockito.mock;
 
-class MultiServerConfigurationReaderTest implements ServerConfigurationReaderContract {
+class MultiServerConfigurationReaderTest implements ServerConfigurationReaderContractTest {
 
     private static final String APPLICATION_SERVER_ID = "applicationServerId";
-    private static final String SERIALIZATION_FORMAT = "{\"%s\":{\"%s\":\"%s\"}}";
-    private static final String SERIALIZED = format(SERIALIZATION_FORMAT, APPLICATION_SERVER_ID, ATTRIBUTE_NAME, ATTRIBUTE_VALUE);
-    private static final String CONFIGURATION_WITHOUT_APPLICATION_SERVER_ID
-        = format(SERIALIZATION_FORMAT, "unknownApplicationServerId", ATTRIBUTE_NAME, ATTRIBUTE_VALUE);
+    private static final String MULTI_SERVER_CONFIGURATION_FORMAT = "{\"%s\":%s}";
 
     @Override
     public ServerConfigurationReader newServerConfigurationReader(String serialized) {
-        return new MultiServerConfigurationReader(APPLICATION_SERVER_ID, () -> serialized);
+        return new MultiServerConfigurationReader(APPLICATION_SERVER_ID, () -> serialized, mock(ApplicationConfiguration.class));
     }
 
     @Override
-    public String getSerialized() {
-        return SERIALIZED;
+    public String getConfigurationJson(KeyStoreLocationType keyStoreLocationType, String keyStoreFile) {
+        return format(
+            MULTI_SERVER_CONFIGURATION_FORMAT,
+            APPLICATION_SERVER_ID,
+            createConfigurationJson(
+                keyStoreLocationType,
+                keyStoreFile)
+        );
     }
 
     @Test
     void readEnvironmentConfigurationAttributeIfApplicationServerIdCannotBeFound() {
-        ServerConfigurationReader configurationReader = newServerConfigurationReader(CONFIGURATION_WITHOUT_APPLICATION_SERVER_ID);
+        String configurationWithoutServerId = format(
+            MULTI_SERVER_CONFIGURATION_FORMAT,
+            "unknownApplicationServerId",
+            createConfigurationJson(
+                CLASSPATH,
+                KEY_STORE_FILE_ON_CLASSPATH)
+        );
+        ServerConfigurationReader configurationReader = newServerConfigurationReader(configurationWithoutServerId);
 
         String actual = configurationReader.readEnvironmentConfigurationAttribute(ATTRIBUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, String.class);
 

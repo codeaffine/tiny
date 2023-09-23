@@ -20,6 +20,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.codeaffine.tiny.star.tck.FakeTrustManager.createSslContext;
+import static java.net.http.HttpClient.newBuilder;
+import static java.net.http.HttpResponse.BodyHandlers;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
@@ -50,6 +53,9 @@ class UserSession {
     private final URL url;
     @NonNull
     private final AtomicReference<EntryPointFactory> entryPointFactoryHub;
+    @Getter
+    @NonNull
+    private final Runnable serverTrustedCheckObserver;
     @NonNull
     @Getter
     private final String trackingId;
@@ -99,7 +105,7 @@ class UserSession {
     private HttpResponse<String> sendRequest(HttpRequest request, CookieManager cookieManager) {
         try {
             return ensureHttpClientExists(cookieManager)
-                .send(request, HttpResponse.BodyHandlers.ofString());
+                .send(request, BodyHandlers.ofString());
         } catch (InterruptedException cause) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException(cause);
@@ -108,7 +114,8 @@ class UserSession {
 
     private HttpClient ensureHttpClientExists(CookieManager cookieManager) {
         if (isNull(httpClient)) {
-            httpClient = HttpClient.newBuilder()
+            httpClient = newBuilder()
+                .sslContext(createSslContext(serverTrustedCheckObserver))
                 .cookieHandler(cookieManager)
                 .build();
         }

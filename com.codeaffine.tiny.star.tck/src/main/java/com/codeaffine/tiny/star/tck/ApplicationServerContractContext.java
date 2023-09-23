@@ -8,6 +8,8 @@
 package com.codeaffine.tiny.star.tck;
 
 import com.codeaffine.tiny.star.ApplicationServer;
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
+import jakarta.servlet.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.rap.rwt.application.Application;
@@ -16,25 +18,37 @@ import org.eclipse.rap.rwt.application.EntryPointFactory;
 import org.junit.jupiter.api.extension.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.codeaffine.tiny.star.ApplicationServer.Starting;
 import static com.codeaffine.tiny.star.ApplicationServer.Stopping;
+import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
+import static java.util.Arrays.stream;
 import static org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import static org.junit.jupiter.api.extension.ExtensionContext.Store;
+import static org.mockito.Mockito.*;
 
-public class ApplicationServerContractContext implements ParameterResolver, BeforeAllCallback, EntryPointFactory {
+public class ApplicationServerContractContext implements ParameterResolver, BeforeAllCallback, EntryPointFactory, Filter {
 
-    static final Namespace NAMESPACE = Namespace.create(ApplicationServerCompatibilityContract.class);
+    static final Namespace NAMESPACE = Namespace.create(ApplicationServerCompatibilityContractTest.class);
     static final String CONTEXT_STORAGE_KEY = ApplicationServerContractContext.class.getName();
+    static final String ENTRY_POINT_PATH = "/ui"; // NOSONAR: this is a test constant
 
     private final AtomicReference<EntryPointFactory> entryPointFactoryHub;
     private final AtomicReference<ApplicationServer> applicationServerHolder;
     @Setter
     @Getter
     private File workingDirectory;
+    @Getter
+    private boolean filterInitialized;
+    @Getter
+    private boolean filterDestroyed;
+    @Getter
+    private boolean doFilterCalled;
 
     ApplicationServerContractContext() {
         entryPointFactoryHub = new AtomicReference<>();
@@ -81,10 +95,50 @@ public class ApplicationServerContractContext implements ParameterResolver, Befo
 
     UserSession simulateUserSession(URL url) {
         String uuid = UUID.randomUUID().toString();
-        return new UserSession(url, entryPointFactoryHub, uuid);
+        return new UserSession(url, entryPointFactoryHub, mock(Runnable.class), uuid);
     }
 
     void configure(Application application) {
-        application.addEntryPoint("/ui", this, null);
+        application.addEntryPoint(ENTRY_POINT_PATH, this, null);
     }
+
+    SecureSocketLayerConfiguration getSecureSocketLayerConfiguration() {
+        InputStream keyStore = getClass().getClassLoader().getResourceAsStream("tiny.jks");
+        assert keyStore != null;
+        return new SecureSocketLayerConfiguration(keyStore, KEY_STORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD);
+    }
+
+    void verifyServerTrustCheckInvocation(UserSession ... userSessions) {
+        verifyServerTrustCheckInvocation(stream(userSessions)
+            .map(UserSession::getServerTrustedCheckObserver)
+            .toArray(Runnable[]::new));
+    }
+
+    void verifyServerTrustCheckInvocation(Runnable ... serverTrustedCheckObservers) {
+        stream(serverTrustedCheckObservers)
+            .filter(serverTrustedCheckObserver -> applicationServerHolder.get().getUrls()[0].getProtocol().equals("https"))
+            .forEach(serverTrustedCheckObserver -> verify(serverTrustedCheckObserver, atLeastOnce()).run());
+    }
+
+    ///////////////////////////////////////
+    // start servlet filter related methods
+
+    @Override
+    public void init(FilterConfig filterConfig) {
+        filterInitialized = true;
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        doFilterCalled = true;
+        chain.doFilter(request, response);
+    }
+
+    @Override
+    public void destroy() {
+        filterDestroyed = true;
+    }
+
+    // end servlet filter related methods
+    ///////////////////////////////////////
 }

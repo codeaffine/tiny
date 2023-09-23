@@ -7,16 +7,19 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
+import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.servlet.api.DeploymentInfo;
-import io.undertow.servlet.api.DeploymentManager;
-import io.undertow.servlet.api.ServletInfo;
+import io.undertow.servlet.api.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
+import static io.undertow.servlet.Servlets.*;
 import static io.undertow.servlet.Servlets.defaultContainer;
 import static io.undertow.servlet.Servlets.deployment;
+import static jakarta.servlet.DispatcherType.*;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -36,12 +39,33 @@ class DeploymentOperation {
     }
 
     private DeploymentInfo configureDeployment(ServletInfo servletInfo) {
-        return deployment()
+        DeploymentInfo deploymentInfo = deployment()
             .setClassLoader(configuration.getContextClassLoader())
             .setContextPath(CONTEXT_PATH)
             .addDeploymentCompleteListener(configuration.getContextListener())
             .setDeploymentName(DEPLOYMENT_NAME)
             .addServlets(servletInfo)
+            .addFilters(createFilterInfos());
+        configuration.getFilterDefinitions()
+            .forEach(filterDefinition -> addFilterMappings(filterDefinition, servletInfo, deploymentInfo));
+        return deploymentInfo
             .setResourceManager(new FileResourceManager(configuration.getWorkingDirectory(), 1));
     }
+
+    private List<FilterInfo> createFilterInfos() {
+        return configuration.getFilterDefinitions()
+            .stream()
+            .map(definition -> filter(definition.getFilterName(), definition.getFilter().getClass(), () -> new FilterInstanceHandle(definition)))
+            .toList();
+    }
+
+    private static void addFilterMappings(FilterDefinition filterDefinition, ServletInfo servletInfo, DeploymentInfo deploymentInfo) {
+        List<String> urlPatterns = filterDefinition.getUrlPatterns();
+        if(!urlPatterns.isEmpty()) {
+            urlPatterns.forEach(urlPattern -> deploymentInfo.addFilterUrlMapping(filterDefinition.getFilterName(), urlPattern, REQUEST));
+        } else {
+            deploymentInfo.addFilterServletNameMapping(filterDefinition.getFilterName(), servletInfo.getName(), REQUEST);
+        }
+    }
+
 }

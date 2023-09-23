@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import lombok.NonNull;
 
 import java.util.function.Function;
@@ -17,4 +18,6 @@ interface ServerConfigurationReader {
 
     <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Class<T> type);
     <T> T readEnvironmentConfigurationAttribute(@NonNull String attributeName, T defaultValue, @NonNull Function<String, T> factory);
+
+    SecureSocketLayerConfiguration readSecureSocketLayerConfiguration();
 }

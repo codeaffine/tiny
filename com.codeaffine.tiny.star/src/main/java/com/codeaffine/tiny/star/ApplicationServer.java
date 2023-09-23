@@ -7,7 +7,8 @@
  */
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.spi.Protocol;
+import com.codeaffine.tiny.star.spi.FilterDefinition;
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -31,7 +33,6 @@ import static com.codeaffine.tiny.shared.Metric.measureDuration;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.Boolean.TRUE;
 import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;
@@ -157,15 +158,6 @@ public class ApplicationServer {
     public static final String CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = "delete-working-directory-on-shutdown";
 
     /**
-     * The attribute name used for the protocol definition in the application server's configuration json. Attribute values are
-     * expected to be string representations of the {@link Protocol} enum constants. Default is {@link #DEFAULT_PROTOCOL}.
-     *
-     * @see ApplicationServerBuilder
-     * @see ApplicationServerBuilder#withProtocol(Protocol)
-     */
-    public static final String CONFIGURATION_ATTRIBUTE_PROTOCOL = "protocol";
-
-    /**
      * The attribute name used for the host definition in the application server's configuration json. Attribute values are
      * strings representing a valid host name. Default is {@link #DEFAULT_HOST}.
      *
@@ -202,9 +194,73 @@ public class ApplicationServer {
     public static final String CONFIGURATION_ATTRIBUTE_SHOW_START_INFO = "show-start-info";
 
     /**
-     * Default value for {@link #CONFIGURATION_ATTRIBUTE_PROTOCOL}
+     * The attribute name used for the secure-socket-layer definition in the application server's configuration json. Attribute values are
+     * expected to be a json map that contains the secure socket layer configuration attributes.
+     * <p>Example:</p>
+     * <pre>
+     *     com.codeaffine.tiny.star.configuration
+     *       ={"secure-socket-layer":{"keystore-location":"classpath:keystore.jks", "keystore-password":"store-password", "key-alias":"alias", "key-password":"key-password"}}
+     * </pre>
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration)
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_PASSWORD
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEY_ALIAS
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEY_PASSWORD
      */
-    public static final Protocol DEFAULT_PROTOCOL = HTTP;
+    public static final String CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER = "secure-socket-layer";
+
+    /**
+     * The attribute name used for the keystore-location definition in the application server's configuration json. Attribute values are
+     * expected to be a string that denotes the location of the key store file. The location type is separated from the key store file name by a colon.
+     * <p>Example:</p>
+     * <pre>
+     *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"classpath:keystore.jks", ... }}
+     *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"filesystem:src/test/resources/keystore.jks", ... }}
+     * </pre>
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration)
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER
+     */
+    public static final String CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION = "keystore-location";
+
+    /**
+     * The attribute name used for the keystore-password definition in the application server's configuration json. Attribute values are
+     * expected to be a string that denotes the password of the key store.
+     *
+     * <p>Note: as passwords are sensitive information it is recommended to provide the password by an appropriate secret injection mechanism.</p>
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration)
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION
+     */
+    public static final String CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_PASSWORD = "keystore-password";
+
+    /**
+     * The attribute name used for the key-alias definition in the application server's configuration json. Attribute values are
+     * expected to be a string that denotes the alias of the key entry.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration)
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEY_PASSWORD
+     */
+    public static final String CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEY_ALIAS = "key-alias";
+
+    /**
+     * The attribute name used for the key-password definition in the application server's configuration json. Attribute values are
+     * expected to be a string that denotes the password of the key entry.
+     *
+     * <p>Note: as passwords are sensitive information it is recommended to provide the password by an appropriate secret injection mechanism.</p>
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration)
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION
+     */
+    public static final String CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEY_PASSWORD = "key-password";
 
     /**
      * Default value for {@link #CONFIGURATION_ATTRIBUTE_HOST}
@@ -222,13 +278,13 @@ public class ApplicationServer {
     public static final boolean DEFAULT_SHOW_START_INFO = true;
 
     /**
-     * Value returned by {@link #getIdentifier()} if not specified otherwise bu using the {@link #newApplicationServerBuilder(ApplicationConfiguration, String)}
+     * Value returned by {@link #getIdentifier()} if not specified otherwise by using the {@link #newApplicationServerBuilder(ApplicationConfiguration, String)}
      * builder factory method.
      */
     public static final String DEFAULT_APPLICATION_IDENTIFIER = ApplicationServer.class.getName().toLowerCase();
 
     ApplicationConfiguration applicationConfiguration;
-    Protocol protocol;
+    SecureSocketLayerConfiguration secureSocketLayerConfiguration;
     String host;
     int port;
     File workingDirectory;
@@ -237,9 +293,26 @@ public class ApplicationServer {
     @Singular
     List<Object> lifecycleListeners;
     String applicationIdentifier;
+    @Singular
+    List<FilterDefinition> filterDefinitions;
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 
+    /**
+     * Configuration possibilities of the {@link #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION} attribute. The attribute value
+     * has to specify the location type of the key store file. The location type is separated from the key store file name by a colon.
+     * <p>Example:</p>
+     * <pre>
+     *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"classpath:keystore.jks", ... }}
+     *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"filesystem:src/test/resources/keystore.jks", ... }}
+     *
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION
+     * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER
+     */
+    public enum KeyStoreLocationType {
+        CLASSPATH,
+        FILESYSTEM
+    }
     /**
      * The lifecycle states of an application server instance passes through.
      */
@@ -357,13 +430,15 @@ public class ApplicationServer {
         }
 
         /**
-         * Define the protocol to use. If not specified the server will use (@link {@link Protocol#HTTP}
+         * Specify the secure socket layer configuration to use. If not specified the server will not use a secure transport layer. Note that the
+         * ssl handling is done by the underlying servlet engine. Therefore, it is important to verify that the chosen server binding supports
+         * the given configuration as expected.
          *
-         * @param protocol the protocol tu use must not be {@code null}.
-         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified protocol set. Never {@code null}.
+         * @param secureSocketLayerConfiguration the secure socket layer configuration to use. Null will be interpreted as no secure socket layer usage.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified secure socket layer configuration set. Never {@code null}.
          */
-        public ApplicationServerBuilder withProtocol(Protocol protocol) {
-            return new ApplicationServerBuilder(delegate.withProtocol(protocol));
+        public ApplicationServerBuilder withSecureSocketLayerConfiguration(SecureSocketLayerConfiguration secureSocketLayerConfiguration) {
+            return new ApplicationServerBuilder(delegate.withSecureSocketLayerConfiguration(secureSocketLayerConfiguration));
         }
 
         /**
@@ -371,6 +446,7 @@ public class ApplicationServer {
          *
          * @param port the port to use. Must be within the range of allowed ports of the underlying system.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified port set. Never {@code null}.
+         * @see #CONFIGURATION_ATTRIBUTE_PORT
          */
         public ApplicationServerBuilder withPort(int port) {
             return new ApplicationServerBuilder(delegate.withPort(port));
@@ -381,6 +457,7 @@ public class ApplicationServer {
          *
          * @param host the host to use. Must not be {@code null}.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified host set. Never {@code null}.
+         * @see #CONFIGURATION_ATTRIBUTE_HOST
          */
         public ApplicationServerBuilder withHost(@NonNull String host) {
             return new ApplicationServerBuilder(delegate.withHost(host));
@@ -392,9 +469,45 @@ public class ApplicationServer {
          * @param workingDirectory the working directory to use. Must not be {@code null}.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified working directory set. Never {@code null}.
          * @throws IllegalArgumentException if the specified working directory does not exist.
+         * @see #CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY
          */
         public ApplicationServerBuilder withWorkingDirectory(@NonNull File workingDirectory) {
             return new ApplicationServerBuilder(delegate.withWorkingDirectory(workingDirectory));
+        }
+
+        /**
+         * register the given  {@link FilterDefinition} to the application server instance to create. Filter-mappings will be added to the web application
+         * in the order the filter definitions are registered.
+         *
+         * @param filterDefinition the filter definition to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified filter definition registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withFilterDefinition(@NonNull FilterDefinition filterDefinition) {
+            return new ApplicationServerBuilder(delegate.withFilterDefinition(filterDefinition));
+        }
+
+        /**
+         * register the given  {@link FilterDefinition}s to the application server instance to create. Filter-mappings will be added to the web application
+         * in the order of the given filter definitions argument.
+         *
+         * @param filterDefinitions the filter definitions to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified filter definitions registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withFilterDefinitions(FilterDefinition ... filterDefinitions) {
+            return new ApplicationServerBuilder(delegate.withFilterDefinitions(stream(filterDefinitions)
+                .filter(Objects::nonNull)
+                .toList()));
+        }
+
+        /**
+         * register the given  {@link FilterDefinition}s to the application server instance to create. Filter-mappings will be added to the web application
+         * in the order of the given filter definitions argument.
+         *
+         * @param filterDefinitions the filter definitions to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified filter definitions registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withFilterDefinitions(@NonNull List<FilterDefinition> filterDefinitions) {
+            return new ApplicationServerBuilder(delegate.withFilterDefinitions(filterDefinitions));
         }
 
         /**
@@ -445,6 +558,7 @@ public class ApplicationServer {
          *
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified delete working directory on shutdown flag reset. Never
          * {@code null}.
+         * @see #CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN
          */
         public ApplicationServerBuilder keepWorkingDirectoryOnShutdown() {
             return new ApplicationServerBuilder(delegate.withDeleteWorkingDirectoryOnShutdown(false));
@@ -455,6 +569,7 @@ public class ApplicationServer {
          *
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified delete working directory on shutdown flag set.
          * Never {@code null}.
+         * @see #CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN
          */
         public ApplicationServerBuilder deleteWorkingDirectoryOnShutdown() {
             return new ApplicationServerBuilder(delegate.withDeleteWorkingDirectoryOnShutdown(true));
@@ -467,6 +582,7 @@ public class ApplicationServer {
          * @param startInfoProvider the provider function for the start info message. {@code null} will omit the info message on application
          *                          server start.
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified start info provider set. Never {@code null}.
+         * @see #CONFIGURATION_ATTRIBUTE_SHOW_START_INFO
          */
         public ApplicationServerBuilder withStartInfoProvider(Function<ApplicationServer, String> startInfoProvider) {
             return new ApplicationServerBuilder(delegate.withStartInfoProvider(startInfoProvider));
@@ -481,7 +597,7 @@ public class ApplicationServer {
          * @return a clone of this {@link ApplicationServerBuilder} instance having the specified configuration set. Never {@code null}.
          */
         public ApplicationServerBuilder withConfiguration(String configuration) {
-            SingleServerConfigurationReader configurator = new SingleServerConfigurationReader(() -> configuration);
+            SingleServerConfigurationReader configurator = new SingleServerConfigurationReader(() -> configuration, delegate.applicationConfiguration);
             return new ApplicationServerBuilder(configure(configurator, delegate));
         }
 
@@ -498,8 +614,8 @@ public class ApplicationServer {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             try {
                 configuration.transferTo(out);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
+            } catch (IOException ioe) {
+                throw new UncheckedIOException(ioe);
             }
             return withConfiguration(out.toString(UTF_8));
         }
@@ -524,7 +640,7 @@ public class ApplicationServer {
      * @see ApplicationServerBuilder
      */
     public static ApplicationServerBuilder newApplicationServerBuilder(@NonNull ApplicationConfiguration applicationConfiguration) {
-        SingleServerConfigurationReader configurator = new SingleServerConfigurationReader();
+        SingleServerConfigurationReader configurator = new SingleServerConfigurationReader(applicationConfiguration);
         return newApplicationServerBuilder(configurator, applicationConfiguration, DEFAULT_APPLICATION_IDENTIFIER);
     }
 
@@ -551,7 +667,7 @@ public class ApplicationServer {
         @NonNull ApplicationConfiguration applicationConfiguration,
         @NonNull String applicationIdentifier)
     {
-        MultiServerConfigurationReader configurator = new MultiServerConfigurationReader(applicationIdentifier);
+        MultiServerConfigurationReader configurator = new MultiServerConfigurationReader(applicationIdentifier, applicationConfiguration);
         return newApplicationServerBuilder(configurator, applicationConfiguration, applicationIdentifier);
     }
 
@@ -571,7 +687,7 @@ public class ApplicationServer {
         InternalApplicationServerBuilder internalApplicationServerBuilder)
     {
         return internalApplicationServerBuilder
-            .withProtocol(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PROTOCOL, DEFAULT_PROTOCOL, Protocol::valueOf))
+            .withSecureSocketLayerConfiguration(configurator.readSecureSocketLayerConfiguration())
             .withHost(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_HOST, DEFAULT_HOST, String.class))
             .withPort(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_PORT, findFreePort(), Integer.class))
             .withWorkingDirectory(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new))
@@ -679,7 +795,8 @@ public class ApplicationServer {
 
     private URL toUrl(String path) {
         try {
-            URI uri = new URI(protocol.name().toLowerCase(), null, host, port, path, null, null);
+            String scheme = isNull(secureSocketLayerConfiguration) ? "http" : "https";
+            URI uri = new URI(scheme, null, host, port, path, null, null);
             return uri.toURL();
         } catch (URISyntaxException | MalformedURLException cause) {
             throw new IllegalArgumentException(cause);

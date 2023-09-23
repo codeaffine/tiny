@@ -24,6 +24,7 @@ class ServerImplTest {
     private ResourcesServletRegistrar resourcesServletRegistrar;
     private RwtServletRegistrar rwtServletRegistrar;
     private TomcatLifeCycleControl lifeCycleControl;
+    private FilterRegistrar filterRegistrar;
 
     @BeforeEach
     void setUp() {
@@ -32,11 +33,13 @@ class ServerImplTest {
         resourcesServletRegistrar = mock(ResourcesServletRegistrar.class);
         rwtServletRegistrar = mock(RwtServletRegistrar.class);
         lifeCycleControl = mock(TomcatLifeCycleControl.class);
+        filterRegistrar = mock(FilterRegistrar.class);
         server = new ServerImpl(
             contextRegistrar,
             connectorRegistrar,
             resourcesServletRegistrar,
             rwtServletRegistrar,
+            filterRegistrar,
             lifeCycleControl
         );
     }
@@ -48,11 +51,12 @@ class ServerImplTest {
 
         server.start();
 
-        InOrder order = inOrder(contextRegistrar, connectorRegistrar, resourcesServletRegistrar, rwtServletRegistrar, lifeCycleControl);
+        InOrder order = inOrder(contextRegistrar, connectorRegistrar, resourcesServletRegistrar, rwtServletRegistrar, filterRegistrar, lifeCycleControl);
         order.verify(contextRegistrar).addContext();
         order.verify(connectorRegistrar).addConnector();
         order.verify(resourcesServletRegistrar).addResourcesServlet(context);
         order.verify(rwtServletRegistrar).addRwtServlet(context);
+        order.verify(filterRegistrar).addFilters(context);
         order.verify(lifeCycleControl).startTomcat();
         order.verifyNoMoreInteractions();
     }

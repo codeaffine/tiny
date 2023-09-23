@@ -13,13 +13,16 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.eclipse.swt.SWT;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Scanner;
 
 import static com.codeaffine.tiny.shared.Threads.sleepFor;
+import static com.codeaffine.tiny.star.tck.FakeTrustManager.createSslContext;
 import static java.lang.String.format;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -50,11 +53,25 @@ class ApplicationServerCompatibilityContractUtil {
         }
     }
 
-    static String  readContent(URL entryPointUrl) {
-        try (Scanner scanner = new Scanner(entryPointUrl.openStream())) {
+    static String readContent(URL entryPointUrl, Runnable serverTrustedCheckObserver) {
+        URLConnection connection;
+        try {
+            connection = entryPointUrl.openConnection();
+            if((connection instanceof HttpsURLConnection sslConnection)) {
+                sslConnection.setSSLSocketFactory(createSslContext(serverTrustedCheckObserver).getSocketFactory());
+            }
+            connection.connect();
+        } catch (IOException cause) {
+            throw new IllegalArgumentException(cause);
+        }
+        try (Scanner scanner = new Scanner(connection.getInputStream())) {
             return readContent(scanner);
         } catch (IOException cause) {
             throw new IllegalArgumentException(cause);
+        } finally {
+            if((connection instanceof HttpsURLConnection sslConnection)) {
+                sslConnection.disconnect();
+            }
         }
     }
 
@@ -70,6 +87,7 @@ class ApplicationServerCompatibilityContractUtil {
 
     @SneakyThrows
     public static URL createResourceUrl(URL entryPointUrl, String resource) {
-        return new URI(entryPointUrl.getProtocol(), null, entryPointUrl.getHost(), entryPointUrl.getPort(), PATH_SEPARATOR + resource, null, null).toURL();
+        String path = PATH_SEPARATOR + resource;
+        return new URI(entryPointUrl.getProtocol(), null, entryPointUrl.getHost(), entryPointUrl.getPort(), path, null, null).toURL();
     }
 }

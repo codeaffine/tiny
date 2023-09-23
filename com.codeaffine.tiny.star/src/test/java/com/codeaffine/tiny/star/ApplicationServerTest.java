@@ -35,7 +35,6 @@ import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERV
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.getCurrentServerConfiguration;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static java.lang.String.format;
 import static java.lang.System.getProperty;
 import static java.util.Objects.nonNull;
@@ -51,7 +50,7 @@ class ApplicationServerTest {
     private static final String CUSTOM_HOST = "host";
     private static final String ENTRY_POINT_PATH_1 = "/ep1";
     private static final String ENTRY_POINT_PATH_2 = "/ep2";
-    private static final String PROTOCOL = HTTP.name().toLowerCase();
+    private static final String SCHEME = "http";
 
     private static final ApplicationConfiguration MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION = application -> {
         application.addEntryPoint(ENTRY_POINT_PATH_1, () -> null, null);
@@ -89,8 +88,8 @@ class ApplicationServerTest {
         URL[] actual = applicationServer.getUrls();
 
         assertThat(actual).containsExactlyInAnyOrder(
-            new URI(PROTOCOL, null, DEFAULT_HOST, port, ENTRY_POINT_PATH_1, null, null).toURL(),
-            new URI(PROTOCOL, null, DEFAULT_HOST, port, ENTRY_POINT_PATH_2, null, null).toURL()
+            new URI(SCHEME, null, DEFAULT_HOST, port, ENTRY_POINT_PATH_1, null, null).toURL(),
+            new URI(SCHEME, null, DEFAULT_HOST, port, ENTRY_POINT_PATH_2, null, null).toURL()
         );
     }
     
@@ -433,6 +432,6 @@ class ApplicationServerTest {
     }
 
     private static String expectedEntrypointUrl(String entryPointPath) {
-        return format("%s://%s:%s%s", DEFAULT_PROTOCOL.name().toLowerCase(), DEFAULT_HOST, getCurrentServerConfiguration().getPort(), entryPointPath);
+        return format("%s://%s:%s%s", SCHEME, DEFAULT_HOST, getCurrentServerConfiguration().getPort(), entryPointPath);
     }
 }

@@ -29,6 +29,8 @@ class ServerImpl implements Server {
     @NonNull
     private final RwtServletRegistrar rwtServletRegistrar;
     @NonNull
+    private final FilterRegistrar filterRegistrar;
+    @NonNull
     private final TomcatLifeCycleControl tomcatLifeCycleControl;
 
     ServerImpl(ServerConfiguration configuration) {
@@ -41,6 +43,7 @@ class ServerImpl implements Server {
             new ConnectorRegistrar(tomcat, configuration),
             new ResourcesServletRegistrar(),
             new RwtServletRegistrar(tomcat, configuration),
+            new FilterRegistrar(configuration),
             new TomcatLifeCycleControl(tomcat)
         );
     }
@@ -56,6 +59,7 @@ class ServerImpl implements Server {
         connectorRegistrar.addConnector();
         resourcesServletRegistrar.addResourcesServlet(context);
         rwtServletRegistrar.addRwtServlet(context);
+        filterRegistrar.addFilters(context);
         tomcatLifeCycleControl.startTomcat();
     }
 

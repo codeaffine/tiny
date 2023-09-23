@@ -12,6 +12,7 @@ import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import jakarta.servlet.ServletException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,6 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.spi.Protocol.HTTP;
 import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.stubServerConfiguration;
 import static com.codeaffine.tiny.star.undertow.DeploymentOperation.CONTEXT_PATH;
 import static com.codeaffine.tiny.star.undertow.HttpHandlerStarter.PREFIX_PATH;
@@ -38,6 +38,8 @@ import static java.nio.file.Files.writeString;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class UndertowLifecycleTest {
 
@@ -78,17 +80,20 @@ class UndertowLifecycleTest {
     void startWithNullAsPathArgument() {
         lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
 
-        assertThatThrownBy(() -> lifecycle.startUndertow(null))
+        assertThatThrownBy(() -> lifecycle.startUndertow(null, mock(DeploymentManager.class)))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Nested
     class Started {
 
+        private DeploymentManager manager;
+
         @BeforeEach
         void setUp() {
+            manager = mock(DeploymentManager.class);
             lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
         }
 
         @Test
@@ -99,7 +104,7 @@ class UndertowLifecycleTest {
         }
 
         @Test
-        void requestServerAfterStopped() {
+        void requestServerAfterStopped() throws ServletException {
             lifecycle.stopUndertow();
 
             Exception actual = catchException(UndertowLifecycleTest.this::readIndexContent);
@@ -107,11 +112,12 @@ class UndertowLifecycleTest {
             assertThat(actual)
                 .isInstanceOf(ConnectException.class)
                 .hasMessageContaining(CONNECTION_REFUSED);
+            verify(manager).stop();
         }
 
         @Test
         void requestServerAfterRestartAlreadyRunningServer() {
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
 
             String actual = readIndexContent();
 
@@ -122,10 +128,13 @@ class UndertowLifecycleTest {
     @Nested
     class Stopped {
 
+        private DeploymentManager manager;
+
         @BeforeEach
         void setUp() {
+            manager = mock(DeploymentManager.class);
             lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
             lifecycle.stopUndertow();
         }
 
@@ -140,7 +149,7 @@ class UndertowLifecycleTest {
 
         @Test
         void requestServerAfterRestart() {
-            lifecycle.startUndertow(setupBasicPathHandler());
+            lifecycle.startUndertow(setupBasicPathHandler(), manager);
 
             String actual = readIndexContent();
 
@@ -170,7 +179,7 @@ class UndertowLifecycleTest {
 
     @SneakyThrows
     private String readIndexContent() {
-        URI uri = new URI(HTTP.name().toLowerCase(), null, HOST, port, CONTEXT_PATH + INDEX, null, null);
+        URI uri = new URI("http", null, HOST, port, CONTEXT_PATH + INDEX, null, null);
         URLConnection connection = uri.toURL().openConnection();
         String result;
         try(Scanner scanner = new Scanner(connection.getInputStream())) {

@@ -7,14 +7,17 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.Texts.ERROR_READING_ATTRIBUTE;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -25,19 +28,22 @@ class SingleServerConfigurationReader implements ServerConfigurationReader {
     private static final Supplier<String> CONFIGURATION_READER = () -> System.getenv(ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    private final ApplicationConfiguration applicationConfiguration;
     private final Supplier<String> configurationLoader;
 
     private Map<String, ?> attributeMap;
 
-    SingleServerConfigurationReader() {
-        this(CONFIGURATION_READER);
+    SingleServerConfigurationReader(ApplicationConfiguration applicationConfiguration) {
+        this(CONFIGURATION_READER, applicationConfiguration);
     }
 
-    SingleServerConfigurationReader(@NonNull Supplier<String> configurationLoader) {
+    SingleServerConfigurationReader(@NonNull Supplier<String> configurationLoader, @NonNull ApplicationConfiguration applicationConfiguration) {
+        this.applicationConfiguration = applicationConfiguration;
         this.configurationLoader = configurationLoader;
     }
 
-    SingleServerConfigurationReader(@NonNull Map<String, ?> attributeMap) {
+    SingleServerConfigurationReader(@NonNull Map<String, ?> attributeMap, @NonNull ApplicationConfiguration applicationConfiguration) {
+        this.applicationConfiguration = applicationConfiguration;
         this.configurationLoader = () -> "{}";
         this.attributeMap = attributeMap;
     }
@@ -60,6 +66,28 @@ class SingleServerConfigurationReader implements ServerConfigurationReader {
             return defaultValue;
         }
         return readWithFactory(attributeName, defaultValue, factory, (Map<String, String>) attributeMap);
+    }
+
+    @Override
+    public SecureSocketLayerConfiguration readSecureSocketLayerConfiguration() {
+        tryAttributeMapInitialization(CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER);
+        if (isNull(attributeMap)) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, String> sslConfigMap = (Map<String, String>) attributeMap.get(CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER);
+        if (isNull(sslConfigMap)) {
+            return null;
+        }
+        return KeyStoreLoader.createSecureSocketLayerConfiguration(
+            sslConfigMap.get(CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION),
+            applicationConfiguration,
+            inputStream -> new SecureSocketLayerConfiguration(
+                inputStream,
+                sslConfigMap.get(CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_PASSWORD),
+                sslConfigMap.get(CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEY_ALIAS),
+                sslConfigMap.get(CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEY_PASSWORD))
+        );
     }
 
     private void tryAttributeMapInitialization(String attributeName) {

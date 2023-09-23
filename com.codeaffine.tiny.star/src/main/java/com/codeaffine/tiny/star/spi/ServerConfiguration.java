@@ -10,15 +10,17 @@ package com.codeaffine.tiny.star.spi;
 import jakarta.servlet.ServletContextListener;
 
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 public interface ServerConfiguration {
 
-    Protocol getProtocol();
+    SecureSocketLayerConfiguration getSecureSocketLayerConfiguration();
     String getHost();
     int getPort();
     ClassLoader getContextClassLoader();
     ServletContextListener getContextListener();
     File getWorkingDirectory();
     Set<String> getEntryPointPaths();
+    List<FilterDefinition> getFilterDefinitions();
 }

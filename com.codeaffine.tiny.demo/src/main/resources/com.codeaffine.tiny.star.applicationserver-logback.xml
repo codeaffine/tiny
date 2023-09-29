@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 minutes">
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
     <variable name="basePath" value="${com.codeaffine.tiny.star.applicationserver.working-directory}/logs" />
     <variable name="file-pattern" value="%d | %-5p | %t | %m | %C (%F:%L)%n" />
     <variable name="console-pattern-default" value="%d{HH:mm:ss.SSS} | %p: %n  method : %C.%M\(%class{0}.java:%line\)%n  message: %m%n" />

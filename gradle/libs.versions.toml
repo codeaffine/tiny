@@ -40,13 +40,15 @@ jakarta-xml-rpc-api = { group = "jakarta.xml.rpc", name = "jakarta.xml.rpc-api",
 jakarta-xml-ws-api = { group = "jakarta.xml.ws", name = "jakarta.xml.ws-api", version.ref = "jakarta-xml-ws" }
 javax-servlet-api = { group = "javax.servlet", name = "javax.servlet-api", version.ref = "javax-servlet" }
 jdt-ecj = { group = "org.eclipse.jdt", name = "ecj", version.ref = "ecj" }
+jul-to-slf4j = { group = "org.slf4j", name = "jul-to-slf4j", version.ref = "slf4j" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
 junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit" }
+log4j-appserver = { group = "org.apache.logging.log4j", name = "log4j-appserver", version.ref = "log4j" }
 log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j" }
 log4j-slf4j2-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j" }
-log4j-appserver = { group = "org.apache.logging.log4j", name = "log4j-appserver", version.ref = "log4j" }
+log4j-over-slf4j = { group = "org.slf4j", name = "log4j-over-slf4j", version.ref = "slf4j" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 logback-core = { group = "ch.qos.logback", name = "logback-core", version.ref = "logback" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok-version" }
@@ -65,7 +67,7 @@ wsdl4j = { group = "wsdl4j", name = "wsdl4j", version.ref = "wsdl4j" }
 [bundles]
 junit-jupiter-implementation = ["junit-jupiter", "junit-jupiter-api", "junit-jupiter-params"]
 slf4j-log4j = ["log4j-core", "log4j-slf4j2-impl", "log4j-appserver"]
-slf4j-logback = ["logback-core", "logback-classic"]
+slf4j-logback = ["logback-core", "logback-classic", "log4j-over-slf4j", "jul-to-slf4j"]
 tomcat-embed-dependencies = ["jakarta-annotation-api", "jakarta-ejb-api", "jakarta-mail-api", "jakarta-persistence-api", "jakarta-servlet-api", "jakarta-xml-rpc-api", "jakarta-xml-ws-api", "tomcat-jakartaee-migration", "wsdl4j"]
 tomcat-embed-jasper-dependencies = ["jakarta-el-api", "jakarta-servlet-api", "jakarta-servlet-jsp-api", "jdt-ecj"]
 undertow-embed-dependencies = ["undertow-core", "undertow-servlet"]

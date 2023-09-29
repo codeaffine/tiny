@@ -13,10 +13,12 @@ import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.slf4j.Logger;
 
 import java.util.List;
 
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class DemoApplication extends AbstractEntryPoint implements ApplicationConfiguration {
 
@@ -48,5 +50,8 @@ public class DemoApplication extends AbstractEntryPoint implements ApplicationCo
         parent.setLayout(new FillLayout());
         LaunchPad launchPad = new LaunchPad(CONFIGURATIONS);
         launchPad.createControl(parent);
+        Logger logger = getLogger(getClass());
+        logger.info("Launchpad created.");
+        parent.addDisposeListener(event -> getLogger(getClass()).info("Launchpad disposed."));
     }
 }

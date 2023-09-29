@@ -70,7 +70,7 @@ class TerminatorTest {
     }
 
     @Test
-    void runIfLoggingFrameworkIsUsingWorkingDirectory() {
+    void runIfLoggingFrameworkIsBlockingWorkingDirectory() {
         System.setProperty(applicationServer.getWorkingDirectorSystemProperty(), workingDirectory.getAbsolutePath());
         stubLoggingFrameworkToUseWorkingDirectory();
         Terminator terminator = new Terminator(workingDirectory, server, loggingFrameworkControl, shutDownHookRemover, applicationServer);
@@ -129,7 +129,7 @@ class TerminatorTest {
         InOrder order = inOrder(server, loggingFrameworkControl);
         order.verify(server).stop();
         order.verify(loggingFrameworkControl).halt();
-        verify(loggingFrameworkControl, never()).isUsingWorkingDirectory();
+        verify(loggingFrameworkControl, never()).isBlockingWorkingDirectory();
     }
 
     @Test
@@ -181,7 +181,7 @@ class TerminatorTest {
     }
 
     private void stubLoggingFrameworkToUseWorkingDirectory() {
-        when(loggingFrameworkControl.isUsingWorkingDirectory()).thenReturn(true);
+        when(loggingFrameworkControl.isBlockingWorkingDirectory()).thenReturn(true);
     }
 
     private void stubLoggingFrameworkControlWithErrorOnHalt() {

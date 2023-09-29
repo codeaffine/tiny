@@ -36,7 +36,7 @@ class Log4j2LoggingFrameworkControl implements LoggingFrameworkControl {
     }
 
     @Override
-    public boolean isUsingWorkingDirectory() {
+    public boolean isBlockingWorkingDirectory() {
         return true;
     }
 }

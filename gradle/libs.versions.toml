@@ -15,6 +15,7 @@ jakarta-xml-ws = "4.0.0"
 javax-servlet = "4.0.1"
 junit = "5.10.0"
 log4j = "2.20.0"
+logback = "1.4.11"
 lombok-version = "1.18.30"
 mockito = "5.5.0"
 rap = "3.26.0"
@@ -46,6 +47,8 @@ junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-para
 log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j" }
 log4j-slf4j2-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j" }
 log4j-appserver = { group = "org.apache.logging.log4j", name = "log4j-appserver", version.ref = "log4j" }
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+logback-core = { group = "ch.qos.logback", name = "logback-core", version.ref = "logback" }
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok-version" }
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 rap-rwt = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt", version.ref = "rap" }
@@ -62,6 +65,7 @@ wsdl4j = { group = "wsdl4j", name = "wsdl4j", version.ref = "wsdl4j" }
 [bundles]
 junit-jupiter-implementation = ["junit-jupiter", "junit-jupiter-api", "junit-jupiter-params"]
 slf4j-log4j = ["log4j-core", "log4j-slf4j2-impl", "log4j-appserver"]
+slf4j-logback = ["logback-core", "logback-classic"]
 tomcat-embed-dependencies = ["jakarta-annotation-api", "jakarta-ejb-api", "jakarta-mail-api", "jakarta-persistence-api", "jakarta-servlet-api", "jakarta-xml-rpc-api", "jakarta-xml-ws-api", "tomcat-jakartaee-migration", "wsdl4j"]
 tomcat-embed-jasper-dependencies = ["jakarta-el-api", "jakarta-servlet-api", "jakarta-servlet-jsp-api", "jdt-ecj"]
 undertow-embed-dependencies = ["undertow-core", "undertow-servlet"]

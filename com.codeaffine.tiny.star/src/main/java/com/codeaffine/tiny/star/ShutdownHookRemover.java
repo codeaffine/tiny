@@ -29,7 +29,7 @@ class ShutdownHookRemover implements Runnable {
 
     @Override
     public void run() {
-        if (!loggingFrameworkControl.isUsingWorkingDirectory() || !applicationServer.deleteWorkingDirectoryOnShutdown) {
+        if (!loggingFrameworkControl.isBlockingWorkingDirectory() || !applicationServer.deleteWorkingDirectoryOnShutdown) {
             shutdownHookHandler.deregister(shutdownHookOperation.get());
         }
     }

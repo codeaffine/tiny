@@ -19,6 +19,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ class LaunchPad {
     private final Map<String, Font> fonts;
     private final Map<String, Color> colors;
     private final UrlLauncher urlLauncher;
+    private final Logger logger;
 
     LaunchPad(List<? extends ApplicationConfiguration> configurations) {
         this.configurations = configurations;
@@ -60,6 +63,7 @@ class LaunchPad {
             COLOR_LOGO_FOREGROUND, new Color(Display.getCurrent(), 255, 51, 0)
         );
         this.urlLauncher = RWT.getClient().getService(UrlLauncher.class);
+        logger = LoggerFactory.getLogger(getClass());
     }
 
     void createControl(Composite parent) {
@@ -144,8 +148,10 @@ class LaunchPad {
             serverPushSession.start();
             if(context.getState() == HALTED) {
                 context.startServer();
+                logger.info("Application {} started", configuration.getClass().getSimpleName());
             } else {
                 context.stopServer();
+                logger.info("Application {} stopped", configuration.getClass().getSimpleName());
             }
         });
     }

@@ -3,7 +3,7 @@
     <Properties>
         <Property name="basePath">${sys:com.codeaffine.tiny.star.applicationserver.working-directory}/logs</Property>
         <Property name="file-pattern">%d | %-5p | %t | %m | %C (%F:%L)%n</Property>
-        <Property name="console-pattern-default">%d{HH:mm:ss.SSS} | %p: %n  method (line): %C.%M(%F:%L)%n  message      : %m%n</Property>
+        <Property name="console-pattern-default">%d{HH:mm:ss.SSS} | %p: %n  method : %C.%M\(%class{0}.java:%line\)%n  message: %m%n</Property>
         <Property name="console-pattern-info">%d{HH:mm:ss.SSS} | %p: %m%n</Property>
     </Properties>
     <Appenders>
@@ -20,7 +20,7 @@
             <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
         </Console>
         <RollingFile
-                name="rolling-file"
+                name="file.rolling"
                 fileName="${basePath}/application.log"
                 filePattern="${basePath}/application.%d{dd-MM-yyyy}.log.gz"
                 ignoreExceptions="false">
@@ -36,18 +36,18 @@
             <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
             <AppenderRef ref="system.out" />
             <AppenderRef ref="system.err" />
-            <AppenderRef ref="rolling-file" />
+            <AppenderRef ref="file.rolling" />
         </Logger>
         <Logger name="com.codeaffine.tiny.star" level="TRACE" additivity="false">
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <AppenderRef ref="system.out" />
             <AppenderRef ref="system.err" />
-            <AppenderRef ref="rolling-file" />
+            <AppenderRef ref="file.rolling" />
         </Logger>
         <Root level="ERROR">
             <AppenderRef ref="system.out" />
             <AppenderRef ref="system.err" />
-            <AppenderRef ref="rolling-file" />
+            <AppenderRef ref="file.rolling" />
         </Root>
     </Loggers>
 </Configuration>

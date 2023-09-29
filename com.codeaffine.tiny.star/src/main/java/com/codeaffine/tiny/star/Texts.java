@@ -22,7 +22,7 @@ class Texts {
         +------------------------------------------------------------------------
         |  TINY STAR
         |  STand-Alone-Runner for RAP Applications
-        |  https://github.com/fappel/tiny
+        |  https://github.com/codeaffine/tiny
         |
         |  Launching: %s
         |

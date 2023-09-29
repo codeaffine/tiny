@@ -13,7 +13,7 @@ public interface LoggingFrameworkControl {
 
     default void halt() {}
 
-    default boolean isUsingWorkingDirectory() {
+    default boolean isBlockingWorkingDirectory() {
         return false;
     }
 }

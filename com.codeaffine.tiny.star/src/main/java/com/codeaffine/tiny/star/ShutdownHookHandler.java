@@ -14,7 +14,9 @@ import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.Texts.THREAD_NAME_APPLICATION_SERVER_SHUTDOWN_HOOK;
@@ -27,6 +29,7 @@ class ShutdownHookHandler {
     @Getter
     private final Thread shutdownHookThread;
     private final Synchronizer synchronizer;
+    private final AtomicBoolean concluded;
 
     static class RuntimeSupplier {
         Runtime getRuntime() {
@@ -43,6 +46,7 @@ class ShutdownHookHandler {
         this.shutdownHookThread = new Thread(this::executeRegisteredShutdownOperations, THREAD_NAME_APPLICATION_SERVER_SHUTDOWN_HOOK);
         this.runtimeSupplier = runtimeSupplier;
         this.synchronizer = synchronizer;
+        this.concluded = new AtomicBoolean(false);
     }
 
     static void beforeProcessShutdown(@NonNull Terminator terminator, @NonNull ApplicationProcess process) {
@@ -71,7 +75,7 @@ class ShutdownHookHandler {
 
     private void doDeregister(Runnable shutdownOperation) {
         shutdownOperations.remove(shutdownOperation);
-        if(shutdownOperations.isEmpty() && !isShutdownHookThread()) {
+        if(shutdownOperations.isEmpty() && !isShutdownHookThread() && !concluded.get()) {
             runtimeSupplier.getRuntime().removeShutdownHook(shutdownHookThread);
         }
     }
@@ -81,7 +85,12 @@ class ShutdownHookHandler {
     }
 
     private void executeRegisteredShutdownOperations() {
-        synchronizer.execute(() -> new ArrayList<>(shutdownOperations))
-                .forEach(Threads::saveRun);
+        synchronizer.execute(this::cloneFinalShutdownOperationsList)
+            .forEach(Threads::saveRun);
+    }
+
+    private List<Runnable> cloneFinalShutdownOperationsList() {
+        concluded.set(true);
+        return new ArrayList<>(shutdownOperations);
     }
 }

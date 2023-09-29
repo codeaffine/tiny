@@ -45,8 +45,8 @@ class Log4J2LoggingFrameworkControlTest {
     }
 
     @Test
-    void isUsingWorkingDirectory() {
-        boolean actual = loggingFrameworkControl.isUsingWorkingDirectory();
+    void isBlockingWorkingDirectory() {
+        boolean actual = loggingFrameworkControl.isBlockingWorkingDirectory();
 
         assertThat(actual).isTrue();
     }

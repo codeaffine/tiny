@@ -18,9 +18,11 @@
         <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.test" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.bnd.dummy.main" />
+        <module name="tiny.com.codeaffine.tiny.star.logback.test" />
         <module name="tiny.com.codeaffine.tiny.shared.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.main" />
         <module name="tiny.com.codeaffine.tiny.shared.testFixtures" />
+        <module name="tiny.com.codeaffine.tiny.star.logback.main" />
         <module name="tiny.com.codeaffine.tiny.star.tck.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.tck.main" />

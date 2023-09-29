@@ -7,8 +7,8 @@
  */
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemErrCaptor;
 import com.codeaffine.tiny.shared.Synchronizer;
+import com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemErrCaptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,16 +16,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InOrder;
 
+import static com.codeaffine.tiny.shared.SynchronizerTestHelper.fakeSynchronizer;
 import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.RuntimeSupplier;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.beforeProcessShutdown;
-import static com.codeaffine.tiny.shared.SynchronizerTestHelper.fakeSynchronizer;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ShutdownHookHandlerTest {
+
+    static final String ERROR_SHUTDOWN_IN_PROGRESS = "Shutdown in progress";
 
     private ShutdownHookHandler shutdownHookHandler;
     private Synchronizer synchronizer;
@@ -43,8 +44,7 @@ class ShutdownHookHandlerTest {
         Runnable shutdownOperation = mock(Runnable.class);
 
         shutdownHookHandler.register(shutdownOperation);
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        simulateShutdownHandlerInvocation();
 
         InOrder order = inOrder(runtime, shutdownOperation);
         order.verify(runtime).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
@@ -59,8 +59,7 @@ class ShutdownHookHandlerTest {
 
         shutdownHookHandler.register(shutdownOperation1);
         shutdownHookHandler.register(shutdownOperation2);
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        simulateShutdownHandlerInvocation();
 
         verify(shutdownOperation1).run();
         verify(shutdownOperation2).run();
@@ -75,8 +74,7 @@ class ShutdownHookHandlerTest {
 
         shutdownHookHandler.register(shutdownOperation1);
         shutdownHookHandler.register(shutdownOperation2);
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        simulateShutdownHandlerInvocation();
 
         verify(shutdownOperation1).run();
         verify(shutdownOperation2).run();
@@ -91,8 +89,7 @@ class ShutdownHookHandlerTest {
 
         shutdownHookHandler.register(shutdownOperation1);
         shutdownHookHandler.register(shutdownOperation3);
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        simulateShutdownHandlerInvocation();
 
         verify(shutdownOperation1).run();
         verify(shutdownOperation3).run();
@@ -100,20 +97,15 @@ class ShutdownHookHandlerTest {
     }
 
     @Test
-    void deregisterIfShutdownIsRunning() throws InterruptedException {
-        Runnable shutdownOperation1 = mock(Runnable.class);
-        Runnable shutdownOperation2 = mock(Runnable.class);
-        Runnable shutdownOperation3 = spyRunnable(() -> shutdownHookHandler.deregister(shutdownOperation2));
+    void registerIfShutdownIsInProgress() {
+        stubShutdownInProgress();
+        Runnable shutdownOperation = mock(Runnable.class);
 
-        shutdownHookHandler.register(shutdownOperation1);
-        shutdownHookHandler.register(shutdownOperation2);
-        shutdownHookHandler.register(shutdownOperation3);
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        Exception actual = catchException(() -> shutdownHookHandler.register(shutdownOperation));
 
-        verify(shutdownOperation1).run();
-        verify(shutdownOperation2).run();
-        verify(shutdownOperation3).run();
+        assertThat(actual)
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(ERROR_SHUTDOWN_IN_PROGRESS);
     }
 
     @Test
@@ -133,8 +125,7 @@ class ShutdownHookHandlerTest {
         shutdownHookHandler.register(shutdownOperation);
         reset(synchronizer);
 
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        simulateShutdownHandlerInvocation();
 
         assertThat(systemErrCaptor.getLog()).contains(NullPointerException.class.getName());
         verify(runtime).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
@@ -147,8 +138,7 @@ class ShutdownHookHandlerTest {
 
         shutdownHookHandler.register(shutdownOperation);
         shutdownHookHandler.deregister(shutdownOperation);
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        simulateShutdownHandlerInvocation();
 
         InOrder order = inOrder(runtime, shutdownOperation);
         order.verify(runtime).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
@@ -157,15 +147,55 @@ class ShutdownHookHandlerTest {
     }
 
     @Test
+    void deregisterIfShutdownHandlerHasBeenTriggered() throws InterruptedException {
+        Runnable shutdownOperation1 = mock(Runnable.class);
+        Runnable shutdownOperation2 = spyRunnable(() -> shutdownHookHandler.deregister(shutdownOperation1));
+        Runnable shutdownOperation3 = mock(Runnable.class);
+
+        shutdownHookHandler.register(shutdownOperation1);
+        shutdownHookHandler.register(shutdownOperation2);
+        shutdownHookHandler.register(shutdownOperation3);
+        simulateShutdownHandlerInvocation();
+
+        verify(shutdownOperation1).run();
+        verify(shutdownOperation2).run();
+        verify(shutdownOperation3).run();
+    }
+
+    @Test
     void deregisterIfShutdownHookIsRunning() throws InterruptedException {
         Runnable shutdownOperation = newSelfDeregisteringOperation(shutdownHookHandler);
 
         shutdownHookHandler.register(shutdownOperation);
-        shutdownHookHandler.getShutdownHookThread().start();
-        shutdownHookHandler.getShutdownHookThread().join();
+        simulateShutdownHandlerInvocation();
 
         verify(runtime).addShutdownHook(shutdownHookHandler.getShutdownHookThread());
         verify(runtime, never()).removeShutdownHook(shutdownHookHandler.getShutdownHookThread());
+    }
+
+    @Test
+    void deregisterIfShutdownIsInProgressBeforeHandlerHasBeenExecuted() {
+        Runnable shutdownOperation = mock(Runnable.class);
+        shutdownHookHandler.register(shutdownOperation);
+        stubShutdownInProgress();
+
+        Exception actual = catchException(() -> shutdownHookHandler.deregister(shutdownOperation));
+
+        assertThat(actual)
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage(ERROR_SHUTDOWN_IN_PROGRESS);
+    }
+
+    @Test
+    void deregisterIfShutdownIsInProgressAndHandlerHasBeenExecuted() throws InterruptedException {
+        Runnable shutdownOperation = mock(Runnable.class);
+        shutdownHookHandler.register(shutdownOperation);
+        simulateShutdownHandlerInvocation();
+        stubShutdownInProgress();
+
+        shutdownHookHandler.deregister(shutdownOperation);
+
+        verify(shutdownOperation).run();
     }
 
     @Test
@@ -287,5 +317,15 @@ class ShutdownHookHandlerTest {
                 runnable.run();
             }
         });
+    }
+
+    private void simulateShutdownHandlerInvocation() throws InterruptedException {
+        shutdownHookHandler.getShutdownHookThread().start();
+        shutdownHookHandler.getShutdownHookThread().join();
+    }
+
+    private void stubShutdownInProgress() {
+        when(runtime.removeShutdownHook(any())).thenThrow(new IllegalStateException(ERROR_SHUTDOWN_IN_PROGRESS));
+        doThrow(new IllegalStateException(ERROR_SHUTDOWN_IN_PROGRESS)).when(runtime).addShutdownHook(any());
     }
 }

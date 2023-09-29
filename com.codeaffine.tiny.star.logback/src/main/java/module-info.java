@@ -5,12 +5,17 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-open module com.codeaffine.tiny.demo {
+module tiny.com.codeaffine.tiny.star.logback {
+    requires static lombok;
+
+    requires com.codeaffine.tiny.shared;
     requires com.codeaffine.tiny.star;
-    requires com.codeaffine.tiny.star.cli;
-    requires jakarta.servlet;
-    requires org.eclipse.rap.rwt;
+    requires ch.qos.logback.classic;
+    requires ch.qos.logback.core;
     requires org.slf4j;
 
-    exports com.codeaffine.tiny.demo;
+    provides com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory
+        with com.codeaffine.tiny.star.logback.LogbackConfigurator;
+    provides ch.qos.logback.classic.spi.Configurator
+        with com.codeaffine.tiny.star.logback.LogbackConfigurator;
 }

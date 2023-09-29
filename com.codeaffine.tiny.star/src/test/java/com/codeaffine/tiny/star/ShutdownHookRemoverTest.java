@@ -47,7 +47,7 @@ class ShutdownHookRemoverTest {
             applicationServerBuilder.keepWorkingDirectoryOnShutdown();
         }
         ApplicationServer applicationServer = applicationServerBuilder.build();
-        stubLoggingFrameworkControlIsUsingWorkingDirectory(workingDirectoryInUseByLoggingFramework);
+        stubLoggingFrameworkControlIsBlockingWorkingDirectory(workingDirectoryInUseByLoggingFramework);
         ShutdownHookRemover shutdownHookRemover = new ShutdownHookRemover(
             applicationServer,
             loggingFrameworkControl,
@@ -83,7 +83,7 @@ class ShutdownHookRemoverTest {
             .isInstanceOf(NullPointerException.class );
     }
 
-    private void stubLoggingFrameworkControlIsUsingWorkingDirectory(boolean workingDirectoryInUseByLoggingFramework) {
-        when(loggingFrameworkControl.isUsingWorkingDirectory()).thenReturn(workingDirectoryInUseByLoggingFramework);
+    private void stubLoggingFrameworkControlIsBlockingWorkingDirectory(boolean workingDirectoryInUseByLoggingFramework) {
+        when(loggingFrameworkControl.isBlockingWorkingDirectory()).thenReturn(workingDirectoryInUseByLoggingFramework);
     }
 }

@@ -52,7 +52,7 @@ class Terminator implements Runnable {
                 saveRun(loggingFrameworkControl::halt);
                 deleteDirectory(applicationWorkingDirectory);
             } else {
-                if(!loggingFrameworkControl.isUsingWorkingDirectory()) {
+                if(!loggingFrameworkControl.isBlockingWorkingDirectory()) {
                     deleteDirectory(applicationWorkingDirectory);
                 }
             }

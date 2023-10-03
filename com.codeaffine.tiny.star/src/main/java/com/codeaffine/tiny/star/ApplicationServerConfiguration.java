@@ -72,4 +72,9 @@ class ApplicationServerConfiguration implements ServerConfiguration {
     public List<FilterDefinition> getFilterDefinitions() {
         return applicationServer.filterDefinitions;
     }
+
+    @Override
+    public int getSessionTimeout() {
+        return applicationServer.sessionTimeout;
+    }
 }

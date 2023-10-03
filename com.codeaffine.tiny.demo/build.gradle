@@ -17,8 +17,8 @@ dependencies {
             project(':com.codeaffine.tiny.star.cli.basic'),
 //            project(':com.codeaffine.tiny.star.log4j'),
             project(':com.codeaffine.tiny.star.logback'),
-//            project(':com.codeaffine.tiny.star.undertow'),
-            project(':com.codeaffine.tiny.star.tomcat'),
+            project(':com.codeaffine.tiny.star.undertow'),
+//            project(':com.codeaffine.tiny.star.tomcat'),
     )
     testImplementation(
             libs.rap.rwt.test

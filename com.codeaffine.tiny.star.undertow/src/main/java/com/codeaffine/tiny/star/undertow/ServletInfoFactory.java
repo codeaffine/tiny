@@ -23,12 +23,14 @@ class ServletInfoFactory {
 
     static final String SERVLET_NAME = "rwtServlet";
     static final String ALL_SUB_PATHS_PATTERN = "/*";
+    static final int LOAD_ON_STARTUP = 0;
 
     @NonNull
     private final ServerConfiguration configuration;
 
     ServletInfo createRwtServletInfo() {
         ServletInfo result = servlet(SERVLET_NAME, RwtServletAdapter.class);
+        result.setLoadOnStartup(LOAD_ON_STARTUP);
         Set<String> entrypointPaths = configuration.getEntryPointPaths();
         entrypointPaths.forEach(path -> result.addMapping(path + ALL_SUB_PATHS_PATTERN));
         return result;

@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
+import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.stubServerConfiguration;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -41,7 +43,8 @@ class ContextRegistrarTest {
         assertThat(actual.getPath()).isEqualTo(ContextRegistrar.CONTEXT_PATH);
         assertThat(actual.getDocBase()).isEqualTo(expectedDocBasePath());
         assertThat(new File(actual.getDocBase())).exists();
-        verify(tomcat).setBaseDir(workingDirectory.getAbsolutePath());
+        assertThat(actual.getSessionTimeout()).isEqualTo(DEFAULT_SESSION_TIMEOUT);
+            verify(tomcat).setBaseDir(workingDirectory.getAbsolutePath());
     }
 
     @Test

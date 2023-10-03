@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServlet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
 
 import java.util.Set;
@@ -26,6 +27,7 @@ class RwtServletRegistrar {
 
     static final String SERVLET_NAME = "rwtServlet";
     static final String ALL_SUB_PATHS_PATTERN = "/*";
+    static final int LOAD_ON_STARTUP = 1;
 
     @NonNull
     private final Tomcat tomcat;
@@ -40,7 +42,8 @@ class RwtServletRegistrar {
 
     void addRwtServlet(Context context) {
         HttpServlet servlet = new RwtServletAdapter();
-        tomcat.addServlet(context.getPath(), SERVLET_NAME, servlet);
+        Wrapper wrapper = tomcat.addServlet(context.getPath(), SERVLET_NAME, servlet);
+        wrapper.setLoadOnStartup(LOAD_ON_STARTUP);
         Set<String> entrypointPaths = configuration.getEntryPointPaths();
         entrypointPaths.forEach(path -> context.addServletMappingDecoded(path + ALL_SUB_PATHS_PATTERN, SERVLET_NAME));
         context.addServletContainerInitializer((classes, servletContext) -> listener.contextInitialized(new ServletContextEvent(servletContext)), null);

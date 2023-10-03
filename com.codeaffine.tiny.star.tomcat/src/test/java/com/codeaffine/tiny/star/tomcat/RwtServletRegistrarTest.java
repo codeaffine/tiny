@@ -9,9 +9,11 @@ package com.codeaffine.tiny.star.tomcat;
 
 import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
 import org.apache.catalina.Context;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,8 +28,9 @@ class RwtServletRegistrarTest {
 
     @Test
     void addRwtServlet() throws ServletException {
-        Tomcat tomcat = mock(Tomcat.class);
         Context context = stubContext();
+        Wrapper wrapper = mock(Wrapper.class);
+        Tomcat tomcat = stubTomcat(wrapper);
         TinyStarServletContextListener contextListener = mock(TinyStarServletContextListener.class);
         RwtServletRegistrar registrar = new RwtServletRegistrar(tomcat, MULTI_ENTRYPOINT_CONFIGURATION, contextListener);
 
@@ -39,6 +42,7 @@ class RwtServletRegistrarTest {
         verify(context).addServletMappingDecoded(ENTRYPOINT_PATH_1 + RwtServletRegistrar.ALL_SUB_PATHS_PATTERN, RwtServletRegistrar.SERVLET_NAME);
         verify(context).addServletMappingDecoded(ENTRYPOINT_PATH_2 + RwtServletRegistrar.ALL_SUB_PATHS_PATTERN, RwtServletRegistrar.SERVLET_NAME);
         verify(contextListener).contextInitialized(any());
+        verify(wrapper).setLoadOnStartup(RwtServletRegistrar.LOAD_ON_STARTUP);
         assertThat(servletCaptor.getValue()).isNotNull();
     }
 
@@ -57,6 +61,13 @@ class RwtServletRegistrarTest {
     private static Context stubContext() {
         Context result = mock(Context.class);
         when(result.getPath()).thenReturn(ContextRegistrar.CONTEXT_PATH);
+        return result;
+    }
+
+    private static Tomcat stubTomcat(Wrapper wrapper) {
+        Tomcat result = mock(Tomcat.class);
+        when(result.addServlet(eq(ContextRegistrar.CONTEXT_PATH), eq(RwtServletRegistrar.SERVLET_NAME), any(Servlet.class)))
+            .thenReturn(wrapper);
         return result;
     }
 

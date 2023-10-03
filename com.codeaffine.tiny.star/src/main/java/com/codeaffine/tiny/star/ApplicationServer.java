@@ -34,6 +34,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.*;
 import static java.lang.Boolean.TRUE;
+import static java.lang.Math.*;
 import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -176,6 +177,18 @@ public class ApplicationServer {
     public static final String CONFIGURATION_ATTRIBUTE_PORT = "port";
 
     /**
+     * The attribute name used for the session-timeout definition in the application server's configuration json. Attribute values are
+     * expected to be integers that denote the session timeout in minutes. The session timeout is the time in minutes a session is kept alive
+     * without any request from the client. After the timeout the session is invalidated and all session data is lost. The session timeout
+     * is a server wide setting and affects all sessions. The default value is {@link #DEFAULT_SESSION_TIMEOUT}. Zero or negative values
+     * denote that the session lifetime is unlimited. Default is {@link #DEFAULT_SESSION_TIMEOUT}.
+     *
+     * @see ApplicationServerBuilder
+     * @see ApplicationServerBuilder#withSessionTimeout(int)
+     */
+    public static final String CONFIGURATION_ATTRIBUTE_SESSION_TIMEOUT = "session-timeout";
+
+    /**
      * The attribute name used for the working-directory definition in the application server's configuration json. Attribute values are
      * expected to denote an existing directory on disk.
      *
@@ -268,6 +281,11 @@ public class ApplicationServer {
     public static final String DEFAULT_HOST = "localhost";
 
     /**
+     * Default value for {@link #CONFIGURATION_ATTRIBUTE_SESSION_TIMEOUT}
+     */
+    public static final int DEFAULT_SESSION_TIMEOUT = 15;
+
+    /**
      * Default value for {@link #CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN}
      */
     public static final boolean DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN = true;
@@ -295,6 +313,7 @@ public class ApplicationServer {
     String applicationIdentifier;
     @Singular
     List<FilterDefinition> filterDefinitions;
+    int sessionTimeout;
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 
@@ -589,6 +608,20 @@ public class ApplicationServer {
         }
 
         /**
+         * Define the session timeout tu use in minutes. If not specified the server will use the {@link #DEFAULT_SESSION_TIMEOUT} value.
+         * Zero or negative values denote that the session lifetime is unlimited. The session timeout is a server wide setting and affects all sessions.
+         * Note that the session timeout is the time in minutes a session is kept alive without any request from the client. After the timeout the session
+         * is invalidated and all session data is lost.
+         *
+         * @param sessionTimeout the session timeout to use in minutes.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified session timeout set. Never {@code null}.
+         * @see #CONFIGURATION_ATTRIBUTE_SESSION_TIMEOUT
+         */
+        public ApplicationServerBuilder withSessionTimeout(int sessionTimeout) {
+            return new ApplicationServerBuilder(delegate.withSessionTimeout(normalizeSessionTimeout(sessionTimeout)));
+        }
+
+        /**
          * Allows to configure the application server by providing a json string that contains a map of name/value pairs for the attributes to configure.
          * Note that this method will override any configuration provided by the {@link #ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable.
          * Note also that any subsequent calls to {@link ApplicationServerBuilder} attribute setter methods will override settings made by this method.
@@ -698,7 +731,10 @@ public class ApplicationServer {
             .withDeleteWorkingDirectoryOnShutdown(
                 configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
                     DEFAULT_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
-                    Boolean.class));
+                    Boolean.class))
+            .withSessionTimeout(normalizeSessionTimeout(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SESSION_TIMEOUT,
+                DEFAULT_SESSION_TIMEOUT,
+                Integer.class)));
     }
 
     /**
@@ -801,5 +837,9 @@ public class ApplicationServer {
         } catch (URISyntaxException | MalformedURLException cause) {
             throw new IllegalArgumentException(cause);
         }
+    }
+
+    private static int normalizeSessionTimeout(Integer sessionTimeout) {
+        return max(sessionTimeout, 0);
     }
 }

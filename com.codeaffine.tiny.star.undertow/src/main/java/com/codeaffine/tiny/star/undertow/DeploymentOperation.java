@@ -16,10 +16,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import static com.codeaffine.tiny.star.undertow.SessionTimeoutConfigurator.*;
 import static io.undertow.servlet.Servlets.*;
-import static io.undertow.servlet.Servlets.defaultContainer;
-import static io.undertow.servlet.Servlets.deployment;
-import static jakarta.servlet.DispatcherType.*;
+import static jakarta.servlet.DispatcherType.REQUEST;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -45,6 +44,7 @@ class DeploymentOperation {
             .addDeploymentCompleteListener(configuration.getContextListener())
             .setDeploymentName(DEPLOYMENT_NAME)
             .addServlets(servletInfo)
+            .addServletContainerInitializer(newServletContainerInitializerInfo(configuration))
             .addFilters(createFilterInfos());
         configuration.getFilterDefinitions()
             .forEach(filterDefinition -> addFilterMappings(filterDefinition, servletInfo, deploymentInfo));

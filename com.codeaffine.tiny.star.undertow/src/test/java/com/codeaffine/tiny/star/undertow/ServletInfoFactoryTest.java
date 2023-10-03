@@ -24,6 +24,7 @@ class ServletInfoFactoryTest {
         ServletInfo actual = factory.createRwtServletInfo();
 
         assertThat(actual.getName()).isEqualTo(ServletInfoFactory.SERVLET_NAME);
+        assertThat(actual.getLoadOnStartup()).isEqualTo(ServletInfoFactory.LOAD_ON_STARTUP);
         assertThat(actual.getServletClass()).isEqualTo(RwtServletAdapter.class);
         assertThat(actual.getMappings()).containsExactlyInAnyOrder(toPattern(ENTRYPOINT_PATH_1), toPattern(ENTRYPOINT_PATH_2));
     }

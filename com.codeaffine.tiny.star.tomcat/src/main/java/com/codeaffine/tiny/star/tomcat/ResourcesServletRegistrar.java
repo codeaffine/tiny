@@ -15,7 +15,7 @@ class ResourcesServletRegistrar {
 
     static final String SERVLET_NAME = "default";
     static final String SERVLET_CLASS_NAME = DefaultServlet.class.getName();
-    static final int LOAD_ON_STARTUP = 1;
+    static final int LOAD_ON_STARTUP = 0;
     static final String INIT_PARAMETER_DEBUG = "debug";
     static final String INIT_PARAMETER_LISTINGS = "listings";
     static final String INIT_VALUE_DEBUG = "0";

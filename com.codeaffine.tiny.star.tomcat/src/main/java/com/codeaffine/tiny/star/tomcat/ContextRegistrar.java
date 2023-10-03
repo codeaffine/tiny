@@ -35,6 +35,8 @@ class ContextRegistrar {
             throw new IllegalStateException(format(Texts.ERROR_CREATE_DOC_BASE, docBase.getAbsolutePath()));
         }
         tomcat.setBaseDir(configuration.getWorkingDirectory().getAbsolutePath());
-        return tomcat.addContext(CONTEXT_PATH, docBase.getAbsolutePath());
+        Context result = tomcat.addContext(CONTEXT_PATH, docBase.getAbsolutePath());
+        result.setSessionTimeout(configuration.getSessionTimeout());
+        return result;
     }
 }

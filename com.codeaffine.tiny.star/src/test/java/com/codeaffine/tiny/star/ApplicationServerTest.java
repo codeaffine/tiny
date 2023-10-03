@@ -7,12 +7,15 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.star.spi.ServerConfigurationAssert;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.slf4j.Logger;
@@ -92,7 +95,7 @@ class ApplicationServerTest {
             new URI(SCHEME, null, DEFAULT_HOST, port, ENTRY_POINT_PATH_2, null, null).toURL()
         );
     }
-    
+
     @Test
     void start() {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
@@ -112,14 +115,14 @@ class ApplicationServerTest {
         order.verifyNoMoreInteractions();
         assertThat(CURRENT_SERVER.get().isStarted()).isTrue();
         assertThat(CURRENT_SERVER.get().isStopped()).isFalse();
-        assertThat(getCurrentServerConfiguration().getHost()).isEqualTo(DEFAULT_HOST);
-        assertThat(getCurrentServerConfiguration().getPort()).isNotNegative();
-        assertThat(getCurrentServerConfiguration().getContextClassLoader()).isSameAs(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION.getClass().getClassLoader());
-        assertThat(getCurrentServerConfiguration().getEntryPointPaths()).isEqualTo(captureEntrypointPaths(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION));
-            assertThat(getCurrentServerConfiguration().getWorkingDirectory())
-            .isEqualTo(workingDirectory)
-            .isDirectory()
-            .exists();
+        ServerConfigurationAssert.assertThat(getCurrentServerConfiguration())
+            .hasHost(DEFAULT_HOST)
+            .hasNonNegativePort()
+            .hasContextClassLoader(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION.getClass().getClassLoader())
+            .hasEntryPointPaths(captureEntrypointPaths(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION))
+            .hasSessionTimeout(DEFAULT_SESSION_TIMEOUT)
+            .hasWorkingDirectory(workingDirectory)
+            .hasExistingWorkingDirectory();
         assertThat(applicationIdentifierCaptor.getAllValues())
             .allMatch(DEFAULT_APPLICATION_IDENTIFIER::equals);
     }
@@ -197,6 +200,23 @@ class ApplicationServerTest {
         applicationServer.start();
 
         assertThat(getCurrentServerConfiguration().getHost()).isEqualTo(CUSTOM_HOST);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "0, 0",
+        "1, 1",
+        "42, 42",
+        "-1, 0"
+    })
+    void startWithSessionTimeout(int sessionTimeout, int expectedSessionTimeout) {
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withSessionTimeout(sessionTimeout)
+            .build();
+
+        applicationServer.start();
+
+        ServerConfigurationAssert.assertThat(getCurrentServerConfiguration()).hasSessionTimeout(expectedSessionTimeout);
     }
 
     @Test

@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import static com.codeaffine.tiny.star.ApplicationServer.DEFAULT_SESSION_TIMEOUT;
 import static com.codeaffine.tiny.star.spi.FilterDefinition.of;
 import static lombok.AccessLevel.PRIVATE;
 import static org.mockito.Mockito.mock;
@@ -39,7 +40,7 @@ public class ApplicationServerTestHelper {
     public static final FilterDefinition FILTER_DEFINITION_1 = of(FILTER_NAME_1, mock(Filter.class));
     public static final FilterDefinition FILTER_DEFINITION_2 = of(FILTER_NAME_2, mock(Filter.class), ENTRYPOINT_PATH_1);
     public static final FilterDefinition FILTER_DEFINITION_3 = of(FILTER_NAME_3, mock(Filter.class), ENTRYPOINT_PATH_1, ENTRYPOINT_PATH_2);
-    public static final String KEY_STORE_PASSWORD = "store-password"; // common password for all test keystores
+    public static final String KEY_STORE_PASSWORD = "store-password"; // common password for all test key-stores
     public static final String KEY_ALIAS = "tiny"; // common alias for test keystores that use an alias
     public static final String KEY_PASSWORD = "key-password"; // common password for test keystores that use a password that is different from the store password
 
@@ -73,6 +74,7 @@ public class ApplicationServerTestHelper {
         when(result.getEntryPointPaths()).thenReturn(Set.of(entryPointPaths));
         when(result.getContextClassLoader()).thenReturn(ApplicationServerTestHelper.class.getClassLoader());
         when(result.getContextListener()).thenReturn(mock(TinyStarServletContextListener.class));
+        when(result.getSessionTimeout()).thenReturn(DEFAULT_SESSION_TIMEOUT);
         return result;
     }
 }

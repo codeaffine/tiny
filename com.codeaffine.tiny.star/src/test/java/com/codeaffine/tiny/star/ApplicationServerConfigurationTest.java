@@ -10,12 +10,15 @@ package com.codeaffine.tiny.star;
 import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
+import com.codeaffine.tiny.star.spi.ServerConfigurationAssert;
 import jakarta.servlet.Filter;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.application.EntryPoint;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -29,25 +32,30 @@ class ApplicationServerConfigurationTest {
     private static final String HOST = "localhost";
     private static final int PORT = 8080;
     private static final SecureSocketLayerConfiguration SECURE_SOCKET_LAYER_CONFIGURATION = mock(SecureSocketLayerConfiguration.class);
+    private static final int SESSION_TIMEOUT = 42;
 
     @Test
     void construct() {
+        FilterDefinition filterDefinition = FilterDefinition.of(mock(Filter.class));
         ApplicationServer server = ApplicationServer.newApplicationServerBuilder(APPLICATION_CONFIGURATION)
             .withHost(HOST)
             .withPort(PORT)
-            .withFilterDefinition(FilterDefinition.of(mock(Filter.class)))
+            .withFilterDefinition(filterDefinition)
             .withSecureSocketLayerConfiguration(SECURE_SOCKET_LAYER_CONFIGURATION)
+            .withSessionTimeout(SESSION_TIMEOUT)
             .build();
         ApplicationServerConfiguration actual = new ApplicationServerConfiguration(WORKING_DIRECTORY, server);
 
-        assertThat(actual.getWorkingDirectory()).isEqualTo(WORKING_DIRECTORY);
-        assertThat(actual.getSecureSocketLayerConfiguration()).isSameAs(SECURE_SOCKET_LAYER_CONFIGURATION);
-        assertThat(actual.getHost()).isEqualTo(HOST);
-        assertThat(actual.getPort()).isEqualTo(PORT);
-        assertThat(actual.getContextClassLoader()).isEqualTo(APPLICATION_CONFIGURATION.getClass().getClassLoader());
-        assertThat(actual.getContextListener()).isInstanceOf(TinyStarServletContextListener.class);
-        assertThat(actual.getEntryPointPaths()).containsExactly("/app");
-        assertThat(actual.getFilterDefinitions()).hasSize(1);
+        ServerConfigurationAssert.assertThat(actual)
+            .hasWorkingDirectory(WORKING_DIRECTORY)
+            .hasSecureSocketLayerConfiguration(SECURE_SOCKET_LAYER_CONFIGURATION)
+            .hasHost(HOST)
+            .hasPort(PORT)
+            .hasContextClassLoader(APPLICATION_CONFIGURATION.getClass().getClassLoader())
+            .hasServletContextListenerInstanceOf(TinyStarServletContextListener.class)
+            .hasEntryPointPaths(Set.of("/app"))
+            .hasFilterDefinitions(List.of(filterDefinition))
+            .hasSessionTimeout(SESSION_TIMEOUT);
     }
 
     @Test

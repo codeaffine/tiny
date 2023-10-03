@@ -23,4 +23,5 @@ public interface ServerConfiguration {
     File getWorkingDirectory();
     Set<String> getEntryPointPaths();
     List<FilterDefinition> getFilterDefinitions();
+    int getSessionTimeout();
 }

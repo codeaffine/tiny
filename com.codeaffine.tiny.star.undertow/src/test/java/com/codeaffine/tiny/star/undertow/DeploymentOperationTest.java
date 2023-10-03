@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.List;
 
 import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
+import static com.codeaffine.tiny.star.undertow.DeploymentOperation.*;
 import static jakarta.servlet.DispatcherType.REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,8 +39,8 @@ class DeploymentOperationTest {
 
         DeploymentInfo deploymentInfo = actual.getDeployment().getDeploymentInfo();
         FileResourceManager resourceManager = (FileResourceManager) deploymentInfo.getResourceManager();
-        assertThat(deploymentInfo.getContextPath()).isEqualTo(DeploymentOperation.CONTEXT_PATH);
-        assertThat(deploymentInfo.getDeploymentName()).isEqualTo(DeploymentOperation.DEPLOYMENT_NAME);
+        assertThat(deploymentInfo.getContextPath()).isEqualTo(CONTEXT_PATH);
+        assertThat(deploymentInfo.getDeploymentName()).isEqualTo(DEPLOYMENT_NAME);
         assertThat(deploymentInfo.getClassLoader()).isSameAs(MULTI_ENTRYPOINT_CONFIGURATION.getClass().getClassLoader());
         assertThat(deploymentInfo.getServlets())
             .hasSize(1)
@@ -48,6 +49,9 @@ class DeploymentOperationTest {
         assertThat(deploymentInfo.getDeploymentCompleteListeners())
             .hasSize(1)
             .allSatisfy(listener -> assertThat(listener).isInstanceOf(TinyStarServletContextListener.class));
+        assertThat(deploymentInfo.getServletContainerInitializers())
+            .hasSize(1)
+            .allSatisfy(initializer -> assertThat(initializer.getServletContainerInitializerClass()).isSameAs(SessionTimeoutConfigurator.class));
         assertThat(resourceManager.getBase()).isEqualTo(workingDirectory);
     }
 

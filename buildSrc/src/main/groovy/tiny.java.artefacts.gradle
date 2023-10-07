@@ -8,5 +8,10 @@ java {
 }
 
 javadoc {
-    options.encoding = 'UTF-8'
+    options {
+        encoding = 'UTF-8';
+        stylesheetFile = project.parent.file('javadoc/stylesheet.css');
+        windowTitle = 'TINY API';
+        header = '<a href="https://codeaffine.com"><img class="logo" src="https://www.codeaffine.com/wp-content/uploads/2014/07/logo.svg" alt="Code Affine"></a>';
+    }
 }

@@ -324,7 +324,7 @@ public class ApplicationServer {
      * <pre>
      *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"classpath:keystore.jks", ... }}
      *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"filesystem:src/test/resources/keystore.jks", ... }}
-     *
+     * </pre>
      * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER_KEYSTORE_LOCATION
      * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER
      */
@@ -414,7 +414,7 @@ public class ApplicationServer {
      * <pre>
      *     com.codeaffine.tiny.star.configuration={"port":12000}
      * </pre>
-     * However, if multiple application server instances are running on the same machine or particular file mappings infos (e.g. to the server's working
+     * <p>However, if multiple application server instances are running on the same machine or particular file mappings infos (e.g. to the server's working
      * directory) are needed an application server identifier must be specified. This more general approach is done by using the
      * {@link #newApplicationServerBuilder(ApplicationConfiguration, String)} method for building and launching an {@link ApplicationServer} instance. In this
      * case the {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable's value exists of a json that contains

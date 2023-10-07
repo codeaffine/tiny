@@ -6,3 +6,7 @@ java {
     withSourcesJar()
 //    withJavadocJar()
 }
+
+javadoc {
+    options.encoding = 'UTF-8'
+}

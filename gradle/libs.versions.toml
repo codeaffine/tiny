@@ -1,6 +1,6 @@
 [versions]
 ant-version = "1.10.14"
-assertj = "3.25.1"
+assertj = "3.25.2"
 ecj = "3.36.0"
 jackson = "2.16.1"
 jakarta-annotation = "2.1.1"

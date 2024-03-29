@@ -32,6 +32,7 @@ module org.apache.tomcat.embed.core {
     exports org.apache.coyote.http11;
     exports org.apache.juli.logging;
     exports org.apache.tomcat;
+    exports org.apache.tomcat.util.buf;
     exports org.apache.tomcat.util.descriptor;
     exports org.apache.tomcat.util.descriptor.tagplugin;
     exports org.apache.tomcat.util.descriptor.web;

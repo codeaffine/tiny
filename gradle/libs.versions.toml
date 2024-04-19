@@ -22,7 +22,7 @@ rap = "3.27.0"
 slf4j = "2.0.12"
 tomcat-embed = "10.1.20"
 tomcat-jakartaee = "1.0.8"
-undertow = "2.3.12.Final"
+undertow = "2.3.13.Final"
 wsdl4j = "1.6.3"
 
 [libraries]

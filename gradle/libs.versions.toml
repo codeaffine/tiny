@@ -1,8 +1,8 @@
 [versions]
 ant-version = "1.10.14"
-assertj = "3.25.0"
-ecj = "3.36.0"
-jackson = "2.16.1"
+org_assertj_core = "3.24.2"
+ecj = "3.35.0"
+com_fasterxml_jackson_databind = "2.15.3"
 jakarta-annotation = "2.1.1"
 jakarta-ejb = "4.0.1"
 jakarta-el = "5.0.1"
@@ -12,23 +12,24 @@ jakarta-servlet = "6.0.0"
 jakarta-servlet-jsp = "3.1.1"
 jakarta-xml-rpc = "1.1.4"
 jakarta-xml-ws = "4.0.1"
-javax-servlet = "4.0.1"
-junit = "5.10.1"
-log4j = "2.22.1"
-logback = "1.4.14"
-lombok-version = "1.18.30"
-mockito = "5.8.0"
-rap = "3.27.0"
-slf4j = "2.0.10"
-tomcat-embed = "10.1.17"
+javax_servlet-api = "4.0.1"
+log4j = "2.21.0"
+logback = "1.4.11"
+lombok = "1.18.30"
+org_eclipse_rap_rwt = "3.26.0"
+org_junit_jupiter_api = "5.10.0"
+org_mockito = "5.6.0"
+rap = "3.26.0"
+org_slf4j = "2.0.9"
+tomcat-embed = "10.1.15"
 tomcat-jakartaee = "1.0.7"
 undertow = "2.3.10.Final"
 wsdl4j = "1.6.3"
 
 [libraries]
 ant = { group = "org.apache.ant", name = "ant", version.ref = "ant-version" }
-assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
-jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "org_assertj_core" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "com_fasterxml_jackson_databind" }
 jakarta-annotation-api = { group = "jakarta.annotation", name = "jakarta.annotation-api", version.ref = "jakarta-annotation" }
 jakarta-ejb-api = { group = "jakarta.ejb", name = "jakarta.ejb-api", version.ref = "jakarta-ejb" }
 jakarta-el-api = { group = "jakarta.el", name = "jakarta.el-api", version.ref = "jakarta-el" }
@@ -38,24 +39,24 @@ jakarta-servlet-api = { group = "jakarta.servlet", name = "jakarta.servlet-api",
 jakarta-servlet-jsp-api = { group = "jakarta.servlet.jsp", name = "jakarta.servlet.jsp-api", version.ref = "jakarta-servlet-jsp" }
 jakarta-xml-rpc-api = { group = "jakarta.xml.rpc", name = "jakarta.xml.rpc-api", version.ref = "jakarta-xml-rpc" }
 jakarta-xml-ws-api = { group = "jakarta.xml.ws", name = "jakarta.xml.ws-api", version.ref = "jakarta-xml-ws" }
-javax-servlet-api = { group = "javax.servlet", name = "javax.servlet-api", version.ref = "javax-servlet" }
+javax-servlet-api = { group = "javax.servlet", name = "javax.servlet-api", version.ref = "javax_servlet-api" }
 jdt-ecj = { group = "org.eclipse.jdt", name = "ecj", version.ref = "ecj" }
-jul-to-slf4j = { group = "org.slf4j", name = "jul-to-slf4j", version.ref = "slf4j" }
-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
-junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
-junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
-junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit" }
+jul-to-slf4j = { group = "org.slf4j", name = "jul-to-slf4j", version.ref = "org_slf4j" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "org_junit_jupiter_api" }
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "org_junit_jupiter_api" }
+junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "org_junit_jupiter_api" }
+junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "org_junit_jupiter_api" }
 log4j-appserver = { group = "org.apache.logging.log4j", name = "log4j-appserver", version.ref = "log4j" }
 log4j-core = { group = "org.apache.logging.log4j", name = "log4j-core", version.ref = "log4j" }
 log4j-slf4j2-impl = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version.ref = "log4j" }
-log4j-over-slf4j = { group = "org.slf4j", name = "log4j-over-slf4j", version.ref = "slf4j" }
+log4j-over-slf4j = { group = "org.slf4j", name = "log4j-over-slf4j", version.ref = "org_slf4j" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 logback-core = { group = "ch.qos.logback", name = "logback-core", version.ref = "logback" }
-lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok-version" }
-mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
-rap-rwt = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt", version.ref = "rap" }
-rap-rwt-test = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt.testfixture", version.ref = "rap" }
-slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "org_mockito" }
+rap-rwt = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt", version.ref = "org_eclipse_rap_rwt" }
+rap-rwt-test = { group = "org.eclipse.rap", name = "org.eclipse.rap.rwt.testfixture", version.ref = "org_eclipse_rap_rwt" }
+slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "org_slf4j" }
 tomcat-embed-core = { group = "org.apache.tomcat.embed", name = "tomcat-embed-core", version.ref = "tomcat-embed" }
 tomcat-embed-el = { group = "org.apache.tomcat.embed", name = "tomcat-embed-el", version.ref = "tomcat-embed" }
 tomcat-embed-jasper = { group = "org.apache.tomcat.embed", name = "tomcat-embed-jasper", version.ref = "tomcat-embed" }
@@ -65,7 +66,7 @@ undertow-servlet = { group = "io.undertow", name = "undertow-servlet", version.r
 wsdl4j = { group = "wsdl4j", name = "wsdl4j", version.ref = "wsdl4j" }
 
 [bundles]
-junit-jupiter-implementation = ["junit-jupiter", "junit-jupiter-api", "junit-jupiter-params"]
+junit-jupiter-apis = ["junit-jupiter", "junit-jupiter-api", "junit-jupiter-params"]
 slf4j-log4j = ["log4j-core", "log4j-slf4j2-impl", "log4j-appserver"]
 slf4j-logback = ["logback-core", "logback-classic", "log4j-over-slf4j", "jul-to-slf4j"]
 tomcat-embed-dependencies = ["jakarta-annotation-api", "jakarta-ejb-api", "jakarta-mail-api", "jakarta-persistence-api", "jakarta-servlet-api", "jakarta-xml-rpc-api", "jakarta-xml-ws-api", "tomcat-jakartaee-migration", "wsdl4j"]

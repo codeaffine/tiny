@@ -1,0 +1,19 @@
+// Configure the ':tasks' task of the root project to only show
+// the main lifecycle tasks as entry points to the build
+ext.mainBuildGroup = "main build"
+
+tasks.named("tasks") {
+    displayGroup = mainBuildGroup
+}
+
+tasks.register("build") {
+    group = mainBuildGroup
+    description = "Complete build of all modules and the application"
+    dependsOn(subprojects.collect { ":${it.name}:$name" })
+}
+
+tasks.register("clean") {
+    group = mainBuildGroup
+    description = "Run clean of all modules and the application"
+    dependsOn(subprojects.collect { ":${it.name}:$name" })
+}

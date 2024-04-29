@@ -1,0 +1,12 @@
+plugins {
+    id("com.codeaffine.tiny.java.base")
+    id("java-test-fixtures")
+}
+
+dependencies {
+    testFixturesImplementation(
+        libs.bundles.junit.jupiter.apis,
+        libs.assertj.core,
+        libs.mockito.core
+    )
+}

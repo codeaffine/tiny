@@ -1,0 +1,6 @@
+// Include all sub folders that contain a 'build.gradle' as subprojects
+rootDir.eachFile { file ->
+    if (new File(file, "build.gradle").exists()) {
+        include(file.name)
+    }
+}

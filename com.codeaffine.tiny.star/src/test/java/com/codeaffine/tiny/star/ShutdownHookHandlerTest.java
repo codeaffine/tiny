@@ -16,7 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InOrder;
 
-import static com.codeaffine.tiny.shared.SynchronizerTestHelper.fakeSynchronizer;
+import static com.codeaffine.tiny.shared.testfixture.SynchronizerTestHelper.fakeSynchronizer;
 import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.RuntimeSupplier;

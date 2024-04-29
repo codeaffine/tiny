@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
-  <component name="AdditionalModuleElements">
-    <content url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star/build/generated/sources/annotationProcessor/java/test">
-      <sourceFolder url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star/build/generated/sources/annotationProcessor/java/test" isTestSource="true" generated="true" />
-    </content>
-  </component>
   <component name="SonarLintModuleSettings">
-    <option name="uniqueId" value="085c0fb7-e10f-41e8-a288-b74608bdff5b" />
+    <option name="uniqueId" value="e33c6e1e-2913-4cb6-ab76-3673ca71c47d" />
   </component>
 </module>

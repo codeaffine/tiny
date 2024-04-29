@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import static com.codeaffine.tiny.shared.SynchronizerTestHelper.fakeSynchronizer;
+import static com.codeaffine.tiny.shared.testfixture.SynchronizerTestHelper.fakeSynchronizer;
 import static com.codeaffine.tiny.shared.Threads.sleepFor;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;

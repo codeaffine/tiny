@@ -1,0 +1,10 @@
+plugins {
+    id("com.codeaffine.tiny.java.base")
+    id("io.freefair.lombok")
+}
+
+dependencies {
+    compileOnly(
+        libs.lombok
+    );
+}

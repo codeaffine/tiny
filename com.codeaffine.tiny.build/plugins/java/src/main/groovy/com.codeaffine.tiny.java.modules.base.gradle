@@ -1,0 +1,80 @@
+plugins {
+    id("com.codeaffine.tiny.java.base")
+    id("org.gradlex.extra-java-module-info")
+    id("org.gradlex.java-module-dependencies")
+}
+
+extraJavaModuleInfo {
+//    failOnAutomaticModules.set(true)
+//    automaticModule("javax.servlet:javax.servlet-api", "javax.servlet.api")
+    module("javax.servlet:javax.servlet-api", "javax.servlet.api") {
+        exports("javax.servlet")
+        exports("javax.servlet.annotation")
+        exports("javax.servlet.descriptor")
+        exports("javax.servlet.http")
+    }
+    module("org.eclipse.rap:org.eclipse.rap.rwt", "org.eclipse.rap.rwt") {
+        requires("javax.servlet.api")
+        exports("org.eclipse.rap.json")
+        exports("org.eclipse.rap.rwt")
+        exports("org.eclipse.rap.rwt.apache.batik.css.parser")
+        exports("org.eclipse.rap.rwt.apache.batik.util.io")
+        exports("org.eclipse.rap.rwt.application")
+        exports("org.eclipse.rap.rwt.client")
+        exports("org.eclipse.rap.rwt.client.service")
+        exports("org.eclipse.rap.rwt.dnd")
+        exports("org.eclipse.rap.rwt.engine")
+        exports("org.eclipse.rap.rwt.remote")
+        exports("org.eclipse.rap.rwt.scripting")
+        exports("org.eclipse.rap.rwt.service")
+        exports("org.eclipse.rap.rwt.template")
+        exports("org.eclipse.rap.rwt.theme")
+        exports("org.eclipse.rap.rwt.widgets")
+        exports("org.eclipse.swt")
+        exports("org.eclipse.swt.accessibility")
+        exports("org.eclipse.swt.browser")
+        exports("org.eclipse.swt.custom")
+        exports("org.eclipse.swt.dnd")
+        exports("org.eclipse.swt.events")
+        exports("org.eclipse.swt.graphics")
+        exports("org.eclipse.swt.layout")
+        exports("org.eclipse.swt.widgets")
+        exports("org.w3c.css.sac")
+    }
+
+    automaticModule("org.eclipse.rap:org.eclipse.rap.rwt.testfixture", "org.eclipse.rap.rwt.testfixture")
+    automaticModule("org.eclipse.rap:org.eclipse.rap.rwt.testfixture", "org.eclipse.rap.rwt.testfixture")
+//    automaticModule("com.fasterxml.jackson.core:jackson-databind", "jackson.databind")
+//    automaticModule("org.slf4j:slf4j-api", "slf4j.api")
+//    deriveAutomaticModuleNamesFromFileNames.set(true)
+}
+
+javaModuleDependencies {
+    moduleNameToGA.put("javax.servlet.api", "javax.servlet:javax.servlet-api")
+    moduleNameToGA.put("org.eclipse.rap.rwt", "org.eclipse.rap:org.eclipse.rap.rwt")
+    moduleNameToGA.put("org.eclipse.rap.rwt.testfixture", "org.eclipse.rap:org.eclipse.rap.rwt.testfixture")
+    moduleNameToGA.put("jackson.databind", "com.fasterxml.jackson.core:jackson-databind")
+    moduleNameToGA.put("slf4j.api", "org.slf4j:slf4j-api")
+
+    // add all modules from the root project
+    rootDir.eachFile { file ->
+        if (new File(file, "build.gradle").exists()) {
+//            println("moduleName: ${file.name}")
+//            println("grouped: ${group}:${file.name}")
+            moduleNameToGA.put(file.name, "${group}:${file.name}")
+//
+//            println("projectName: ${project.name}")
+//            println("fileName: ${file.name}")
+//            if (project.name != file.name && new File(file, "src").exists()) {
+//                file.listFiles().each { sourceSetFile ->
+//                    if (new File(sourceSetFile, "testFixtures").exists()) {
+//                        println("fixture-project: ${file.name}.testfixture")
+//                        println("fixture; ${group}:${file.name}.testfixture")
+//
+//                        moduleNameToGA.put("${file.name}.testfixture", "${group}:${file.name}.testfixture")
+//                    }
+//                }
+//            }
+        }
+    }
+}

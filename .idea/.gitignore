@@ -1,6 +1,6 @@
 # Default ignored files
 /shelf/
-/workspace.xml
+/.idea-bak/workspace.xml
 /sonarlint/
 # Editor-based HTTP Client requests
 /httpRequests/

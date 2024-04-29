@@ -1,0 +1,22 @@
+pluginManagement {
+    repositories.gradlePluginPortal()
+
+    // lookup of the convention plugins for the main build
+    if (new File(rootDir, "com.codeaffine.tiny.build/plugins").exists()) {
+        includeBuild("com.codeaffine.tiny.build/plugins")
+    }
+
+    // lookup of the convention plugins if this is not the main build
+    if (new File(rootDir, "../plugins").exists()) {
+        includeBuild("../plugins")
+    }
+}
+
+dependencyResolutionManagement {
+    repositories.mavenLocal()
+    repositories.mavenCentral()
+
+    if (new File(rootDir, "com.codeaffine.tiny.build/platform").exists()) {
+        includeBuild("com.codeaffine.tiny.build/platform")
+    }
+}

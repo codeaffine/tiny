@@ -1,4 +1,0 @@
-plugins {
-    id 'tiny.java.modules.base'
-    id 'tiny.java.lombok'
-}

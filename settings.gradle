@@ -1,18 +1,9 @@
-rootProject.name = 'tiny'
-include 'com.codeaffine.tiny.star'
-include 'com.codeaffine.tiny.star.tck'
-include 'com.codeaffine.tiny.star.undertow'
-include 'com.codeaffine.tiny.star.tomcat'
-include 'com.codeaffine.tiny.star.tomcat.bnd.dummy'
-include 'com.codeaffine.tiny.star.tomcat.embed.core'
-include 'com.codeaffine.tiny.star.tomcat.embed.el'
-include 'com.codeaffine.tiny.star.tomcat.embed.jasper'
-include 'com.codeaffine.tiny.demo'
-include 'com.codeaffine.tiny.star.cli'
-include 'com.codeaffine.tiny.test'
-include 'com.codeaffine.tiny.shared'
-include 'com.codeaffine.tiny.star.cli.tck'
-include 'com.codeaffine.tiny.star.cli.basic'
-include 'com.codeaffine.tiny.star.log4j'
-include 'com.codeaffine.tiny.star.logback'
-include 'com.codeaffine.tiny.star.servlet'
+pluginManagement {
+    includeBuild("com.codeaffine.tiny.build/meta-plugins")
+}
+
+plugins {
+    id("com.codeaffine.tiny.settings")
+}
+
+rootProject.name = "tiny"

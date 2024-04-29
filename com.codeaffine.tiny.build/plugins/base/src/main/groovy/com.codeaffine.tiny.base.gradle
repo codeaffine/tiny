@@ -1,0 +1,16 @@
+plugins {
+    id("base")
+}
+
+// set the group for publishing
+group = "com.codeaffine.tiny"
+
+// read the version from 'version.txt'
+version = providers
+    .fileContents(rootProject.layout.projectDirectory.file("VERSION.txt"))
+    .getAsText()
+    .getOrElse("")
+    .trim()
+if(version == "") {
+    throw new GradleException("com.codeaffine.tiny.build/version.txt is empty")
+}

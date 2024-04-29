@@ -1,31 +1,4 @@
 plugins {
-    id 'tiny.java.modules'
-    id 'tiny.quality.gate'
-    id 'tiny.license'
-    id 'tiny.publish.common'
-}
-
-dependencies {
-    implementation(
-            libs.javax.servlet.api,
-            libs.jakarta.servlet.api,
-            libs.rap.rwt
-    )
-    testImplementation(
-            libs.rap.rwt.test
-    )
-}
-
-publishing {
-    publications {
-        tinyStarServlet(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
-sonarqube {
-    properties {
-        property "sonar.exclusions", "src/main/java/**/JakartaToJavax*.java, src/main/java/**/JavaxToJakarta*.java"
-    }
+    id("com.codeaffine.tiny.java.modules")
+    id("com.codeaffine.tiny.license")
 }

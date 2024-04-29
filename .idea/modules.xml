@@ -2,13 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.testFixtures.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.testFixtures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tiny.iml" filepath="$PROJECT_DIR$/.idea/tiny.iml" />
     </modules>
   </component>
 </project>

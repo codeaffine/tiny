@@ -45,11 +45,13 @@ class JakartaToJavaxServletResponseAdapter implements javax.servlet.http.HttpSer
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public String encodeUrl(String url) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public String encodeRedirectUrl(String url) {
         throw new UnsupportedOperationException();
     }
@@ -105,6 +107,7 @@ class JakartaToJavaxServletResponseAdapter implements javax.servlet.http.HttpSer
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public void setStatus(int sc, String sm) {
         throw new UnsupportedOperationException();
     }

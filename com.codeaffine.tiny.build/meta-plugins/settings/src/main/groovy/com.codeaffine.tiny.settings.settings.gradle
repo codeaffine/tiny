@@ -1,0 +1,4 @@
+plugins {
+    id("com.codeaffine.tiny.project-structure")
+    id("com.codeaffine.tiny.repositories")
+}

@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
 class RwtServletAdapterTest {
 
     private static final String SERVLET_NAME = "servlet-name";
+
     private RWTServlet delegate;
     private RwtServletAdapter adapter;
 

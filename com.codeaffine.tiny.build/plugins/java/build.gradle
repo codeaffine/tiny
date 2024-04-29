@@ -1,0 +1,16 @@
+plugins {
+    id 'groovy-gradle-plugin'
+}
+
+repositories {
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+    implementation("io.freefair.gradle:lombok-plugin:8.4");
+    implementation("org.gradlex:java-module-dependencies:1.4.1")
+    implementation("org.gradlex:extra-java-module-info:1.6")
+    implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.6.1")
+}

@@ -1,0 +1,5 @@
+plugins {
+    id("com.codeaffine.tiny.java.modules.base")
+    id("com.codeaffine.tiny.java.test")
+    id("com.codeaffine.tiny.java.lombok")
+}

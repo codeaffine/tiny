@@ -1,0 +1,21 @@
+plugins {
+    id 'tiny.java.modules'
+    id 'tiny.java.testfixtures'
+    id 'tiny.quality.gate'
+    id 'tiny.license'
+    id 'tiny.publish.common'
+}
+
+dependencies {
+    testImplementation(
+        testFixtures(project(":com.codeaffine.tiny.test"))
+    )
+}
+
+publishing {
+    publications {
+        tinyShared(MavenPublication) {
+            from components.java
+        }
+    }
+}

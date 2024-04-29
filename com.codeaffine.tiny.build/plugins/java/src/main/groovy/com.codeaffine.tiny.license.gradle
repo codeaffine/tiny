@@ -1,0 +1,41 @@
+import java.time.LocalDate
+
+plugins {
+    id("com.codeaffine.tiny.base")
+//    id("org.cadixdev.licenser")
+}
+
+//license {
+//    header = project.parent.file('COPYRIGHT.txt')
+//    include '**/*.java'
+//    newLine = false
+//    style {
+//        java = 'JAVADOC'
+//    }
+//    properties {
+//        year = LocalDate.now().getYear()
+//    }
+//}
+//
+//tasks.register('addMainLicense', Copy) {
+//    if(needLicenceFile(project, 'main', "${projectDir}/src/main/")) {
+//        from(project.parent.file('LICENSE'))
+//        into("${projectDir}/src/main/resources/META-INF")
+//    }
+//}
+//
+//private static boolean needLicenceFile(Project project, sourceSetName, sourceSetDir) {
+//    def result = false
+//    project.sourceSets.each {
+//        result |= it.name == sourceSetName && new File(sourceSetDir).exists()
+//    }
+//    return result
+//}
+//
+//updateLicenses {
+//    dependsOn addMainLicense
+//}
+//
+//updateLicenseMain {
+//    dependsOn addMainLicense
+//}

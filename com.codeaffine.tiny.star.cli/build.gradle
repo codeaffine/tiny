@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     testImplementation(
-        testFixtures(project(":com.codeaffine.tiny.test")),
-        testFixtures(project(":com.codeaffine.tiny.shared"))
+        testFixtures(project(":com.codeaffine.tiny.shared")),
+        testFixtures(project(":com.codeaffine.tiny.test"))
     )
 }

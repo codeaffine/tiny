@@ -21,15 +21,13 @@ import org.mockito.ArgumentCaptor;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.HOST;
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.PORT;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.HOST;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.PORT;
 import static org.apache.tomcat.util.net.SSLHostConfigCertificate.Type.UNDEFINED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 class SslConnectorConfiguratorTest {
 

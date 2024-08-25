@@ -18,7 +18,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;

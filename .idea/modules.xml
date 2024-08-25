@@ -2,7 +2,31 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/tiny.iml" filepath="$PROJECT_DIR$/.idea/tiny.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.demo/tiny.com.codeaffine.tiny.demo.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.demo/tiny.com.codeaffine.tiny.demo.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.demo/tiny.com.codeaffine.tiny.demo.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.demo/tiny.com.codeaffine.tiny.demo.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.shared/tiny.com.codeaffine.tiny.shared.testFixtures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli.basic/tiny.com.codeaffine.tiny.star.cli.basic.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli.basic/tiny.com.codeaffine.tiny.star.cli.basic.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli.basic/tiny.com.codeaffine.tiny.star.cli.basic.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli.basic/tiny.com.codeaffine.tiny.star.cli.basic.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli/tiny.com.codeaffine.tiny.star.cli.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli/tiny.com.codeaffine.tiny.star.cli.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli/tiny.com.codeaffine.tiny.star.cli.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli/tiny.com.codeaffine.tiny.star.cli.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli/tiny.com.codeaffine.tiny.star.cli.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.cli/tiny.com.codeaffine.tiny.star.cli.testFixtures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.log4j/tiny.com.codeaffine.tiny.star.log4j.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.log4j/tiny.com.codeaffine.tiny.star.log4j.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.log4j/tiny.com.codeaffine.tiny.star.log4j.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.log4j/tiny.com.codeaffine.tiny.star.log4j.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.logback/tiny.com.codeaffine.tiny.star.logback.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.logback/tiny.com.codeaffine.tiny.star.logback.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.logback/tiny.com.codeaffine.tiny.star.logback.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.logback/tiny.com.codeaffine.tiny.star.logback.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.servlet/tiny.com.codeaffine.tiny.star.servlet.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star/tiny.com.codeaffine.tiny.star.testFixtures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.tomcat/tiny.com.codeaffine.tiny.star.tomcat.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.tomcat/tiny.com.codeaffine.tiny.star.tomcat.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.tomcat/tiny.com.codeaffine.tiny.star.tomcat.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.tomcat/tiny.com.codeaffine.tiny.star.tomcat.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.undertow/tiny.com.codeaffine.tiny.star.undertow.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.undertow/tiny.com.codeaffine.tiny.star.undertow.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.undertow/tiny.com.codeaffine.tiny.star.undertow.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.star.undertow/tiny.com.codeaffine.tiny.star.undertow.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.testFixtures.iml" filepath="$PROJECT_DIR$/.idea/modules/com.codeaffine.tiny.test/tiny.com.codeaffine.tiny.test.testFixtures.iml" />
     </modules>
   </component>
 </project>

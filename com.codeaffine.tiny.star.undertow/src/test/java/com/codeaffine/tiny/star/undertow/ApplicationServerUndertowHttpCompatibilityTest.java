@@ -7,7 +7,7 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.tck.ApplicationServerCompatibilityContractTest;
+import com.codeaffine.tiny.star.test.fixtures.ApplicationServerCompatibilityContractTest;
 
 class ApplicationServerUndertowHttpCompatibilityTest implements ApplicationServerCompatibilityContractTest {
 

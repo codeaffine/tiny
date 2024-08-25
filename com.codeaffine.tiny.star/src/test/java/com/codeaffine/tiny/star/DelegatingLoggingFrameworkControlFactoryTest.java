@@ -12,7 +12,7 @@ import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory;
 import org.junit.jupiter.api.Test;
 
-import static com.codeaffine.tiny.shared.testfixture.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
+import static com.codeaffine.tiny.shared.test.test.fixtures.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
 import static org.assertj.core.api.Assertions.*;
 
 class DelegatingLoggingFrameworkControlFactoryTest {

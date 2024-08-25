@@ -17,3 +17,19 @@ tasks.register("clean") {
     description = "Run clean of all modules and the application"
     dependsOn(subprojects.collect { ":${it.name}:$name" })
 }
+
+tasks.register("javadoc") {
+    group = mainBuildGroup
+    description = "Run javadoc of all modules and the application"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("testFixturesJavadoc") {
+    group = mainBuildGroup
+    description = "Run javadoc of all modules and the application"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}

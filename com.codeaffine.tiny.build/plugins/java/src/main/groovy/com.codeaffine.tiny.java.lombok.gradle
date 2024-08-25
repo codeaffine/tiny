@@ -6,5 +6,10 @@ plugins {
 dependencies {
     compileOnly(
         libs.lombok
-    );
+    )
+}
+
+delombok {
+    // workaround for setting module path described in https://github.com/freefair/gradle-plugins/issues/824
+    modulePath = classpath
 }

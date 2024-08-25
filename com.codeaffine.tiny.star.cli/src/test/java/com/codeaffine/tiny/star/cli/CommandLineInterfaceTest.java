@@ -7,7 +7,7 @@
  */
 package com.codeaffine.tiny.star.cli;
 
-import com.codeaffine.tiny.test.SystemInSupplier;
+import com.codeaffine.tiny.test.test.fixtures.SystemInSupplier;
 import com.codeaffine.tiny.star.ApplicationServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

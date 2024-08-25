@@ -1,3 +1,11 @@
+import org.gradle.api.internal.project.ProjectInternal
+import org.gradle.api.plugins.internal.JavaConfigurationVariantMapping
+import org.gradle.api.plugins.internal.JavaPluginHelper
+import org.gradle.api.plugins.internal.JvmPluginsHelper
+import org.gradle.internal.component.external.model.ProjectDerivedCapability
+import org.gradle.internal.component.external.model.TestFixturesSupport
+import org.gradle.jvm.component.internal.DefaultJvmSoftwareComponent
+
 plugins {
     id("com.codeaffine.tiny.java.base")
     id("java-test-fixtures")
@@ -10,3 +18,35 @@ dependencies {
         libs.mockito.core
     )
 }
+
+testFixturesJavadoc {
+    options {
+        encoding = 'UTF-8'
+        stylesheetFile = project.parent.file('javadoc/stylesheet.css')
+        windowTitle = 'TINY API'
+        header = '<a href="https://codeaffine.com"><img class="logo" src="https://www.codeaffine.com/wp-content/uploads/2014/07/logo.svg" alt="Code Affine"></a>'
+    }
+}
+
+delombokTestFixtures {
+    // workaround for setting module path described in https://github.com/freefair/gradle-plugins/issues/824
+    modulePath = classpath
+}
+
+// workaround to generate test fixtures sources jar taken from https://github.com/gradle/gradle/issues/20539
+def testFixturesSourceSet = sourceSets.named(TestFixturesSupport.TEST_FIXTURE_SOURCESET_NAME).get()
+JavaPluginExtension javaPluginExtension = project.getExtensions().findByType(JavaPluginExtension.class)
+JvmPluginsHelper.configureJavaDocTask(TestFixturesSupport.TEST_FIXTURE_SOURCESET_NAME, testFixturesSourceSet, tasks, javaPluginExtension)
+def capabilities = [new ProjectDerivedCapability(project, "testFixtures")]
+def sourceElements = JvmPluginsHelper.createDocumentationVariantWithArtifact(
+        testFixturesSourceSet.sourcesElementsConfigurationName,
+        TestFixturesSupport.TEST_FIXTURE_SOURCESET_NAME,
+        DocsType.SOURCES,
+        capabilities as Set<Capability>,
+        testFixturesSourceSet.sourcesJarTaskName,
+        testFixturesSourceSet.allSource,
+        project as ProjectInternal
+)
+
+def component = JavaPluginHelper.getJavaComponent(project) as DefaultJvmSoftwareComponent
+component.addVariantsFromConfiguration(sourceElements, new JavaConfigurationVariantMapping("runtime", true))

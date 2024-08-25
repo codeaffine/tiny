@@ -2,3 +2,7 @@ plugins {
     id("com.codeaffine.tiny.java.modules.test.fixture")
     id("com.codeaffine.tiny.license")
 }
+
+javadoc {
+    enabled = false
+}

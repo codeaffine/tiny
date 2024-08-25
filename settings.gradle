@@ -7,3 +7,6 @@ plugins {
 }
 
 rootProject.name = "tiny"
+
+// due to https://github.com/gradle/gradle/issues/21490#issuecomment-1458887481
+includeBuild(".")

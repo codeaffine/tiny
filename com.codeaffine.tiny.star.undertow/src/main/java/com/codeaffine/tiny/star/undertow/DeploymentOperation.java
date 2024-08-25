@@ -67,5 +67,4 @@ class DeploymentOperation {
             deploymentInfo.addFilterServletNameMapping(filterDefinition.getFilterName(), servletInfo.getName(), REQUEST);
         }
     }
-
 }

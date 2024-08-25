@@ -9,14 +9,14 @@ package com.codeaffine.tiny.star.cli.basic;
 
 import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.cli.spi.CliCommand;
-import com.codeaffine.tiny.star.cli.spi.tck.CliCommandContract;
+import com.codeaffine.tiny.star.cli.test.fixtures.CliCommandContract;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
 
-import static com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemOutCaptor;
+import static com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemOutCaptor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HelpCommandTest implements CliCommandContract<HelpCommand> {

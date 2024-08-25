@@ -5,11 +5,10 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-module com.codeaffine.tiny.star.cli.spi.tck {
-//    requires com.codeaffine.tiny.star;
+module com.codeaffine.tiny.star.cli.test.fixtures {
+    requires com.codeaffine.tiny.star;
     requires com.codeaffine.tiny.star.cli;
     requires org.assertj.core;
     requires org.junit.jupiter.api;
-
-    exports com.codeaffine.tiny.star.cli.spi.tck;
+    requires org.mockito;
 }

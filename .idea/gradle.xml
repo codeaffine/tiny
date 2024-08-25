@@ -32,11 +32,16 @@
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.build/plugins" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.build/plugins/base" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.build/plugins/java" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.demo" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.shared" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.cli.basic" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.log4j" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.logback" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.servlet" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.tomcat" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.star.undertow" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.test" />
           </set>
         </option>

@@ -1,0 +1,13 @@
+plugins {
+    id("com.codeaffine.tiny.java.modules")
+    id("com.codeaffine.tiny.license")
+    id("application")
+}
+
+application {
+    mainClass = "com.codeaffine.tiny.demo.DemoApplication"
+}
+
+run {
+    standardInput = System.in
+}

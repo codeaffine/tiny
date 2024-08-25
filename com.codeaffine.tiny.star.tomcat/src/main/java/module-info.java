@@ -14,7 +14,7 @@ module com.codeaffine.tiny.star.tomcat {
     requires com.codeaffine.tiny.star.servlet;
     requires org.eclipse.rap.rwt;
     requires org.apache.tomcat.embed.core;
-    requires org.apache.tomcat.embed.jasper;
+    requires java.logging;
 
     provides com.codeaffine.tiny.star.spi.ServerFactory
         with com.codeaffine.tiny.star.tomcat.ServerFactoryImpl;

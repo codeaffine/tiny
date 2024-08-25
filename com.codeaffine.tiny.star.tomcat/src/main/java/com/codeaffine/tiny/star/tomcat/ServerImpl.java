@@ -15,6 +15,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 
 import static com.codeaffine.tiny.star.tomcat.Texts.SERVER_NAME;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Logger.getLogger;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -35,6 +37,7 @@ class ServerImpl implements Server {
 
     ServerImpl(ServerConfiguration configuration) {
         this(new Tomcat(), configuration);
+        getLogger("org.apache").setLevel(SEVERE); // use a less obtrusive logging configuration in future versions to suppress Tomcat's log output
     }
 
     ServerImpl(Tomcat tomcat, ServerConfiguration configuration) {

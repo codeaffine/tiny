@@ -1,80 +1,148 @@
 plugins {
-    id("com.codeaffine.tiny.java.base")
+    id("com.codeaffine.tiny.java.lombok")
     id("org.gradlex.extra-java-module-info")
     id("org.gradlex.java-module-dependencies")
 }
 
 extraJavaModuleInfo {
-//    failOnAutomaticModules.set(true)
-//    automaticModule("javax.servlet:javax.servlet-api", "javax.servlet.api")
+    failOnAutomaticModules.set(true)
     module("javax.servlet:javax.servlet-api", "javax.servlet.api") {
-        exports("javax.servlet")
-        exports("javax.servlet.annotation")
-        exports("javax.servlet.descriptor")
-        exports("javax.servlet.http")
+        exportAllPackages()
     }
     module("org.eclipse.rap:org.eclipse.rap.rwt", "org.eclipse.rap.rwt") {
         requires("javax.servlet.api")
-        exports("org.eclipse.rap.json")
-        exports("org.eclipse.rap.rwt")
-        exports("org.eclipse.rap.rwt.apache.batik.css.parser")
-        exports("org.eclipse.rap.rwt.apache.batik.util.io")
-        exports("org.eclipse.rap.rwt.application")
-        exports("org.eclipse.rap.rwt.client")
-        exports("org.eclipse.rap.rwt.client.service")
-        exports("org.eclipse.rap.rwt.dnd")
-        exports("org.eclipse.rap.rwt.engine")
-        exports("org.eclipse.rap.rwt.remote")
-        exports("org.eclipse.rap.rwt.scripting")
-        exports("org.eclipse.rap.rwt.service")
-        exports("org.eclipse.rap.rwt.template")
-        exports("org.eclipse.rap.rwt.theme")
-        exports("org.eclipse.rap.rwt.widgets")
-        exports("org.eclipse.swt")
-        exports("org.eclipse.swt.accessibility")
-        exports("org.eclipse.swt.browser")
-        exports("org.eclipse.swt.custom")
-        exports("org.eclipse.swt.dnd")
-        exports("org.eclipse.swt.events")
-        exports("org.eclipse.swt.graphics")
-        exports("org.eclipse.swt.layout")
-        exports("org.eclipse.swt.widgets")
-        exports("org.w3c.css.sac")
+        exportAllPackages()
+    }
+    module("org.eclipse.rap:org.eclipse.rap.rwt.testfixture", "org.eclipse.rap.rwt.testfixture") {
+        requires("org.eclipse.rap.rwt")
+        exportAllPackages()
+    }
+    module("org.mockito:mockito-core", "org.mockito") {
+        exportAllPackages()
+    }
+    module("org.objenesis:objenesis", "org.objenesis")
+    module("io.undertow:undertow-core", "undertow.core") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("io.undertow:undertow-servlet", "undertow.servlet") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.jboss.threads:jboss-threads", "jboss.threads") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.jboss.xnio:xnio-api", "xnio.api") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.jboss.xnio:xnio-nio", "xnio.nio") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.jboss.logging:jboss-logging", "org.jboss.logging") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.wildfly.client:wildfly-client-config", "wildfly.client.config") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.wildfly.common:wildfly-common", "wildfly.common") {
+        requireAllDefinedDependencies()
+        exportAllPackages()
     }
 
-    automaticModule("org.eclipse.rap:org.eclipse.rap.rwt.testfixture", "org.eclipse.rap.rwt.testfixture")
-    automaticModule("org.eclipse.rap:org.eclipse.rap.rwt.testfixture", "org.eclipse.rap.rwt.testfixture")
-//    automaticModule("com.fasterxml.jackson.core:jackson-databind", "jackson.databind")
-//    automaticModule("org.slf4j:slf4j-api", "slf4j.api")
-//    deriveAutomaticModuleNamesFromFileNames.set(true)
+    // patch real modules to fix split packages, module-info.class not found, etc.
+    module("com.fasterxml.jackson.core:jackson-core", "com.fasterxml.jackson.core") {
+        patchRealModule()
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("com.fasterxml.jackson.core:jackson-databind", "com.fasterxml.jackson.databind") {
+        patchRealModule()
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("net.bytebuddy:byte-buddy", "net.bytebuddy") {
+        patchRealModule()
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.assertj:assertj-core", "org.assertj.core") {
+        patchRealModule()
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.slf4j:slf4j-api", "org.slf4j") {
+        patchRealModule()
+        requireAllDefinedDependencies()
+        exportAllPackages()
+    }
+    module("org.apache.tomcat.embed:tomcat-embed-core", "org.apache.tomcat.embed.core") {
+        patchRealModule()
+        requires("jakarta.annotation")
+        requires("jakarta.ejb")
+        requires("jakarta.mail")
+        requires("jakarta.persistence")
+        requires("jakarta.servlet")
+        requires("jakarta.xml.ws")
+        requires("java.base")
+        requires("java.desktop")
+        requires("java.instrument")
+        requires("java.logging")
+        requires("java.management")
+        requires("java.naming")
+        requires("java.rmi")
+        requires("java.security.jgss")
+        requires("java.sql")
+        requires("java.xml")
+        requires("java.xml.ws")
+
+        exports("org.apache.catalina")
+        exports("org.apache.catalina.servlets")
+        exports("org.apache.catalina.connector")
+        exports("org.apache.catalina.startup")
+        exports("org.apache.coyote.http11")
+        exports("org.apache.tomcat.util.net")
+        exports("org.apache.tomcat.util.descriptor.web")
+        exports("org.apache.tomcat.util.net.SSLHostConfigCertificate")
+    }
 }
 
 javaModuleDependencies {
+    moduleNameToGA.put("com.fasterxml.jackson.core", "com.fasterxml.jackson.core:jackson-core")
+    moduleNameToGA.put("com.fasterxml.jackson.databind", "com.fasterxml.jackson.core:jackson-databind")
+    moduleNameToGA.put("jakarta.servlet", "jakarta.servlet:jakarta.servlet-api")
     moduleNameToGA.put("javax.servlet.api", "javax.servlet:javax.servlet-api")
+    moduleNameToGA.put("ch.qos.logback.core", "ch.qos.logback:logback-core")
+    moduleNameToGA.put("ch.qos.logback.classic", "ch.qos.logback:logback-classic")
+    moduleNameToGA.put("jboss.threads", "org.jboss.threads:jboss-threads")
+    moduleNameToGA.put("log4j.api", "org.apache.logging.log4j:log4j-api")
+    moduleNameToGA.put("log4j.appserver", "org.apache.logging.log4j:log4j-appserver")
+    moduleNameToGA.put("log4j.core", "org.apache.logging.log4j:log4j-core")
+    moduleNameToGA.put("log4j.over.slf4j", "org.slf4j:log4j-over-slf4j")
+    moduleNameToGA.put("net.bytebuddy", "net.bytebuddy:byte-buddy")
+    moduleNameToGA.put("org.apache.logging.log4j.slf4j2.impl", "org.apache.logging.log4j:log4j-slf4j2-impl")
+    moduleNameToGA.put("org.assertj.core", "org.assertj:assertj-core")
     moduleNameToGA.put("org.eclipse.rap.rwt", "org.eclipse.rap:org.eclipse.rap.rwt")
     moduleNameToGA.put("org.eclipse.rap.rwt.testfixture", "org.eclipse.rap:org.eclipse.rap.rwt.testfixture")
-    moduleNameToGA.put("jackson.databind", "com.fasterxml.jackson.core:jackson-databind")
-    moduleNameToGA.put("slf4j.api", "org.slf4j:slf4j-api")
+    moduleNameToGA.put("org.jboss.logging", "org.jboss.logging:jboss-logging")
+    moduleNameToGA.put("org.mockito", "org.mockito:mockito-core")
+    moduleNameToGA.put("org.objenesis", "org.objenesis:objenesis")
+    moduleNameToGA.put("org.slf4j", "org.slf4j:slf4j-api")
+    moduleNameToGA.put("org.apache.tomcat.embed.core", "org.apache.tomcat.embed:tomcat-embed-core")
+    moduleNameToGA.put("undertow.core", "io.undertow:undertow-core")
+    moduleNameToGA.put("undertow.servlet", "io.undertow:undertow-servlet")
+    moduleNameToGA.put("wildfly.client.config", "org.wildfly.client:wildfly-client-config")
+    moduleNameToGA.put("wildfly.common", "org.wildfly.common:wildfly-common")
+    moduleNameToGA.put("xnio_api", "org.jboss.xnio:xnio-api")
 
-    // add all modules from the root project
+    // map all project modules to their group and artifact id
     rootDir.eachFile { file ->
         if (new File(file, "build.gradle").exists()) {
-//            println("moduleName: ${file.name}")
-//            println("grouped: ${group}:${file.name}")
             moduleNameToGA.put(file.name, "${group}:${file.name}")
-//
-//            println("projectName: ${project.name}")
-//            println("fileName: ${file.name}")
-//            if (project.name != file.name && new File(file, "src").exists()) {
-//                file.listFiles().each { sourceSetFile ->
-//                    if (new File(sourceSetFile, "testFixtures").exists()) {
-//                        println("fixture-project: ${file.name}.testfixture")
-//                        println("fixture; ${group}:${file.name}.testfixture")
-//
-//                        moduleNameToGA.put("${file.name}.testfixture", "${group}:${file.name}.testfixture")
-//                    }
-//                }
-//            }
         }
     }
 }

@@ -8,7 +8,7 @@
 package com.codeaffine.tiny.star.cli.basic;
 
 import com.codeaffine.tiny.star.cli.spi.CliCommand;
-import com.codeaffine.tiny.star.cli.spi.tck.CliCommandProviderContract;
+import com.codeaffine.tiny.star.cli.test.fixtures.CliCommandProviderContract;
 import org.assertj.core.api.AbstractCollectionAssert;
 import org.assertj.core.api.ObjectAssert;
 

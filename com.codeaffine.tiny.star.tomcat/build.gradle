@@ -1,0 +1,10 @@
+plugins {
+    id("com.codeaffine.tiny.java.modules")
+    id("com.codeaffine.tiny.license")
+}
+
+dependencies {
+    testImplementation(
+        testFixtures(project(":com.codeaffine.tiny.star")),
+    )
+}

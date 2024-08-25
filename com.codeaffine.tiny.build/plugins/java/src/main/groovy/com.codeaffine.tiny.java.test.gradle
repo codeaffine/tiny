@@ -1,5 +1,5 @@
 plugins {
-    id("com.codeaffine.tiny.java.base")
+    id("com.codeaffine.tiny.java.lombok")
     id("jvm-test-suite")
     id("jacoco")
 }

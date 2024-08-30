@@ -1,0 +1,17 @@
+plugins {
+    id("base")
+    id("com.diffplug.spotless")
+}
+
+// set the group for publishing
+group = "com.codeaffine.tiny"
+
+// read the release version from 'VERSION' file
+version = providers
+    .fileContents(rootProject.layout.projectDirectory.file("VERSION"))
+    .getAsText()
+    .getOrElse("")
+    .trim()
+if(version == "") {
+    throw new GradleException("${rootProject.layout.projectDirectory}/VERSION is empty")
+}

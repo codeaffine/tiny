@@ -1,0 +1,7 @@
+pluginManagement {
+    includeBuild("../meta-plugins")
+}
+
+plugins {
+    id("com.codeaffine.tiny.settings")
+}

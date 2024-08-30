@@ -1,33 +1,10 @@
 plugins {
-    id 'tiny.java.modules'
-    id 'tiny.java.test'
-    id 'tiny.license'
-    id 'application'
-}
-
-dependencies {
-    implementation(
-            libs.jakarta.servlet.api,
-            libs.rap.rwt,
-            libs.slf4j.api,
-            project(':com.codeaffine.tiny.star'),
-            project(':com.codeaffine.tiny.star.cli'),
-    )
-    runtimeOnly(
-            project(':com.codeaffine.tiny.star.cli.basic'),
-//            project(':com.codeaffine.tiny.star.log4j'),
-            project(':com.codeaffine.tiny.star.logback'),
-            project(':com.codeaffine.tiny.star.undertow'),
-//            project(':com.codeaffine.tiny.star.tomcat'),
-    )
-    testImplementation(
-            libs.rap.rwt.test
-    )
+    id("com.codeaffine.tiny.java.modules")
+    id("application")
 }
 
 application {
     mainClass = "com.codeaffine.tiny.demo.DemoApplication"
-    mainModule = moduleName
 }
 
 run {

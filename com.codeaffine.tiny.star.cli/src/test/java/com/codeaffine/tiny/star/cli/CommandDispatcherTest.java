@@ -15,7 +15,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.Map;
 
-import static com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemOutCaptor;
+import static com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemOutCaptor;
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

@@ -1,23 +1,8 @@
 plugins {
-    id 'tiny.java.artefacts'
-    id 'tiny.java.lombok'
-    id 'tiny.java.testfixtures'
-    id 'tiny.quality.gate'
-    id 'tiny.license'
-    id 'tiny.publish.common'
+    id("com.codeaffine.tiny.java.modules.with.test.fixtures")
+    id("com.codeaffine.tiny.publish")
 }
 
-publishing {
-    publications {
-        tinyTest(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
-sonarqube {
-    properties {
-        property "sonar.sources", "src/testFixtures/java"
-        property "sonar.java.binaries", "build/classes/java/testFixtures"
-    }
+javadoc {
+    enabled = false
 }

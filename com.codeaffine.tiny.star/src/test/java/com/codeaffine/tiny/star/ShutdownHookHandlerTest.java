@@ -8,7 +8,7 @@
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.shared.Synchronizer;
-import com.codeaffine.tiny.test.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemErrCaptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InOrder;
 
-import static com.codeaffine.tiny.shared.SynchronizerTestHelper.fakeSynchronizer;
+import static com.codeaffine.tiny.shared.test.test.fixtures.SynchronizerTestHelper.fakeSynchronizer;
 import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
 import static com.codeaffine.tiny.star.ShutdownHookHandler.RuntimeSupplier;

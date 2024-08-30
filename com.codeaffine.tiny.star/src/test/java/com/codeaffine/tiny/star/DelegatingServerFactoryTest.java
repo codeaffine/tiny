@@ -19,7 +19,7 @@ import java.io.File;
 
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.shared.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
+import static com.codeaffine.tiny.shared.test.test.fixtures.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.getCurrentServerConfiguration;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.ERROR_NO_SERVER_FACTORY_FOUND;

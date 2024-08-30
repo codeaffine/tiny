@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star/build/generated/sources/annotationProcessor/java/testFixtures">
+      <sourceFolder url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star/build/generated/sources/annotationProcessor/java/testFixtures" isTestSource="false" generated="true" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star/src/testFixtures" dumb="true">
+      <sourceFolder url="file://$MODULE_DIR$/../../../com.codeaffine.tiny.star/src/testFixtures/resources" type="java-test-resource" />
+    </content>
+  </component>
+</module>

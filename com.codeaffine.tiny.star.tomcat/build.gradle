@@ -1,30 +1,10 @@
 plugins {
-    id 'tiny.java.modules'
-    id 'tiny.quality.gate'
-    id 'tiny.license'
-    id 'tiny.publish.common'
+    id("com.codeaffine.tiny.java.modules")
+    id("com.codeaffine.tiny.publish")
 }
 
 dependencies {
-    implementation(
-            libs.jakarta.servlet.api,
-            libs.rap.rwt,
-            libs.slf4j.api,
-            project(':com.codeaffine.tiny.shared'),
-            project(':com.codeaffine.tiny.star'),
-            project(':com.codeaffine.tiny.star.servlet'),
-            project(':com.codeaffine.tiny.star.tomcat.embed.core'),
-            project(':com.codeaffine.tiny.star.tomcat.embed.jasper')
-    )
     testImplementation(
-            project(':com.codeaffine.tiny.star.tck'),
+        testFixtures(project(":com.codeaffine.tiny.star")),
     )
-}
-
-publishing {
-    publications {
-        tinyStarTomcat(MavenPublication) {
-            from components.java
-        }
-    }
 }

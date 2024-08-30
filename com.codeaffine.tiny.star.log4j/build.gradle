@@ -1,27 +1,10 @@
 plugins {
-    id 'tiny.java.modules'
-    id 'tiny.quality.gate'
-    id 'tiny.license'
-    id 'tiny.publish.common'
+    id("com.codeaffine.tiny.java.modules")
+    id("com.codeaffine.tiny.publish")
 }
 
 dependencies {
-    implementation(
-            libs.slf4j.api,
-            libs.bundles.slf4j.log4j,
-            project(':com.codeaffine.tiny.shared'),
-            project(':com.codeaffine.tiny.star')
-    )
     testImplementation(
-            project(':com.codeaffine.tiny.star.tck'),
-            testFixtures(project(":com.codeaffine.tiny.test"))
+        testFixtures(project(":com.codeaffine.tiny.test")),
     )
-}
-
-publishing {
-    publications {
-        tinyStarLog4j(MavenPublication) {
-            from components.java
-        }
-    }
 }

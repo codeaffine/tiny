@@ -1,0 +1,16 @@
+plugins {
+    id("maven-publish")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "tiny"
+            url = uri("https://maven.pkg.github.com/codeaffine/tiny")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+}

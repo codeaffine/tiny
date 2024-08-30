@@ -27,7 +27,7 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 import static com.codeaffine.tiny.shared.IoUtils.findFreePort;
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.stubServerConfiguration;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.stubServerConfiguration;
 import static com.codeaffine.tiny.star.undertow.DeploymentOperation.CONTEXT_PATH;
 import static com.codeaffine.tiny.star.undertow.HttpHandlerStarter.PREFIX_PATH;
 import static io.undertow.Handlers.path;

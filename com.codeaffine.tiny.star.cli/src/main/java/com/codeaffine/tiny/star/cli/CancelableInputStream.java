@@ -47,6 +47,11 @@ class CancelableInputStream extends InputStream {
     }
 
     @Override
+    public int read() throws IOException {
+        return delegate.read();
+    }
+
+    @Override
     public int read(byte @NonNull [] buffer, int off, int end) throws IOException {
         try {
             return doRead(buffer, off, end);

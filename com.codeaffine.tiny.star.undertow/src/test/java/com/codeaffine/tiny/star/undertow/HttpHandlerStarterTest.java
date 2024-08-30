@@ -17,7 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.*;
 import static io.undertow.Handlers.path;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

@@ -7,7 +7,6 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
-import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
@@ -17,8 +16,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
-import static com.codeaffine.tiny.star.ApplicationServer.*;
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.stubServerConfiguration;
+import static com.codeaffine.tiny.star.ApplicationServer.DEFAULT_SESSION_TIMEOUT;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.stubServerConfiguration;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

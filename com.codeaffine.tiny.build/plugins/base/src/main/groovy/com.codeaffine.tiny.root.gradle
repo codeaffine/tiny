@@ -1,0 +1,51 @@
+// Configure the ':tasks' task of the root project to only show
+// the main lifecycle tasks as entry points to the build
+ext.mainBuildGroup = "main build"
+
+tasks.named("tasks") {
+    displayGroup = mainBuildGroup
+}
+
+tasks.register("build") {
+    group = mainBuildGroup
+    description = "Complete build of all modules and the application"
+    dependsOn(subprojects.collect { ":${it.name}:$name" })
+}
+
+tasks.register("clean") {
+    group = mainBuildGroup
+    description = "Run clean of all modules and the application"
+    dependsOn(subprojects.collect { ":${it.name}:$name" })
+}
+
+tasks.register("javadoc") {
+    group = mainBuildGroup
+    description = "Run javadoc of all modules and the application"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("testFixturesJavadoc") {
+    group = mainBuildGroup
+    description = "Run javadoc of all modules and the application"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("recommendModuleVersions") {
+    group = mainBuildGroup
+    description = "Run recommendModuleVersions of all modules and the application"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("moduleDependencies") {
+    group = mainBuildGroup
+    description = "Run moduleDependencies of all modules and the application"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}

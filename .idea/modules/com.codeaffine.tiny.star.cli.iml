@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../../com.codeaffine.tiny.star.cli" dumb="true">
+      <sourceFolder url="file://$MODULE_DIR$/../../com.codeaffine.tiny.star.cli/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../com.codeaffine.tiny.star.cli/src/test/java" isTestSource="true" />
+    </content>
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="7422249b-baa5-41c1-8f35-c90701656685" />
+  </component>
+</module>

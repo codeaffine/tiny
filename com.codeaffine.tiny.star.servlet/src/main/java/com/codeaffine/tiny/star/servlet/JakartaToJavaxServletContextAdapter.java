@@ -87,16 +87,19 @@ class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContex
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public javax.servlet.Servlet getServlet(String name) {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public Enumeration<Servlet> getServlets() {
         throw new UnsupportedOperationException();
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public Enumeration<String> getServletNames() {
         throw new UnsupportedOperationException();
     }
@@ -107,6 +110,7 @@ class JakartaToJavaxServletContextAdapter implements javax.servlet.ServletContex
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public void log(Exception exception, String msg) {
         throw new UnsupportedOperationException();
     }

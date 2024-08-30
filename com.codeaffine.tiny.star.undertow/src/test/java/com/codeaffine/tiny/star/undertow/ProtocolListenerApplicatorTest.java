@@ -8,8 +8,6 @@
 package com.codeaffine.tiny.star.undertow;
 
 import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
-import com.codeaffine.tiny.star.spi.ServerConfiguration;
-import com.codeaffine.tiny.star.tck.ApplicationServerTestHelper;
 import io.undertow.Undertow;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,9 +18,7 @@ import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 
 import static com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration.SSL_PROTOCOL;
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.HOST;
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.PORT;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;

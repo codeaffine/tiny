@@ -17,7 +17,7 @@ import org.mockito.ArgumentCaptor;
 import java.io.File;
 import java.util.List;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.*;
 import static com.codeaffine.tiny.star.tomcat.RwtServletRegistrar.SERVLET_NAME;
 import static jakarta.servlet.DispatcherType.*;
 import static org.assertj.core.api.Assertions.assertThat;

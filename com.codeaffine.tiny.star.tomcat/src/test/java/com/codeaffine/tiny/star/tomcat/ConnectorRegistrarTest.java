@@ -18,7 +18,7 @@ import org.mockito.ArgumentCaptor;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.*;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;

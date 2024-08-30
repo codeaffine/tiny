@@ -10,7 +10,7 @@ package com.codeaffine.tiny.star.undertow;
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.Test;
 
-import static com.codeaffine.tiny.star.tck.ApplicationServerTestHelper.FILTER_DEFINITION_1;
+import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.FILTER_DEFINITION_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

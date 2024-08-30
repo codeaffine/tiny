@@ -8,7 +8,7 @@
 package com.codeaffine.tiny.star.cli.basic;
 
 import com.codeaffine.tiny.star.ApplicationServer;
-import com.codeaffine.tiny.star.cli.spi.tck.CliCommandContract;
+import com.codeaffine.tiny.star.cli.test.fixtures.CliCommandContract;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

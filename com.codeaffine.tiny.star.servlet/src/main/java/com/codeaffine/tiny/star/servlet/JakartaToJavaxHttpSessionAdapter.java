@@ -64,6 +64,7 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public Object getValue(String name) {
         throw new UnsupportedOperationException();
     }
@@ -74,6 +75,7 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public String[] getValueNames() {
         throw new UnsupportedOperationException();
     }
@@ -84,6 +86,7 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public void putValue(String name, Object value) {
         throw new UnsupportedOperationException();
     }
@@ -94,6 +97,7 @@ class JakartaToJavaxHttpSessionAdapter implements javax.servlet.http.HttpSession
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public void removeValue(String name) {
         throw new UnsupportedOperationException();
     }

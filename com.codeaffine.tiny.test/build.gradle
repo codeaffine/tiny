@@ -1,5 +1,6 @@
 plugins {
     id("com.codeaffine.tiny.java.modules.with.test.fixtures")
+    id("com.codeaffine.tiny.publish")
 }
 
 javadoc {

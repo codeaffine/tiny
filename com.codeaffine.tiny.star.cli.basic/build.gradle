@@ -1,6 +1,5 @@
 plugins {
     id("com.codeaffine.tiny.java.modules")
-    id("com.codeaffine.tiny.license")
 }
 
 dependencies {

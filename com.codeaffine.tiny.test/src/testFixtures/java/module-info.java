@@ -6,6 +6,7 @@
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
 module com.codeaffine.tiny.test.test.fixtures {
+
     requires org.junit.jupiter.api;
 
     exports com.codeaffine.tiny.test.test.fixtures;

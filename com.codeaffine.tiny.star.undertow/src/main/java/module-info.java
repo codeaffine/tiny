@@ -6,6 +6,7 @@
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
 module com.codeaffine.tiny.star.undertow {
+
     requires static lombok;
 
     requires com.codeaffine.tiny.shared;

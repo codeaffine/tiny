@@ -1,15 +1,57 @@
 plugins {
-    id("java")
     id("com.codeaffine.tiny.base")
+    id("java")
+    id("io.freefair.lombok")
+    id("jvm-test-suite")
+    id("jacoco")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(readJavaVersion(project)))
     withSourcesJar()
 }
 
 tasks.withType(JavaCompile.class).configureEach {
     options.encoding = "UTF-8"
+}
+
+dependencies {
+    compileOnly(
+            libs.lombok
+    )
+    testImplementation(
+            libs.bundles.junit.jupiter.apis,
+            libs.assertj.core,
+            libs.mockito.core,
+    )
+}
+
+testing {
+    suites {
+        test {
+            useJUnitJupiter()
+        }
+    }
+}
+
+test {
+    jvmArgs "-Xshare:off"
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+spotless {
+    java {
+        licenseHeaderFile project.parent.file("COPYRIGHT.txt")
+    }
 }
 
 javadoc {
@@ -19,4 +61,31 @@ javadoc {
         windowTitle = 'TINY API'
         header = '<a href="https://codeaffine.com"><img class="logo" src="https://www.codeaffine.com/wp-content/uploads/2014/07/logo.svg" alt="Code Affine"></a>'
     }
+}
+
+tasks.register('addMainLicense', Copy) {
+    if(needLicenceFile(project, 'main', "${projectDir}/src/main/")) {
+        from(project.parent.file('LICENSE'))
+        into("${projectDir}/src/main/resources/META-INF")
+    }
+}
+
+private static boolean needLicenceFile(Project project, sourceSetName, sourceSetDir) {
+    def result = false
+    project.sourceSets.each {
+        result |= it.name == sourceSetName && new File(sourceSetDir).exists()
+    }
+    return result
+}
+
+private static String readJavaVersion(Project project) {
+    def result = project.providers
+            .fileContents(project.rootProject.layout.projectDirectory.file("VERSION_JAVA"))
+            .getAsText()
+            .getOrElse("")
+            .trim()
+    if(result == "") {
+        throw new GradleException("${project.rootProject.layout.projectDirectory}/VERSION_JAVA is empty")
+    }
+    return result
 }

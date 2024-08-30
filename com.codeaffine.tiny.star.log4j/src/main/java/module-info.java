@@ -6,13 +6,14 @@
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
 module com.codeaffine.tiny.star.log4j {
+
     requires static lombok;
 
     requires com.codeaffine.tiny.shared;
     requires com.codeaffine.tiny.star;
-    requires org.slf4j;
-    requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.slf4j2.impl;
+    requires org.apache.logging.log4j;
+    requires org.slf4j;
 
     provides com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory
         with com.codeaffine.tiny.star.log4j.Log4j2LoggingFrameworkControlFactory;

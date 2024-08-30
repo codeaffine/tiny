@@ -6,12 +6,13 @@
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
 module tiny.com.codeaffine.tiny.star.logback {
+
     requires static lombok;
 
-    requires com.codeaffine.tiny.shared;
-    requires com.codeaffine.tiny.star;
     requires ch.qos.logback.classic;
     requires ch.qos.logback.core;
+    requires com.codeaffine.tiny.shared;
+    requires com.codeaffine.tiny.star;
     requires org.slf4j;
 
     provides com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory

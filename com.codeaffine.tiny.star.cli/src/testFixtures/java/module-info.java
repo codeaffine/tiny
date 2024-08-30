@@ -6,8 +6,9 @@
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
 module com.codeaffine.tiny.star.cli.test.fixtures {
-    requires com.codeaffine.tiny.star;
+
     requires com.codeaffine.tiny.star.cli;
+    requires com.codeaffine.tiny.star;
     requires org.assertj.core;
     requires org.junit.jupiter.api;
     requires org.mockito;

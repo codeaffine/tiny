@@ -6,11 +6,13 @@
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
 open module com.codeaffine.tiny.demo {
-    requires com.codeaffine.tiny.star;
+
     requires com.codeaffine.tiny.star.cli;
+    requires com.codeaffine.tiny.star;
     requires jakarta.servlet;
     requires org.eclipse.rap.rwt;
     requires org.slf4j;
+
     requires /*runtime*/ com.codeaffine.tiny.star.cli.basic;
     requires /*runtime*/ com.codeaffine.tiny.star.logback;
 //    requires /*runtime*/ com.codeaffine.tiny.star.log4j;

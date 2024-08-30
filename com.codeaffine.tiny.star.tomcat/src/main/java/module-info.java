@@ -6,15 +6,16 @@
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
 module com.codeaffine.tiny.star.tomcat {
+
     requires static lombok;
 
-    requires jakarta.servlet;
-    requires com.codeaffine.tiny.star;
     requires com.codeaffine.tiny.shared;
     requires com.codeaffine.tiny.star.servlet;
-    requires org.eclipse.rap.rwt;
-    requires org.apache.tomcat.embed.core;
+    requires com.codeaffine.tiny.star;
+    requires jakarta.servlet;
     requires java.logging;
+    requires org.apache.tomcat.embed.core;
+    requires org.eclipse.rap.rwt;
 
     provides com.codeaffine.tiny.star.spi.ServerFactory
         with com.codeaffine.tiny.star.tomcat.ServerFactoryImpl;

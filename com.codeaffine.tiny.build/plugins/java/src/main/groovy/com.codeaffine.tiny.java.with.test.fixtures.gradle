@@ -28,11 +28,6 @@ testFixturesJavadoc {
     }
 }
 
-delombokTestFixtures {
-    // workaround for setting module path described in https://github.com/freefair/gradle-plugins/issues/824
-    modulePath = classpath
-}
-
 // workaround to generate test fixtures sources jar taken from https://github.com/gradle/gradle/issues/20539
 def testFixturesSourceSet = sourceSets.named(TestFixturesSupport.TEST_FIXTURE_SOURCESET_NAME).get()
 JavaPluginExtension javaPluginExtension = project.getExtensions().findByType(JavaPluginExtension.class)

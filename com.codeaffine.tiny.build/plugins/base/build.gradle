@@ -1,3 +1,7 @@
 plugins {
     id 'groovy-gradle-plugin'
 }
+
+dependencies {
+    implementation("pl.allegro.tech.build:axion-release-plugin:1.18.7")
+}

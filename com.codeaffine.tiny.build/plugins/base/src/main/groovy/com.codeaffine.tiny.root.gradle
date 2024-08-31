@@ -1,3 +1,15 @@
+plugins {
+    id("pl.allegro.tech.build.axion-release")
+}
+
+scmVersion {
+//    tag {
+//        prefix.set(rootProject.name)
+//    }
+}
+
+project.version = scmVersion.version
+
 // Configure the ':tasks' task of the root project to only show
 // the main lifecycle tasks as entry points to the build
 ext.mainBuildGroup = "main build"

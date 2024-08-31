@@ -1,16 +1,28 @@
 plugins {
+    id("pl.allegro.tech.build.axion-release")
     id("maven-publish")
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "tiny"
-            url = uri("https://maven.pkg.github.com/codeaffine/tiny")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }
-        }
-    }
+scmVersion {
+    releaseOnlyOnReleaseBranches = true
+    releaseBranchNames = ['main']
+    branchVersionIncrementer.putAll( [
+        'main/.*' : 'incrementMinor',
+        'development/.*' :[ 'incrementMinorIfNotOnRelease', [releaseBranchPattern: 'v.*'] ]
+    ])
 }
+
+project.version = scmVersion.version
+
+//publishing {
+//    repositories {
+//        maven {
+//            name = "tiny"
+//            url = uri("https://maven.pkg.github.com/codeaffine/tiny")
+//            credentials {
+//                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+//                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+//            }
+//        }
+//    }
+//}

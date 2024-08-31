@@ -6,6 +6,7 @@ scmVersion {
     tag {
         initialVersion({config, position -> "0.0.1"})
     }
+    useHighestVersion = true
     releaseOnlyOnReleaseBranches = true
     releaseBranchNames = [
         'main',

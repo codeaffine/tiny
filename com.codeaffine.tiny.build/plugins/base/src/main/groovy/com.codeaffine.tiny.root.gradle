@@ -4,10 +4,10 @@ plugins {
 
 scmVersion {
     releaseOnlyOnReleaseBranches = true
-    releaseBranchNames = ['main']
+    releaseBranchNames = ['main', 'development']
     branchVersionIncrementer.putAll( [
-            'main/.*' : 'incrementMinor',
-            'development/.*' :[ 'incrementMinorIfNotOnRelease', [releaseBranchPattern: 'v.*'] ]
+        'main/.*' : 'incrementMinor',
+        'development/.*' :[ 'incrementMinorIfNotOnRelease', [releaseBranchPattern: 'v.*'] ]
     ])
 }
 

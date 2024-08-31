@@ -3,9 +3,12 @@ plugins {
 }
 
 scmVersion {
-//    tag {
-//        prefix.set(rootProject.name)
-//    }
+    releaseOnlyOnReleaseBranches = true
+    releaseBranchNames = ['main']
+    branchVersionIncrementer.putAll( [
+            'main/.*' : 'incrementMinor',
+            'development/.*' :[ 'incrementMinorIfNotOnRelease', [releaseBranchPattern: 'v.*'] ]
+    ])
 }
 
 project.version = scmVersion.version

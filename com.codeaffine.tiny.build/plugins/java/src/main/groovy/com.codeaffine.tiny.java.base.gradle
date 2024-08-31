@@ -89,3 +89,13 @@ private static String readJavaVersion(Project project) {
     }
     return result
 }
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(tasks.named("addMainLicense"))
+}
+
+sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(tasks.named("addMainLicense"))
+}

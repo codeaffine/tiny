@@ -28,6 +28,26 @@ testFixturesJavadoc {
     }
 }
 
+tasks.register('addTestFixturesLicense', Copy) {
+    if(needLicenceFile(project, 'testFixtures', "${projectDir}/src/testFixtures/")) {
+        from(project.parent.file('LICENSE'))
+        into("${projectDir}/src/testFixtures/resources/META-INF")
+    }
+}
+
+private static boolean needLicenceFile(Project project, sourceSetName, sourceSetDir) {
+    def result = false
+    project.sourceSets.each {
+        result |= it.name == sourceSetName && new File(sourceSetDir).exists()
+    }
+    return result
+}
+
+processTestFixturesResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(tasks.named("addTestFixturesLicense"))
+}
+
 // workaround to generate test fixtures sources jar taken from https://github.com/gradle/gradle/issues/20539
 def testFixturesSourceSet = sourceSets.named(TestFixturesSupport.TEST_FIXTURE_SOURCESET_NAME).get()
 JavaPluginExtension javaPluginExtension = project.getExtensions().findByType(JavaPluginExtension.class)
@@ -45,3 +65,8 @@ def sourceElements = JvmPluginsHelper.createDocumentationVariantWithArtifact(
 
 def component = JavaPluginHelper.getJavaComponent(project) as DefaultJvmSoftwareComponent
 component.addVariantsFromConfiguration(sourceElements, new JavaConfigurationVariantMapping("runtime", true))
+
+testFixturesSourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn(tasks.named("addTestFixturesLicense"))
+}

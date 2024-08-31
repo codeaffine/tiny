@@ -27,4 +27,6 @@ jobs:
       - name: Create Release
         run: ./gradlew :release
       - name: Publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew :publish

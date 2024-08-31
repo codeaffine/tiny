@@ -2,3 +2,23 @@ plugins {
     id("com.codeaffine.tiny.java.modules")
     id("com.codeaffine.tiny.publish")
 }
+
+publishing {
+    publications {
+        tinyLogback(MavenPublication) {
+            from components.java
+            pom {
+                name = 'Logback Integration'
+                description = 'Integration of Logback for Standalone Runner Applications'
+                developers {
+                    developer {
+                        id = 'fappel'
+                        name = 'Frank Appel'
+                        email = 'fappel@codeaffine.com'
+                        organizationUrl = 'https://codeaffine.com/'
+                    }
+                }
+            }
+        }
+    }
+}

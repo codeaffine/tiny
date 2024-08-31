@@ -10,3 +10,23 @@ dependencies {
         testFixtures(project(":com.codeaffine.tiny.shared"))
     )
 }
+
+publishing {
+    publications {
+        tinyStar(MavenPublication) {
+            from components.java
+            pom {
+                name = 'Standalone Runner'
+                description = 'Allows to run RWT applications from a java main method'
+                developers {
+                    developer {
+                        id = 'fappel'
+                        name = 'Frank Appel'
+                        email = 'fappel@codeaffine.com'
+                        organizationUrl = 'https://codeaffine.com/'
+                    }
+                }
+            }
+        }
+    }
+}

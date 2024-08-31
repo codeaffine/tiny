@@ -8,3 +8,23 @@ dependencies {
         testFixtures(project(":com.codeaffine.tiny.test"))
     )
 }
+
+publishing {
+    publications {
+        tinyShared(MavenPublication) {
+            from components.java
+            pom {
+                name = 'Shared'
+                description = 'Shared functionalities used by tiny modules'
+                developers {
+                    developer {
+                        id = 'fappel'
+                        name = 'Frank Appel'
+                        email = 'fappel@codeaffine.com'
+                        organizationUrl = 'https://codeaffine.com/'
+                    }
+                }
+            }
+        }
+    }
+}

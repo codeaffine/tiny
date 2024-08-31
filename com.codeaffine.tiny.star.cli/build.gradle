@@ -9,3 +9,23 @@ dependencies {
         testFixtures(project(":com.codeaffine.tiny.test"))
     )
 }
+
+publishing {
+    publications {
+        tinyCli(MavenPublication) {
+            from components.java
+            pom {
+                name = 'Command Line Interface'
+                description = 'CLI Engine for controlling Standalone Runner Application Processes'
+                developers {
+                    developer {
+                        id = 'fappel'
+                        name = 'Frank Appel'
+                        email = 'fappel@codeaffine.com'
+                        organizationUrl = 'https://codeaffine.com/'
+                    }
+                }
+            }
+        }
+    }
+}

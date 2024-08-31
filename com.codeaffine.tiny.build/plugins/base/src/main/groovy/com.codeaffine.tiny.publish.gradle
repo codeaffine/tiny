@@ -22,30 +22,18 @@ publishing {
                 }
             }
             pom {
-                name = 'My Library'
-                description = 'A concise description of my library'
-                url = 'http://www.example.com/library'
-                properties = [
-                        myProp: "value",
-                        "prop.with.dots": "anotherValue"
-                ]
+                groupId = group
+                url = 'https://github.com/codeaffine/tiny/tree/main/' + project.name
                 licenses {
                     license {
                         name = 'Eclipse Public License - v 2.0'
                         url = 'https://www.eclipse.org/legal/epl-v20.html'
                     }
                 }
-                developers {
-                    developer {
-                        id = 'johnd'
-                        name = 'John Doe'
-                        email = 'john.doe@example.com'
-                    }
-                }
                 scm {
-                    connection = 'scm:git:git://example.com/my-library.git'
-                    developerConnection = 'scm:git:ssh://example.com/my-library.git'
-                    url = 'http://example.com/my-library/'
+                    url = 'https://github.com/codeaffine/tiny'
+                    connection = 'scm:git://example.com/my-library.git'
+                    developerConnection = 'scm:git://example.com/my-library.git'
                 }
             }
         }
@@ -61,3 +49,11 @@ publishing {
         }
     }
 }
+
+//signing {
+//    sign publishing.publications.mavenJava
+//}
+//
+//tasks.withType(Sign) {
+//    onlyIf { isReleaseVersion }
+//}

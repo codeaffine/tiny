@@ -12,8 +12,8 @@ scmVersion {
         'development'
     ]
     branchVersionIncrementer.putAll( [
-        'main/.*' : 'incrementMinor',
-        'development/.*' : { context -> context.currentVersion.incrementPatchVersion() },
+        'main' : 'incrementMinor',
+        'development' : { context -> context.currentVersion.incrementPatchVersion() },
     ])
 }
 

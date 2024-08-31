@@ -3,22 +3,4 @@ plugins {
     id("com.codeaffine.tiny.publish")
 }
 
-publishing {
-    publications {
-        tinyServlet(MavenPublication) {
-            from components.java
-            pom {
-                name = 'Servlet Adapter'
-                description = 'Servlet Adapter for Standalone Runner Applications'
-                developers {
-                    developer {
-                        id = 'fappel'
-                        name = 'Frank Appel'
-                        email = 'fappel@codeaffine.com'
-                        organizationUrl = 'https://codeaffine.com/'
-                    }
-                }
-            }
-        }
-    }
-}
+project.description = "Servlet Adapter for Standalone Runner Applications"

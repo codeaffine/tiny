@@ -3,6 +3,8 @@ plugins {
     id("application")
 }
 
+project.description = "Standalone runner for RWT application usage demo"
+
 application {
     mainClass = "com.codeaffine.tiny.demo.DemoApplication"
 }

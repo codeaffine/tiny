@@ -3,28 +3,10 @@ plugins {
     id("com.codeaffine.tiny.publish")
 }
 
+project.description = "Integration of Log4j for Standalone Runner Applications"
+
 dependencies {
     testImplementation(
         testFixtures(project(":com.codeaffine.tiny.test")),
     )
-}
-
-publishing {
-    publications {
-        tinyLog4j(MavenPublication) {
-            from components.java
-            pom {
-                name = 'Log4j Integration'
-                description = 'Integration of Log4j for Standalone Runner Applications'
-                developers {
-                    developer {
-                        id = 'fappel'
-                        name = 'Frank Appel'
-                        email = 'fappel@codeaffine.com'
-                        organizationUrl = 'https://codeaffine.com/'
-                    }
-                }
-            }
-        }
-    }
 }

@@ -2,30 +2,11 @@ plugins {
     id("com.codeaffine.tiny.java.modules")
     id("com.codeaffine.tiny.publish")
 }
+project.description = "Set of basic commands for the CLI used to control Standalone Runner Application Processes"
 
 dependencies {
     testImplementation(
         testFixtures(project(":com.codeaffine.tiny.test")),
         testFixtures(project(':com.codeaffine.tiny.star.cli'))
     )
-}
-
-publishing {
-    publications {
-        tinyCliBasic(MavenPublication) {
-            from components.java
-            pom {
-                name = 'Basic Command Set'
-                description = 'Set of basic commands for the CLI used to control Standalone Runner Application Processes'
-                developers {
-                    developer {
-                        id = 'fappel'
-                        name = 'Frank Appel'
-                        email = 'fappel@codeaffine.com'
-                        organizationUrl = 'https://codeaffine.com/'
-                    }
-                }
-            }
-        }
-    }
 }

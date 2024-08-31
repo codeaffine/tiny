@@ -3,26 +3,8 @@ plugins {
     id("com.codeaffine.tiny.publish")
 }
 
+project.description = "JUnit 5 utilities for testing"
+
 javadoc {
     enabled = false
-}
-
-publishing {
-    publications {
-        tinyTest(MavenPublication) {
-            from components.java
-            pom {
-                name = 'Test Utilities'
-                description = 'JUnit 5 utilities for testing'
-                developers {
-                    developer {
-                        id = 'fappel'
-                        name = 'Frank Appel'
-                        email = 'fappel@codeaffine.com'
-                        organizationUrl = 'https://codeaffine.com/'
-                    }
-                }
-            }
-        }
-    }
 }

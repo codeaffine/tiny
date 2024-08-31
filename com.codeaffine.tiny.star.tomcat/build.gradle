@@ -3,28 +3,10 @@ plugins {
     id("com.codeaffine.tiny.publish")
 }
 
+project.description = "Standalone Runner Server Implementation adapting Tomcat as embedded servlet container"
+
 dependencies {
     testImplementation(
         testFixtures(project(":com.codeaffine.tiny.star")),
     )
-}
-
-publishing {
-    publications {
-        tinyTomcat(MavenPublication) {
-            from components.java
-            pom {
-                name = 'Tomcat Server Implementation'
-                description = 'Standalone Runner Server Implementation adapting Tomcat as embedded servlet container'
-                developers {
-                    developer {
-                        id = 'fappel'
-                        name = 'Frank Appel'
-                        email = 'fappel@codeaffine.com'
-                        organizationUrl = 'https://codeaffine.com/'
-                    }
-                }
-            }
-        }
-    }
 }

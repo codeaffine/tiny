@@ -3,6 +3,9 @@ plugins {
 }
 
 scmVersion {
+    tag {
+        initialVersion({config, position -> "0.0.1"})
+    }
     releaseOnlyOnReleaseBranches = true
     releaseBranchNames = [
         'main',

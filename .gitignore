@@ -2,6 +2,7 @@
 .idea
 **/build
 **/out
+/lib
 
 ### Mac OS ###
 **.DS_Store

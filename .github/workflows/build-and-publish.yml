@@ -1,14 +1,13 @@
-name: Tiny Build
+name: Tiny Build and Publish
 on:
   push:
     branches:
-      - '*'
-      - '!master'
-      - '!development'
+      - 'master'
+      - 'development'
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -17,3 +16,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Generate JavaDoc
+        run: ./gradlew :javadoc
+      - name: Create Release
+        run: ./gradlew :release -Prelease.dryRun

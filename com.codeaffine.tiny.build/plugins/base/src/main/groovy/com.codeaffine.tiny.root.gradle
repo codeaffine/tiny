@@ -67,3 +67,11 @@ tasks.register("moduleDependencies") {
         subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
     }.findAll { it != null })
 }
+
+tasks.register("publish") {
+    group = mainBuildGroup
+    description = "Run publish of all modules"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}

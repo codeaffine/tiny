@@ -10,9 +10,8 @@ scmVersion {
     ]
     branchVersionIncrementer.putAll( [
         'main/.*' : 'incrementMinor',
-        'development/.*' :[ 'incrementMinorIfNotOnRelease', [releaseBranchPattern: 'v.*'] ]
+        'development/.*' : { context -> context.currentVersion.incrementPatchVersion() },
     ])
-    versionCreator('versionWithCommitHash')
 }
 
 project.version = scmVersion.version

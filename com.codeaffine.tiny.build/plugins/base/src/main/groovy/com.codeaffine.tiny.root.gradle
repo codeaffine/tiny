@@ -4,11 +4,15 @@ plugins {
 
 scmVersion {
     releaseOnlyOnReleaseBranches = true
-    releaseBranchNames = ['main', 'development']
+    releaseBranchNames = [
+        'main',
+        'development'
+    ]
     branchVersionIncrementer.putAll( [
         'main/.*' : 'incrementMinor',
         'development/.*' :[ 'incrementMinorIfNotOnRelease', [releaseBranchPattern: 'v.*'] ]
     ])
+    versionCreator('versionWithCommitHash')
 }
 
 project.version = scmVersion.version

@@ -28,6 +28,11 @@ testFixturesJavadoc {
     }
 }
 
+tasks.register("testFixturesJavadocJar", Jar) {
+    from(tasks.testFixturesJavadoc)
+    archiveClassifier.set("test-fixtures-javadoc")
+}
+
 tasks.register('addTestFixturesLicense', Copy) {
     if(needLicenceFile(project, 'testFixtures', "${projectDir}/src/testFixtures/")) {
         from(project.parent.file('LICENSE'))

@@ -44,9 +44,25 @@ tasks.register("javadoc") {
     }.findAll { it != null })
 }
 
+tasks.register("javadocJar") {
+    group = mainBuildGroup
+    description = "Run javadocJar of all modules and the application"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
 tasks.register("testFixturesJavadoc") {
     group = mainBuildGroup
-    description = "Run javadoc of all modules and the application"
+    description = "Run javadoc for test fixtures of all related modules"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("testFixturesJavadocJar") {
+    group = mainBuildGroup
+    description = "Run javadocJar for test fixtures of all related modules"
     dependsOn(subprojects.collect { subproject ->
         subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
     }.findAll { it != null })

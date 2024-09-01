@@ -23,7 +23,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
       - name: Generate JavaDoc
-        run: ./gradlew :javadoc
+        run: ./gradlew javadocJar testFixturesJavadocJar
       - name: Create Release
         run: ./gradlew :release
       - name: Publish

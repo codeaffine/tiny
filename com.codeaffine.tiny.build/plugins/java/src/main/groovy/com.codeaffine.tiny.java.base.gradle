@@ -63,6 +63,11 @@ javadoc {
     }
 }
 
+tasks.register("javadocJar", Jar) {
+    from(tasks.javadoc)
+    archiveClassifier.set("javadoc")
+}
+
 tasks.register('addMainLicense', Copy) {
     if(needLicenceFile(project, 'main', "${projectDir}/src/main/")) {
         from(project.parent.file('LICENSE'))

@@ -7,11 +7,11 @@
  */
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerConfigurationAssert;
 import jakarta.servlet.Filter;
+import jakarta.servlet.ServletContextListener;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.application.EntryPoint;
 import org.junit.jupiter.api.Test;
@@ -52,10 +52,22 @@ class ApplicationServerConfigurationTest {
             .hasHost(HOST)
             .hasPort(PORT)
             .hasContextClassLoader(APPLICATION_CONFIGURATION.getClass().getClassLoader())
-            .hasServletContextListenerInstanceOf(TinyStarServletContextListener.class)
+            .hasServletContextListenerInstanceOf(ServletContextListenerAdapter.class)
             .hasEntryPointPaths(Set.of("/app"))
             .hasFilterDefinitions(List.of(filterDefinition))
             .hasSessionTimeout(SESSION_TIMEOUT);
+    }
+
+    @Test
+    void getContextListenerMoreThanOnce() {
+        ApplicationServer server = ApplicationServer.newApplicationServerBuilder(APPLICATION_CONFIGURATION)
+            .build();
+        ApplicationServerConfiguration configuration = new ApplicationServerConfiguration(WORKING_DIRECTORY, server);
+
+        ServletContextListener actual1 = configuration.getContextListener();
+        ServletContextListener actual2 = configuration.getContextListener();
+
+        assertThat(actual1).isSameAs(actual2);
     }
 
     @Test

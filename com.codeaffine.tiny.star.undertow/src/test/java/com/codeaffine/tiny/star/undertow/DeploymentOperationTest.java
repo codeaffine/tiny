@@ -7,7 +7,6 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
@@ -19,7 +18,8 @@ import java.io.File;
 import java.util.List;
 
 import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.*;
-import static com.codeaffine.tiny.star.undertow.DeploymentOperation.*;
+import static com.codeaffine.tiny.star.undertow.DeploymentOperation.CONTEXT_PATH;
+import static com.codeaffine.tiny.star.undertow.DeploymentOperation.DEPLOYMENT_NAME;
 import static jakarta.servlet.DispatcherType.REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -48,7 +48,7 @@ class DeploymentOperationTest {
             .allSatisfy((key, value) -> assertThat(value.getName()).isEqualTo(servletInfo.getName()));
         assertThat(deploymentInfo.getDeploymentCompleteListeners())
             .hasSize(1)
-            .allSatisfy(listener -> assertThat(listener).isInstanceOf(TinyStarServletContextListener.class));
+            .allSatisfy(listener -> assertThat(listener).isNotNull());
         assertThat(deploymentInfo.getServletContainerInitializers())
             .hasSize(1)
             .allSatisfy(initializer -> assertThat(initializer.getServletContainerInitializerClass()).isSameAs(SessionTimeoutConfigurator.class));

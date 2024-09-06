@@ -7,14 +7,13 @@
  */
 package com.codeaffine.tiny.star.servlet;
 
-import lombok.NonNull;
-import org.eclipse.rap.rwt.application.ApplicationConfiguration;
-import org.eclipse.rap.rwt.application.ApplicationRunner;
-
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.rap.rwt.application.ApplicationConfiguration;
+import org.eclipse.rap.rwt.application.ApplicationRunner;
 
 @RequiredArgsConstructor
 public class TinyStarServletContextListener implements ServletContextListener {

@@ -7,11 +7,11 @@
  */
 package com.codeaffine.tiny.star.test.fixtures;
 
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import jakarta.servlet.Filter;
+import jakarta.servlet.ServletContextListener;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
@@ -66,6 +66,7 @@ public class ApplicationServerTestHelper {
         ServerConfiguration result = mock(ServerConfiguration.class);
         when(result.getHost()).thenReturn(host);
         when(result.getPort()).thenReturn(port);
+        when(result.getContextListener()).thenReturn(mock(ServletContextListener.class));
         return result;
     }
 
@@ -73,7 +74,7 @@ public class ApplicationServerTestHelper {
         ServerConfiguration result = stubServerConfiguration(HOST, PORT);
         when(result.getEntryPointPaths()).thenReturn(Set.of(entryPointPaths));
         when(result.getContextClassLoader()).thenReturn(ApplicationServerTestHelper.class.getClassLoader());
-        when(result.getContextListener()).thenReturn(mock(TinyStarServletContextListener.class));
+        when(result.getContextListener()).thenReturn(mock(ServletContextListener.class));
         when(result.getSessionTimeout()).thenReturn(DEFAULT_SESSION_TIMEOUT);
         return result;
     }

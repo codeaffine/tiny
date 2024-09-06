@@ -7,11 +7,16 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
+import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.server.handlers.resource.FileResourceManager;
+import io.undertow.servlet.api.Deployment;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.spec.ServletContextImpl;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
 
 import java.io.File;
 import java.net.ConnectException;
@@ -38,8 +44,8 @@ import static java.nio.file.Files.writeString;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.Mockito.*;
 
 class UndertowLifecycleTest {
 
@@ -91,7 +97,7 @@ class UndertowLifecycleTest {
 
         @BeforeEach
         void setUp() {
-            manager = mock(DeploymentManager.class);
+            manager = stubDeploymentManager();
             lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
             lifecycle.startUndertow(setupBasicPathHandler(), manager);
         }
@@ -129,11 +135,13 @@ class UndertowLifecycleTest {
     class Stopped {
 
         private DeploymentManager manager;
+        private ServerConfiguration configuration;
 
         @BeforeEach
         void setUp() {
-            manager = mock(DeploymentManager.class);
-            lifecycle = new UndertowLifecycle(stubServerConfiguration(HOST, port));
+            manager = stubDeploymentManager();
+            configuration = stubServerConfiguration(HOST, port);
+            lifecycle = new UndertowLifecycle(configuration);
             lifecycle.startUndertow(setupBasicPathHandler(), manager);
             lifecycle.stopUndertow();
         }
@@ -155,8 +163,17 @@ class UndertowLifecycleTest {
 
             assertThat(actual).isEqualTo(INDEX_CONTENT);
         }
-    }
 
+        @Test
+        void contextDestroyed() {
+            ServletContextListener contextListener = configuration.getContextListener();
+
+            ArgumentCaptor<ServletContextEvent> eventCaptor = forClass(ServletContextEvent.class);
+            verify(contextListener).contextDestroyed(eventCaptor.capture());
+            assertThat(eventCaptor.getValue().getServletContext()).isSameAs(manager.getDeployment().getServletContext());
+        }
+
+    }
     @SneakyThrows
     private PathHandler setupBasicPathHandler() {
         File index = new File(workingDirectory, INDEX);
@@ -185,6 +202,15 @@ class UndertowLifecycleTest {
         try(Scanner scanner = new Scanner(connection.getInputStream())) {
             result = scanner.next();
         }
+        return result;
+    }
+
+    private static DeploymentManager stubDeploymentManager() {
+        Deployment deployment = mock(Deployment.class);
+        ServletContextImpl servletContext = mock(ServletContextImpl.class);
+        when(deployment.getServletContext()).thenReturn(servletContext);
+        DeploymentManager result = mock(DeploymentManager.class);
+        when(result.getDeployment()).thenReturn(deployment);
         return result;
     }
 }

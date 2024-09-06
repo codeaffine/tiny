@@ -16,8 +16,8 @@ open module com.codeaffine.tiny.demo {
     requires /*runtime*/ com.codeaffine.tiny.star.cli.basic;
     requires /*runtime*/ com.codeaffine.tiny.star.logback;
 //    requires /*runtime*/ com.codeaffine.tiny.star.log4j;
-//    requires /*runtime*/ com.codeaffine.tiny.star.undertow;
-    requires /*runtime*/ com.codeaffine.tiny.star.tomcat;
+    requires /*runtime*/ com.codeaffine.tiny.star.undertow;
+//    requires /*runtime*/ com.codeaffine.tiny.star.tomcat;
 
     exports com.codeaffine.tiny.demo;
 }

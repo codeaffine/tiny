@@ -9,6 +9,7 @@ package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
+import jakarta.servlet.ServletContextListener;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -314,6 +315,8 @@ public class ApplicationServer {
     @Singular
     List<FilterDefinition> filterDefinitions;
     int sessionTimeout;
+    @Singular
+    List<ServletContextListener> servletContextListeners;
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 
@@ -619,6 +622,28 @@ public class ApplicationServer {
          */
         public ApplicationServerBuilder withSessionTimeout(int sessionTimeout) {
             return new ApplicationServerBuilder(delegate.withSessionTimeout(normalizeSessionTimeout(sessionTimeout)));
+        }
+
+        /**
+         * Register the given {@link ServletContextListener} implementation.
+         *
+         * @param servletContextListener the {@link ServletContextListener} implementation to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified {@link ServletContextListener} implementation registered.
+         * Never {@code null}.
+         */
+        public ApplicationServerBuilder withServletContextListener(ServletContextListener servletContextListener) {
+            return new ApplicationServerBuilder(delegate.withServletContextListener(servletContextListener));
+        }
+
+        /**
+         * Register the given list of{@link ServletContextListener} implementations.
+         *
+         * @param servletContextListeners the list of{@link ServletContextListener} implementations to register. Must not be {@code null}.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified list of{@link ServletContextListener} implementations
+         * registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withServletContextListeners(List<ServletContextListener> servletContextListeners) {
+            return new ApplicationServerBuilder(delegate.withServletContextListeners(servletContextListeners));
         }
 
         /**

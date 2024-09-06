@@ -9,12 +9,15 @@ package com.codeaffine.tiny.star.tomcat;
 
 import com.codeaffine.tiny.star.spi.Server;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.Context;
 import org.apache.catalina.startup.Tomcat;
 
 import static com.codeaffine.tiny.star.tomcat.Texts.SERVER_NAME;
+import static java.util.Objects.nonNull;
 import static java.util.logging.Level.SEVERE;
 import static java.util.logging.Logger.getLogger;
 import static lombok.AccessLevel.PACKAGE;
@@ -34,6 +37,10 @@ class ServerImpl implements Server {
     private final FilterRegistrar filterRegistrar;
     @NonNull
     private final TomcatLifeCycleControl tomcatLifeCycleControl;
+    @NonNull
+    private final ServerConfiguration configuration;
+
+    private Context context;
 
     ServerImpl(ServerConfiguration configuration) {
         this(new Tomcat(), configuration);
@@ -47,7 +54,8 @@ class ServerImpl implements Server {
             new ResourcesServletRegistrar(),
             new RwtServletRegistrar(tomcat, configuration),
             new FilterRegistrar(configuration),
-            new TomcatLifeCycleControl(tomcat)
+            new TomcatLifeCycleControl(tomcat),
+            configuration
         );
     }
 
@@ -58,7 +66,7 @@ class ServerImpl implements Server {
 
     @Override
     public void start() {
-        Context context = contextRegistrar.addContext();
+        context = contextRegistrar.addContext();
         connectorRegistrar.addConnector();
         resourcesServletRegistrar.addResourcesServlet(context);
         rwtServletRegistrar.addRwtServlet(context);
@@ -68,6 +76,12 @@ class ServerImpl implements Server {
 
     @Override
     public void stop() {
+        if (nonNull(context)) {
+            // is it really necessary to destroy the context manually? Could not find a better way to do it.
+            ServletContext servletContext = context.getServletContext();
+            configuration.getContextListener().contextDestroyed(new ServletContextEvent(servletContext));
+            context = null;
+        }
         tomcatLifeCycleControl.stopTomcat();
     }
 }

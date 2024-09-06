@@ -10,7 +10,10 @@ package com.codeaffine.tiny.star.undertow;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
+import io.undertow.servlet.api.Deployment;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.spec.ServletContextImpl;
+import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletException;
 import lombok.NonNull;
 
@@ -21,12 +24,14 @@ import static java.util.Objects.nonNull;
 
 class UndertowLifecycle {
 
-    private final AtomicReference<UndertowInstance> serverHolder;
     private final ProtocolListenerApplicator protocolListenerApplicator;
+    private final AtomicReference<UndertowInstance> serverHolder;
+    private final ServerConfiguration configuration;
 
     record UndertowInstance(Undertow undertow, DeploymentManager manager) {}
 
     UndertowLifecycle(@NonNull ServerConfiguration configuration) {
+        this.configuration = configuration;
         this.serverHolder = new AtomicReference<>();
         this.protocolListenerApplicator = new ProtocolListenerApplicator(configuration);
     }
@@ -63,12 +68,20 @@ class UndertowLifecycle {
         return null;
     }
 
-    private static void stopManager(UndertowInstance current) {
+    private void stopManager(UndertowInstance current) {
         try {
-            current.manager().stop();
+            DeploymentManager manager = current.manager();
+            destroyContext(manager);
+            manager.stop();
         } catch (ServletException servletException) {
             throw extractExceptionToReport(servletException, IllegalStateException::new);
         }
     }
 
+    private void destroyContext(DeploymentManager manager) {
+        // is it really necessary to destroy the context manually? Could not find a better way to do it.
+        Deployment deployment = manager.getDeployment();
+        ServletContextImpl servletContext = deployment.getServletContext();
+        configuration.getContextListener().contextDestroyed(new ServletContextEvent(servletContext));
+    }
 }

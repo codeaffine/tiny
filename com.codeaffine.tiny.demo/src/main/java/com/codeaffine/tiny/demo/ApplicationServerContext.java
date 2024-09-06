@@ -15,7 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
 import static com.codeaffine.tiny.star.ApplicationServer.*;
-import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 
 class ApplicationServerContext {
 

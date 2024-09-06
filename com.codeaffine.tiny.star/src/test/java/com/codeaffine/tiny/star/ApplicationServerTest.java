@@ -8,6 +8,9 @@
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.ServerConfigurationAssert;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -355,6 +358,40 @@ class ApplicationServerTest {
     }
 
     @Test
+    void startWithServletContextListenerLifeCycleCallbackInvocations() {
+        ServletContextListener servletContextListener = mock(ServletContextListener.class);
+        ServletContextEvent servletContextEvent = stubServletContextEvent();
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withServletContextListener(servletContextListener)
+            .build();
+
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+
+        ServletContextListener contextListener = getCurrentServerConfiguration().getContextListener();
+        contextListener.contextInitialized(servletContextEvent);
+        contextListener.contextDestroyed(servletContextEvent);
+        verify(servletContextListener).contextInitialized(servletContextEvent);
+        verify(servletContextListener).contextDestroyed(servletContextEvent);
+    }
+
+    @Test
+    void startWithMultipleServletContextListenersLifeCycleCallbackInvocations() {
+        ServletContextListener servletContextListener = mock(ServletContextListener.class);
+        ServletContextEvent servletContextEvent = stubServletContextEvent();
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withServletContextListeners(List.of(servletContextListener))
+            .build();
+
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+
+        ServletContextListener contextListener = getCurrentServerConfiguration().getContextListener();
+        contextListener.contextInitialized(servletContextEvent);
+        contextListener.contextDestroyed(servletContextEvent);
+        verify(servletContextListener).contextInitialized(servletContextEvent);
+        verify(servletContextListener).contextDestroyed(servletContextEvent);
+    }
+
+    @Test
     void stop() {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .build();
@@ -453,5 +490,13 @@ class ApplicationServerTest {
 
     private static String expectedEntrypointUrl(String entryPointPath) {
         return format("%s://%s:%s%s", SCHEME, DEFAULT_HOST, getCurrentServerConfiguration().getPort(), entryPointPath);
+    }
+
+    private ServletContextEvent stubServletContextEvent() {
+        ServletContext servletContext = mock(ServletContext.class);
+        when(servletContext.getRealPath(anyString())).thenReturn(new File(tempDir, "realPath").getAbsolutePath());
+        ServletContextEvent result = mock(ServletContextEvent.class);
+        when(result.getServletContext()).thenReturn(servletContext);
+        return result;
     }
 }

@@ -1,0 +1,34 @@
+/**
+ * <p>Copyright (c) 2022-2024 CA Code Affine GmbH (<a href="https://codeaffine.com">codeaffine.com</a>)</p>
+ * <p>All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
+ */
+package com.codeaffine.tiny.star;
+
+import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import lombok.NonNull;
+
+import java.util.List;
+
+record ServletContextListenerAdapter(
+    @NonNull TinyStarServletContextListener tinyStarServletContextListener,
+    @NonNull List<ServletContextListener> applicationServletContextListeners)
+    implements ServletContextListener
+{
+
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        tinyStarServletContextListener.contextInitialized(servletContextEvent);
+        applicationServletContextListeners.forEach(listener -> listener.contextInitialized(servletContextEvent));
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        applicationServletContextListeners.forEach(listener -> listener.contextDestroyed(servletContextEvent));
+        tinyStarServletContextListener.contextDestroyed(servletContextEvent);
+    }
+}

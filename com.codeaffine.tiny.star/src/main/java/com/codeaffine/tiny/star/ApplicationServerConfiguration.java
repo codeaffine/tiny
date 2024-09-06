@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
+import static java.util.Objects.isNull;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -29,6 +30,8 @@ class ApplicationServerConfiguration implements ServerConfiguration {
     private final File workingDirectory;
     @NonNull
     private final ApplicationServer applicationServer;
+
+    private ServletContextListenerAdapter servletContextListenerAdapter;
 
     @Override
     public SecureSocketLayerConfiguration getSecureSocketLayerConfiguration() {
@@ -55,7 +58,13 @@ class ApplicationServerConfiguration implements ServerConfiguration {
 
     @Override
     public ServletContextListener getContextListener() {
-        return new TinyStarServletContextListener(applicationServer.applicationConfiguration);
+        if (isNull(servletContextListenerAdapter)) {
+            servletContextListenerAdapter = new ServletContextListenerAdapter(
+                new TinyStarServletContextListener(applicationServer.applicationConfiguration),
+                applicationServer.servletContextListeners
+            );
+        }
+        return servletContextListenerAdapter;
     }
 
     @Override
@@ -77,4 +86,5 @@ class ApplicationServerConfiguration implements ServerConfiguration {
     public int getSessionTimeout() {
         return applicationServer.sessionTimeout;
     }
+
 }

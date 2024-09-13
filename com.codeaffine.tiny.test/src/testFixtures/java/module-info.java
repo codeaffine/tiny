@@ -8,6 +8,9 @@
 module com.codeaffine.tiny.test.test.fixtures {
 
     requires org.junit.jupiter.api;
+    requires org.mockito;
+    requires org.slf4j;
+    requires static lombok;
 
     exports com.codeaffine.tiny.test.test.fixtures;
 }

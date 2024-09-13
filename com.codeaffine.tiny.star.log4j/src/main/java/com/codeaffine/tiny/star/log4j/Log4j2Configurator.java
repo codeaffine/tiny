@@ -33,6 +33,8 @@ class Log4j2Configurator {
 
     static final String CONFIGURATION_FILE_NAME_SUFFIX = "-log4j2.xml";
 
+    static Logger logger = getLogger(Log4j2Configurator.class);
+
     private static final String LOG4J_CONFIGURATOR_CLASS = "org.apache.logging.log4j.core.config.Configurator";
     private static final String RECONFIGURE_METHOD = "reconfigure";
 
@@ -41,11 +43,9 @@ class Log4j2Configurator {
     private final String reconfigureMethod;
     @NonNull
     private final Function<String, URL> systemResourceResolver;
-    @NonNull
-    private final Logger logger;
 
     Log4j2Configurator() {
-        this(LOG4J_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, ClassLoader::getSystemResource, getLogger(Log4j2Configurator.class));
+        this(LOG4J_CONFIGURATOR_CLASS, RECONFIGURE_METHOD, ClassLoader::getSystemResource);
     }
 
     void run(@NonNull ClassLoader applicationClassLoader, @NonNull String applicationName) {

@@ -13,16 +13,18 @@ import org.slf4j.Logger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.ENFORCED;
 import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.NORMAL;
 import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.ApplicationServer.State.*;
 import static com.codeaffine.tiny.star.Texts.*;
-import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class ApplicationProcess {
+
+    static Logger logger = getLogger(ApplicationProcess.class);
 
     private static final long OBSERVER_NOTIFICATION_TIMEOUT = 5000;
 
@@ -30,7 +32,6 @@ class ApplicationProcess {
     private final AtomicReference<State> state;
     private final Runnable terminator;
     private final Runnable starter;
-    private final Logger logger;
 
     enum StopMode { NORMAL, ENFORCED }
 
@@ -39,11 +40,7 @@ class ApplicationProcess {
         LifecycleException(Throwable cause) { super(cause); }
     }
 
-    ApplicationProcess(ApplicationServer applicationServer, Runnable starter, Runnable terminator) {
-        this(applicationServer, starter, terminator, getLogger(ApplicationProcess.class));
-    }
-
-    ApplicationProcess(@NonNull ApplicationServer applicationServer, @NonNull Runnable starter, @NonNull Runnable terminator, @NonNull Logger logger) {
+    ApplicationProcess(@NonNull ApplicationServer applicationServer, @NonNull Runnable starter, @NonNull Runnable terminator) {
         this.observerRegistry = new ObserverRegistry<>(
             applicationServer,
             ApplicationServer.class,
@@ -53,7 +50,6 @@ class ApplicationProcess {
         this.state = new AtomicReference<>(HALTED);
         this.terminator = terminator;
         this.starter = starter;
-        this.logger = logger;
     }
 
     void registerLifecycleListener(Object lifecycleListener) {

@@ -7,23 +7,25 @@
  */
 package com.codeaffine.tiny.star;
 
+import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.stubbing.Answer;
-import org.slf4j.Logger;
 
 import java.util.stream.Stream;
 
 import static com.codeaffine.tiny.star.ApplicationProcess.LifecycleException;
+import static com.codeaffine.tiny.star.ApplicationProcess.logger;
 import static com.codeaffine.tiny.star.ApplicationServer.*;
 import static com.codeaffine.tiny.star.ApplicationServer.State.*;
 import static com.codeaffine.tiny.star.Texts.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@UseLoggerSpy(ApplicationProcess.class)
 class ApplicationProcessTest {
 
     private static final String IDENTIFIER = "identifier";
@@ -34,7 +36,6 @@ class ApplicationProcessTest {
     private ApplicationServer applicationServer;
     private Runnable terminator;
     private Runnable starter;
-    private Logger logger;
 
     interface LifecycleConsumerListener {
         @Starting
@@ -62,9 +63,8 @@ class ApplicationProcessTest {
     void setUp() {
         terminator = mock(Runnable.class);
         starter = mock(Runnable.class);
-        logger = mock(Logger.class);
         applicationServer = stubApplicationServer();
-        applicationProcess = new ApplicationProcess(applicationServer, starter, terminator, logger);
+        applicationProcess = new ApplicationProcess(applicationServer, starter, terminator);
         stubApplicationServerGetState();
         lifecycleConsumingListener = mock(LifecycleConsumerListener.class);
         parameterlessListener = mock(ParameterlessListener.class);
@@ -361,25 +361,19 @@ class ApplicationProcessTest {
 
     @Test
     void constructWithNullAsNameArgument() {
-        assertThatThrownBy(() -> new ApplicationProcess(null, starter, terminator, logger))
+        assertThatThrownBy(() -> new ApplicationProcess(null, starter, terminator))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsStarterArgument() {
-        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, null, terminator, logger))
+        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, null, terminator))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void constructWithNullAsTerminatorArgument() {
-        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, starter, null, logger))
-            .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    void constructWithNullAsLoggerArgument() {
-        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, starter, terminator, null))
+        assertThatThrownBy(() -> new ApplicationProcess(applicationServer, starter, null))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -408,13 +402,13 @@ class ApplicationProcessTest {
             new Object() {
                 @Starting
                 @SuppressWarnings({"EmptyMethod", "unused"})
-                void starting(@SuppressWarnings("unused") String parameter) {
+                void starting(@SuppressWarnings("unused") String parameter) { // NOSONAR: Test fixture
                 }
             },
             new Object() {
                 @Starting
                 @SuppressWarnings({"EmptyMethod", "unused"})
-                void starting(@SuppressWarnings("unused") ApplicationProcess applicationProcess, @SuppressWarnings("unused") String parameter) {
+                void starting(@SuppressWarnings("unused") ApplicationProcess applicationProcess, @SuppressWarnings("unused") String parameter) { // NOSONAR: Test fixture
                 }
             }
         );

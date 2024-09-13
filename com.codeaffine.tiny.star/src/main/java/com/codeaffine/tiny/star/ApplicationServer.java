@@ -35,7 +35,7 @@ import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.*;
 import static java.lang.Boolean.TRUE;
-import static java.lang.Math.*;
+import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -301,6 +301,8 @@ public class ApplicationServer {
      * builder factory method.
      */
     public static final String DEFAULT_APPLICATION_IDENTIFIER = ApplicationServer.class.getName().toLowerCase();
+
+    static Logger logger = getLogger(ApplicationServer.class);
 
     ApplicationConfiguration applicationConfiguration;
     SecureSocketLayerConfiguration secureSocketLayerConfiguration;
@@ -805,7 +807,7 @@ public class ApplicationServer {
      * @return this {@link ApplicationServer} instance. Never {@code null}.
      */
     public ApplicationServer start() {
-        return startInternal(new ApplicationProcessFactory(this), getLogger(getClass()));
+        return startInternal(new ApplicationProcessFactory(this));
     }
 
     /**
@@ -814,14 +816,14 @@ public class ApplicationServer {
      * @return this {@link ApplicationServer} instance. Never {@code null}.
      */
     public ApplicationServer stop() {
-        return stopInternal(getLogger(getClass()));
+        return stopInternal();
     }
 
     String getWorkingDirectorSystemProperty() {
         return getIdentifier() + "." + CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY;
     }
 
-    ApplicationServer stopInternal(Logger logger) {
+    ApplicationServer stopInternal() {
         ApplicationProcess process = processHolder.getAndUpdate(currentProcess -> null);
         if (nonNull(process)) {
             logger.info(INFO_SHUTDOWN_START, getIdentifier());
@@ -831,16 +833,16 @@ public class ApplicationServer {
         return this;
     }
 
-    ApplicationServer startInternal(ApplicationProcessFactory applicationProcessFactory, Logger logger) {
-        ApplicationProcess process = processHolder.updateAndGet(currentProcess -> createProcess(logger, currentProcess, applicationProcessFactory));
+    ApplicationServer startInternal(ApplicationProcessFactory applicationProcessFactory) {
+        ApplicationProcess process = processHolder.updateAndGet(currentProcess -> createProcess(currentProcess, applicationProcessFactory));
         if (process.getState().equals(HALTED)) {
             measureDuration(process::start)
-                .report(duration -> logStartupInfos(logger, duration));
+                .report(this::logStartupInfos);
         }
         return this;
     }
 
-    private ApplicationProcess createProcess(Logger logger, ApplicationProcess currentProcess, ApplicationProcessFactory applicationProcessFactory) {
+    private ApplicationProcess createProcess(ApplicationProcess currentProcess, ApplicationProcessFactory applicationProcessFactory) {
         if (nonNull(currentProcess)) {
             return currentProcess;
         }
@@ -848,7 +850,7 @@ public class ApplicationServer {
             .report((value, duration) -> logger.info(INFO_CREATION_CONFIRMATION, getIdentifier(), duration));
     }
 
-    private void logStartupInfos(Logger logger, long duration) {
+    private void logStartupInfos(long duration) {
         stream(getUrls())
             .forEach(url -> logger.info(INFO_ENTRYPOINT_URL, url.toString()));
         logger.info(INFO_STARTUP_CONFIRMATION, getIdentifier(), duration);

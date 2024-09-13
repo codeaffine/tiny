@@ -8,19 +8,20 @@
 package com.codeaffine.tiny.star.cli;
 
 import com.codeaffine.tiny.test.test.fixtures.SystemInSupplier;
+import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
-import static com.codeaffine.tiny.star.cli.CancelableInputStream.SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS;
-import static com.codeaffine.tiny.star.cli.Texts.*;
 import static com.codeaffine.tiny.shared.Threads.sleepFor;
+import static com.codeaffine.tiny.star.cli.CancelableInputStream.SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS;
+import static com.codeaffine.tiny.star.cli.InputScanner.logger;
+import static com.codeaffine.tiny.star.cli.Texts.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -28,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@UseLoggerSpy(InputScanner.class)
 class InputScannerTest {
 
     private static final String COMMAND_LINE = "commandLine\n";
@@ -35,14 +37,12 @@ class InputScannerTest {
     private CommandDispatcher commandDispatcher;
     private ExecutorService executorService;
     private InputScanner scanner;
-    private Logger logger;
 
     @BeforeEach
     void setUp() {
         executorService = newSingleThreadExecutor();
         commandDispatcher = mock(CommandDispatcher.class);
-        logger = mock(Logger.class);
-        scanner = new InputScanner(commandDispatcher, logger);
+        scanner = new InputScanner(commandDispatcher);
     }
 
     @AfterEach

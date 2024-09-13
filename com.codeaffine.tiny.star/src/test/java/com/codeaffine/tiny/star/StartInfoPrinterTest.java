@@ -7,16 +7,17 @@
  */
 package com.codeaffine.tiny.star;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
-import org.slf4j.Logger;
 
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
+import static com.codeaffine.tiny.star.StartInfoPrinter.logger;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@UseLoggerSpy(StartInfoPrinter.class)
 class StartInfoPrinterTest {
 
     private static final String APPLICATION_IDENTIFIER = "com.codeaffine.tiny.star";
@@ -28,18 +29,11 @@ class StartInfoPrinterTest {
         %s
         """;
 
-    private Logger logger;
-
-    @BeforeEach
-    void setUp() {
-        logger = mock(Logger.class);
-    }
-
     @Test
     void printStartText() {
         ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {}, APPLICATION_IDENTIFIER)
             .build();
-        StartInfoPrinter printer = new StartInfoPrinter(applicationServer, logger);
+        StartInfoPrinter printer = new StartInfoPrinter(applicationServer);
 
         printer.printStartText();
 
@@ -51,7 +45,7 @@ class StartInfoPrinterTest {
         ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {}, APPLICATION_IDENTIFIER)
             .withStartInfoProvider(server -> String.format(START_TEXT, server.getIdentifier()))
             .build();
-        StartInfoPrinter printer = new StartInfoPrinter(applicationServer, logger);
+        StartInfoPrinter printer = new StartInfoPrinter(applicationServer);
 
         printer.printStartText();
 
@@ -68,7 +62,7 @@ class StartInfoPrinterTest {
         ApplicationServer applicationServer = newApplicationServerBuilder(configuration -> {}, APPLICATION_IDENTIFIER)
             .withStartInfoProvider(null)
             .build();
-        StartInfoPrinter printer = new StartInfoPrinter(applicationServer, logger);
+        StartInfoPrinter printer = new StartInfoPrinter(applicationServer);
 
         printer.printStartText();
 

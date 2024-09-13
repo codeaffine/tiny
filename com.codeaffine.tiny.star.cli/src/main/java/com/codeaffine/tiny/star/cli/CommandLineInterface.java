@@ -31,14 +31,14 @@ public class CommandLineInterface {
 
     static final AtomicReference<Engine> GLOBAL_ENGINE = new AtomicReference<>();
 
+    static Logger logger = getLogger(CommandLineInterface.class);
+
     private static final EngineFactory ENGINE_FACTORY = new EngineFactory();
 
     @NonNull
     private final CliCommandProvider commandProvider;
     @NonNull
     private final AtomicReference<Engine> commandlineEngineHolder;
-    @NonNull
-    private final Logger logger;
 
     private Map<String, CliCommand> instanceCodeToCommandMap;
     private ApplicationServer applicationServer;
@@ -49,7 +49,7 @@ public class CommandLineInterface {
     }
 
     public CommandLineInterface(CliCommandProvider cliCommandProvider) {
-        this(cliCommandProvider, new AtomicReference<>(), getLogger(CommandLineInterface.class));
+        this(cliCommandProvider, new AtomicReference<>());
     }
 
     @Stopped
@@ -110,7 +110,7 @@ public class CommandLineInterface {
 
     private void printHelpOnStartup(ApplicationServer applicationServer, CliCommand command, Logger logger) {
         CliCommandAdapter commandAdapter = new CliCommandAdapter(applicationServer, command, instanceIdentifier);
-        if(commandAdapter.printHelpOnStartup()) {
+        if(commandAdapter.printHelpOnStartup() && logger.isInfoEnabled()) {
             logger.info(commandAdapter.getDescription(commandAdapter, applicationServer));
         }
     }

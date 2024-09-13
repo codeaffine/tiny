@@ -20,7 +20,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -34,9 +33,11 @@ import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
+import static org.slf4j.LoggerFactory.getLogger;
 
 class LaunchPad {
 
+    private static final Logger logger = getLogger(LaunchPad.class);
     private static final String COLOR_LOGO_FOREGROUND = "COLOR_LOGO_FOREGROUND";
     private static final String FONT_LOGO = "FONT_LOGO";
     private static final String FONT_CONTENT_TITLE = "FONT_CONTENT_TITLE";
@@ -49,7 +50,6 @@ class LaunchPad {
     private final Map<String, Font> fonts;
     private final Map<String, Color> colors;
     private final UrlLauncher urlLauncher;
-    private final Logger logger;
 
     LaunchPad(List<? extends ApplicationConfiguration> configurations) {
         this.configurations = configurations;
@@ -63,7 +63,6 @@ class LaunchPad {
             COLOR_LOGO_FOREGROUND, new Color(Display.getCurrent(), 255, 51, 0)
         );
         this.urlLauncher = RWT.getClient().getService(UrlLauncher.class);
-        logger = LoggerFactory.getLogger(getClass());
     }
 
     void createControl(Composite parent) {

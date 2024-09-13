@@ -8,12 +8,12 @@
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.ServerConfigurationAssert;
+import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -21,7 +21,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -49,6 +48,7 @@ import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationServerTestContext.class)
+@UseLoggerSpy({ApplicationServer.class, ApplicationProcessFactory.class})
 class ApplicationServerTest {
 
     private static final String APPLICATION_IDENTIFIER = "applicationIdentifier";
@@ -65,14 +65,8 @@ class ApplicationServerTest {
 
     private ApplicationServer applicationServer;
     private File persistentWorkingDirectory;
-    private Logger logger;
     @TempDir
     private File tempDir;
-    
-    @BeforeEach
-    void setUp() {
-        logger = mock(Logger.class);
-    }
 
     @AfterEach
     void tearDown() {
@@ -104,14 +98,12 @@ class ApplicationServerTest {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .build();
 
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
         File workingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         ArgumentCaptor<String> applicationIdentifierCaptor = forClass(String.class);
-        InOrder order = inOrder(logger);
-        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(applicationServer.getWorkingDirectorSystemProperty()));
-        order.verify(logger).info(eq(INFO_SERVER_USAGE), applicationIdentifierCaptor.capture(), eq(CURRENT_SERVER.get().getName()));
-        order.verify(logger).info(eq(INFO_CREATION_CONFIRMATION), eq(applicationIdentifierCaptor.getValue()), anyLong());
+        InOrder order = inOrder(logger, ApplicationProcessFactory.logger);
+        verifyServerStartupLogMessages(order, applicationIdentifierCaptor, INFO_CREATION_CONFIRMATION);
         order.verify(logger).info(INFO_ENTRYPOINT_URL, expectedEntrypointUrl(ENTRY_POINT_PATH_1));
         order.verify(logger).info(INFO_ENTRYPOINT_URL, expectedEntrypointUrl(ENTRY_POINT_PATH_2));
         order.verify(logger).info(eq(INFO_STARTUP_CONFIRMATION), eq(applicationIdentifierCaptor.getValue()), anyLong());
@@ -227,7 +219,7 @@ class ApplicationServerTest {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .keepWorkingDirectoryOnShutdown()
             .build();
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
         persistentWorkingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
 
         applicationServer.stop();
@@ -243,14 +235,12 @@ class ApplicationServerTest {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION, APPLICATION_IDENTIFIER)
             .build();
 
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
         File workingDirectory = new File(getProperty(applicationServer.getWorkingDirectorSystemProperty()));
         ArgumentCaptor<String> captor = forClass(String.class);
-        InOrder order = inOrder(logger);
-        order.verify(logger).info(INFO_WORKING_DIRECTORY, getProperty(applicationServer.getWorkingDirectorSystemProperty()));
-        order.verify(logger).info(eq(INFO_SERVER_USAGE), captor.capture(), eq(CURRENT_SERVER.get().getName()));
-        order.verify(logger).info(eq(INFO_STARTUP_CONFIRMATION), eq(captor.getValue()), anyLong());
+        InOrder order = inOrder(logger, ApplicationProcessFactory.logger);
+        verifyServerStartupLogMessages(order, captor, INFO_STARTUP_CONFIRMATION);
         order.verifyNoMoreInteractions();
         assertThat(captor.getValue()).isEqualTo(APPLICATION_IDENTIFIER);
         assertThat(workingDirectory.getName()).startsWith(APPLICATION_IDENTIFIER);
@@ -267,7 +257,7 @@ class ApplicationServerTest {
             .withLifecycleListener(stateCaptor)
             .build();
 
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
         InOrder order = inOrder(stateCaptor);
         order.verify(stateCaptor).captureStarting(applicationServer);
@@ -288,7 +278,7 @@ class ApplicationServerTest {
             .withLifecycleListener(stateCaptor2)
             .build();
 
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
         InOrder order = inOrder(stateCaptor1, stateCaptor2);
         order.verify(stateCaptor1).captureStarting(applicationServer);
@@ -306,7 +296,7 @@ class ApplicationServerTest {
             .withLifecycleListeners(List.of(stateCaptor1, stateCaptor2))
             .build();
 
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
         InOrder order = inOrder(stateCaptor1, stateCaptor2);
         order.verify(stateCaptor1).captureStarting(applicationServer);
@@ -346,7 +336,7 @@ class ApplicationServerTest {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withLifecycleListener(stateCaptor)
             .build();
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
         stateCaptor.clear();
 
         applicationServer.start();
@@ -365,7 +355,7 @@ class ApplicationServerTest {
             .withServletContextListener(servletContextListener)
             .build();
 
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
         ServletContextListener contextListener = getCurrentServerConfiguration().getContextListener();
         contextListener.contextInitialized(servletContextEvent);
@@ -382,7 +372,7 @@ class ApplicationServerTest {
             .withServletContextListeners(List.of(servletContextListener))
             .build();
 
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
         ServletContextListener contextListener = getCurrentServerConfiguration().getContextListener();
         contextListener.contextInitialized(servletContextEvent);
@@ -405,10 +395,9 @@ class ApplicationServerTest {
     void stopRunningInstance() {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .build();
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
-        reset(logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
 
-        applicationServer.stopInternal(logger);
+        applicationServer.stopInternal();
 
         assertThat(CURRENT_SERVER.get().isStopped()).isTrue();
         assertThat(getCurrentServerConfiguration().getWorkingDirectory()).doesNotExist();
@@ -428,7 +417,6 @@ class ApplicationServerTest {
             .keepWorkingDirectoryOnShutdown()
             .build()
             .start();
-        reset(logger);
 
         applicationServer.stop();
 
@@ -446,7 +434,7 @@ class ApplicationServerTest {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withLifecycleListener(stateCaptor)
             .build();
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
         reset(stateCaptor);
         stateCaptor.clear();
 
@@ -468,7 +456,7 @@ class ApplicationServerTest {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .withLifecycleListener(stateCaptor)
             .build();
-        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer, logger), logger);
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
         reset(stateCaptor);
         stateCaptor.clear();
         applicationServer.stop();
@@ -486,6 +474,12 @@ class ApplicationServerTest {
     void newApplicationRunnerBuilderWithNullAsArgumentNameArgument() {
         assertThatThrownBy(() -> newApplicationServerBuilder(null))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    private void verifyServerStartupLogMessages(InOrder order, ArgumentCaptor<String> captor, String startupMessage) {
+        order.verify(ApplicationProcessFactory.logger).info(INFO_WORKING_DIRECTORY, getProperty(applicationServer.getWorkingDirectorSystemProperty()));
+        order.verify(ApplicationProcessFactory.logger).info(eq(INFO_SERVER_USAGE), captor.capture(), eq(CURRENT_SERVER.get().getName()));
+        order.verify(logger).info(eq(startupMessage), eq(captor.getValue()), anyLong());
     }
 
     private static String expectedEntrypointUrl(String entryPointPath) {

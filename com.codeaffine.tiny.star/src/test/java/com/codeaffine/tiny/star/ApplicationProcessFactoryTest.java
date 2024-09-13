@@ -9,6 +9,7 @@ package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.Server;
+import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +17,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
+import static com.codeaffine.tiny.star.ApplicationProcessFactory.LIFECYCLE_LISTENER_REGISTRAR;
+import static com.codeaffine.tiny.star.ApplicationProcessFactory.logger;
 import static com.codeaffine.tiny.star.ApplicationServer.DEFAULT_APPLICATION_IDENTIFIER;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
@@ -37,6 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@UseLoggerSpy(ApplicationProcessFactory.class)
 class ApplicationProcessFactoryTest {
 
     public static final String APPLICATION_IDENTIFIER = "applicationIdentifier";
@@ -44,14 +47,12 @@ class ApplicationProcessFactoryTest {
 
     private ApplicationConfiguration applicationConfiguration;
     private File workingDirectory;
-    private Logger logger;
     @TempDir
     private File tempDir;
 
     @BeforeEach
     void setUp() {
         applicationConfiguration = application -> {};
-        logger = mock(Logger.class);
     }
 
     @AfterEach
@@ -65,7 +66,7 @@ class ApplicationProcessFactoryTest {
     void createProcess() {
         ApplicationServer applicationServer = newApplicationServerBuilder(applicationConfiguration)
             .build();
-        ApplicationProcessFactory factory = new ApplicationProcessFactory(applicationServer, logger);
+        ApplicationProcessFactory factory = new ApplicationProcessFactory(applicationServer);
 
         ApplicationProcess actual = factory.createProcess();
 
@@ -102,7 +103,6 @@ class ApplicationProcessFactoryTest {
         BiConsumer<ApplicationServer, ApplicationProcess> lifecycleListenerRegistrar = mock(BiConsumer.class);
         AtomicReference<Runnable> shutdownHookOperation = new AtomicReference<>();
         StartInfoPrinter startInfoPrinter = mock(StartInfoPrinter.class);
-        Logger logger = mock(Logger.class);
         ApplicationProcessFactory applicationProcessFactory = new ApplicationProcessFactory(
             applicationServer,
             workingDirectoryPreparer,
@@ -112,8 +112,7 @@ class ApplicationProcessFactoryTest {
             shutdownHookHandler,
             shutdownHookOperation,
             lifecycleListenerRegistrar,
-            startInfoPrinter,
-            logger
+            startInfoPrinter
         );
 
         ApplicationProcess actual = applicationProcessFactory.createProcess();
@@ -138,7 +137,7 @@ class ApplicationProcessFactoryTest {
             .build();
         ApplicationProcess process = mock(ApplicationProcess.class);
 
-        ApplicationProcessFactory.LIFECYCLE_LISTENER_REGISTRAR.accept(applicationServer, process);
+        LIFECYCLE_LISTENER_REGISTRAR.accept(applicationServer, process);
 
         verify(process).registerLifecycleListener(lifecycleListener);
     }

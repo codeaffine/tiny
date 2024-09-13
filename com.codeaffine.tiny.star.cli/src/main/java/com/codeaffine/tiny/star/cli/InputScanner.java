@@ -23,19 +23,15 @@ import static org.slf4j.LoggerFactory.getLogger;
 @RequiredArgsConstructor(access = PACKAGE)
 class InputScanner {
 
+    static Logger logger = getLogger(InputScanner.class);
+
     private static final String STOP_SIGNAL = CommandLineInterface.class.getName() + "#stop\n";
 
     @NonNull
     private final CommandDispatcher commandDispatcher;
-    @NonNull
-    private final Logger logger;
 
     private volatile boolean stopping;
     private CancelableInputStream cancelableInputStream;
-
-    InputScanner(CommandDispatcher commandDispatcher) {
-        this(commandDispatcher, getLogger(InputScanner.class));
-    }
 
     void cancel() {
         if (nonNull(cancelableInputStream)) {

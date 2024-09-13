@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static java.util.Collections.emptySet;
 
-// only public classes with public default constructors are allowed as service providers.
+// only public classes with public constructors having no arguments are allowed as service providers.
 // Hence, loading this class should throw an exception
 class TestCliCommandProviderWithServiceConfigurationError implements CliCommandProvider {
 

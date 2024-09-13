@@ -29,6 +29,8 @@ class ApplicationProcessFactory {
     static final @NonNull BiConsumer<ApplicationServer, ApplicationProcess> LIFECYCLE_LISTENER_REGISTRAR
         = (appServer, appProcess) -> appServer.lifecycleListeners.forEach(appProcess::registerLifecycleListener);
 
+    static Logger logger = getLogger(ApplicationProcessFactory.class);
+
     @NonNull
     private final ApplicationServer applicationServer;
     @NonNull
@@ -47,14 +49,8 @@ class ApplicationProcessFactory {
     private final BiConsumer<ApplicationServer, ApplicationProcess> lifecycleListenerRegistrar;
     @NonNull
     private final StartInfoPrinter startInfoPrinter;
-    @NonNull
-    private final Logger logger;
 
     ApplicationProcessFactory(ApplicationServer applicationServer) {
-        this(applicationServer, getLogger(ApplicationProcessFactory.class));
-    }
-
-    ApplicationProcessFactory(ApplicationServer applicationServer, Logger logger) {
         this(applicationServer,
              new WorkingDirectoryPreparer(applicationServer),
              new LoggingFrameworkConfigurator(applicationServer),
@@ -63,8 +59,7 @@ class ApplicationProcessFactory {
              new ShutdownHookHandler(),
              new AtomicReference<>(),
              LIFECYCLE_LISTENER_REGISTRAR,
-             new StartInfoPrinter(applicationServer),
-             logger);
+             new StartInfoPrinter(applicationServer));
     }
 
     ApplicationProcess createProcess() {
@@ -82,5 +77,4 @@ class ApplicationProcessFactory {
         logger.info(INFO_SERVER_USAGE, applicationServer.getIdentifier(), server.getName());
         return result;
     }
-
 }

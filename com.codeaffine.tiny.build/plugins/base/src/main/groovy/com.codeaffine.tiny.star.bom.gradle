@@ -1,0 +1,31 @@
+plugins {
+    id("com.codeaffine.tiny.publish")
+    id("java-platform")
+}
+
+gradle.projectsEvaluated {
+    dependencies {
+        constraints {
+//            println("bom: " + project.name)
+            project.rootProject.subprojects.forEach { subproject ->
+                bom.getBomProjectNames(subproject.name).forEach { bomProjectName ->
+                    if (project.name.equals(bomProjectName)) {
+//                        println("  -> bom dependency: " + subproject.name)
+                        api(subproject)
+                    }
+                }
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        bom(MavenPublication) {
+            groupId = group
+            artifactId = project.name
+            version = project.version
+            afterEvaluate { from(components["javaPlatform"]) }
+        }
+    }
+}

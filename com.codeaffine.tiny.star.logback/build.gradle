@@ -1,6 +1,13 @@
 plugins {
     id("com.codeaffine.tiny.java.modules")
-    id("com.codeaffine.tiny.publish")
+    id("com.codeaffine.tiny.java.modules.publish")
 }
 
 project.description = "Integration of Logback for Standalone Runner Applications"
+bom.include(
+    project.name,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK_DEV,
+    COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK,
+    COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK_DEV,
+)

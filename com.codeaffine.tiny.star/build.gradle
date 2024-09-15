@@ -1,6 +1,6 @@
 plugins {
     id("com.codeaffine.tiny.java.modules.with.test.fixtures")
-    id("com.codeaffine.tiny.publish")
+    id("com.codeaffine.tiny.java.modules.publish")
 }
 
 project.description = "Allows to run RWT applications from a java main method"

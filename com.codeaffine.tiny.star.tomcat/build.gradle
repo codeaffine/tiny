@@ -1,9 +1,16 @@
 plugins {
     id("com.codeaffine.tiny.java.modules")
-    id("com.codeaffine.tiny.publish")
+    id("com.codeaffine.tiny.java.modules.publish")
 }
 
 project.description = "Standalone Runner Server Implementation adapting Tomcat as embedded servlet container"
+bom.include(
+    project.name,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK_DEV,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J_DEV
+)
 
 dependencies {
     testImplementation(

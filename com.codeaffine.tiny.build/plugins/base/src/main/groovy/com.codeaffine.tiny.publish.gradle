@@ -1,53 +1,9 @@
 plugins {
-    id("pl.allegro.tech.build.axion-release")
+    id("com.codeaffine.tiny.base")
     id("maven-publish")
 }
 
-scmVersion {
-
-}
-
-project.version = scmVersion.version
-
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                name = project.name
-                groupId = group
-                description = project.description
-                url = 'https://github.com/codeaffine/tiny/tree/main/' + project.name
-                licenses {
-                    license {
-                        name = 'Eclipse Public License - v 2.0'
-                        url = 'https://www.eclipse.org/legal/epl-v20.html'
-                    }
-                }
-                scm {
-                    url = 'https://github.com/codeaffine/tiny'
-                    connection = 'scm:git://example.com/my-library.git'
-                    developerConnection = 'scm:git://example.com/my-library.git'
-                }
-                developers {
-                    developer {
-                        id = 'fappel'
-                        name = 'Frank Appel'
-                        email = 'fappel@codeaffine.com'
-                        organizationUrl = 'https://codeaffine.com/'
-                    }
-                }
-            }
-        }
-    }
     repositories {
         maven {
             name = "tiny"
@@ -59,11 +15,3 @@ publishing {
         }
     }
 }
-
-//signing {
-//    sign publishing.publications.mavenJava
-//}
-//
-//tasks.withType(Sign) {
-//    onlyIf { isReleaseVersion }
-//}

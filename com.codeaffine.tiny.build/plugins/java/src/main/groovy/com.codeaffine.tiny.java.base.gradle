@@ -2,6 +2,7 @@ plugins {
     id("com.codeaffine.tiny.base")
     id("java")
     id("io.freefair.lombok")
+    id("com.diffplug.spotless")
     id("jvm-test-suite")
     id("jacoco")
 }

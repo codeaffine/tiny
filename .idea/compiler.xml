@@ -40,6 +40,9 @@
       <module name="meta-plugins.main" target="20" />
       <module name="meta-plugins.settings-plugins.test" target="20" />
       <module name="meta-plugins.test" target="20" />
+      <module name="plugins.bom" target="20" />
+      <module name="plugins.bom.main" target="20" />
+      <module name="plugins.bom.test" target="20" />
       <module name="settings" target="20" />
       <module name="tiny.com.codeaffine.tiny.build.plugins.base" target="20" />
       <module name="tiny.com.codeaffine.tiny.build.plugins.base.main" target="20" />

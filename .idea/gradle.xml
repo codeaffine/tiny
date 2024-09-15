@@ -27,6 +27,14 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j.dev" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.logback" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.logback.dev" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.log4j" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.log4j.dev" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.logback" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.logback.dev" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.build/meta-plugins" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.build/meta-plugins/settings" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.build/plugins" />
@@ -45,6 +53,30 @@
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.test" />
           </set>
         </option>
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j.dev" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.logback" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.logback.dev" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.log4j" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.log4j.dev" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.logback" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.undertow.logback.dev" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.build/plugins/bom" />
       </GradleProjectSettings>
     </option>
   </component>

@@ -1,0 +1,5 @@
+plugins {
+    id("com.codeaffine.tiny.star.bom")
+}
+
+project.description = "BOM for Standalone Runner Server Implementation adapting Undertow as embedded servlet container and using Logback for logging"

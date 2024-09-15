@@ -1,6 +1,24 @@
 plugins {
     id("base")
-    id("com.diffplug.spotless")
+    id("com.codeaffine.tiny.bom")
+    id("pl.allegro.tech.build.axion-release")
 }
 
+scmVersion {
+}
+
+project.version = scmVersion.version
 group =  "com.codeaffine." + rootProject.name
+
+// initialize bom affiliation settings by excluding the project from each bom by default
+bom.exclude(
+    project.name,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK_DEV,
+    COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J_DEV,
+    COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK,
+    COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOG4J,
+    COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK_DEV,
+    COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOG4J_DEV
+)

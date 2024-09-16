@@ -753,7 +753,7 @@ public class ApplicationServer {
             .withWorkingDirectory(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_WORKING_DIRECTORY, null, File::new))
             .withStartInfoProvider(
                 TRUE.equals(configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_SHOW_START_INFO, TRUE, Boolean.class))
-                    ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getIdentifier(), now().getYear())
+                    ? applicationServer -> format(TINY_STAR_START_INFO, applicationServer.getVersion(), applicationServer.getIdentifier(), now().getYear())
                     : null)
             .withDeleteWorkingDirectoryOnShutdown(
                 configurator.readEnvironmentConfigurationAttribute(CONFIGURATION_ATTRIBUTE_DELETE_WORKING_DIRECTORY_ON_SHUTDOWN,
@@ -774,6 +774,19 @@ public class ApplicationServer {
      */
     public String getIdentifier() {
         return applicationIdentifier;
+    }
+
+    /**
+     * returns the version of the tiny star application server library.
+     *
+     * @return the version of the tiny star application server library. Never {@code null}.
+     */
+    public String getVersion() {
+        String result = ApplicationServer.class.getPackage().getImplementationVersion();
+        if (isNull(result)) {
+            result = "not available";
+        }
+        return result;
     }
 
     /**

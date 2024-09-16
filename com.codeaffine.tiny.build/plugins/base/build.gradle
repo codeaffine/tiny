@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     implementation("pl.allegro.tech.build:axion-release-plugin:1.18.7")
+    implementation("org.ajoberstar.grgit:grgit-gradle:5.0.0-rc.3")
 }

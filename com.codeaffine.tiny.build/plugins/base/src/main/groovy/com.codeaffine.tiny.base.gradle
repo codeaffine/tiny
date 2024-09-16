@@ -2,6 +2,7 @@ plugins {
     id("base")
     id("com.codeaffine.tiny.bom")
     id("pl.allegro.tech.build.axion-release")
+    id("org.ajoberstar.grgit")
 }
 
 scmVersion {
@@ -9,6 +10,12 @@ scmVersion {
 
 project.version = scmVersion.version
 group =  "com.codeaffine." + rootProject.name
+
+def git = org.ajoberstar.grgit.Grgit.open{
+    dir = rootProject.rootDir
+}
+def headHash = git.head().id
+project.ext.headHash = headHash
 
 // initialize bom affiliation settings by excluding the project from each bom by default
 bom.exclude(

@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
     id("com.codeaffine.tiny.base")
     id("java")
@@ -99,6 +101,22 @@ private static String readJavaVersion(Project project) {
 processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(tasks.named("addMainLicense"))
+}
+
+jar {
+    manifest {
+        attributes(
+            'Name'                    : project.name.replace('.', '/'),
+            'Implementation-Title'    : project.name,
+            'Implementation-Version'  : project.version,
+            'Implementation-Vendor-Id': "com.codeaffine",
+            'Build-Timestamp'         : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+            'Build-Revision'          : project.ext.headHash,
+            'Created-By'              : "Gradle ${gradle.gradleVersion}",
+            'Build-Jdk'               : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+            'Build-OS'                : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+        )
+    }
 }
 
 sourcesJar {

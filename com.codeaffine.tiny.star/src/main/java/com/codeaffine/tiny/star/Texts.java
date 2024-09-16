@@ -23,6 +23,7 @@ class Texts {
         |  TINY STAR
         |  STand-Alone-Runner for RAP Applications
         |  https://github.com/codeaffine/tiny
+        |  Version: %s
         |
         |  Launching: %s
         |

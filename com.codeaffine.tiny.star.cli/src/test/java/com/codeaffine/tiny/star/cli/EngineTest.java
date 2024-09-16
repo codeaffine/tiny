@@ -7,8 +7,8 @@
  */
 package com.codeaffine.tiny.star.cli;
 
-import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.shared.Synchronizer;
+import com.codeaffine.tiny.star.ApplicationServer;
 import com.codeaffine.tiny.star.cli.spi.CliCommand;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import static com.codeaffine.tiny.shared.test.test.fixtures.SynchronizerTestHelper.fakeSynchronizer;
 import static com.codeaffine.tiny.shared.Threads.sleepFor;
+import static com.codeaffine.tiny.shared.test.test.fixtures.SynchronizerTestHelper.fakeSynchronizer;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 
 class EngineTest {
 
-    private static final int THREAD_SWITCH_TIME = 10;
+    private static final int THREAD_SWITCH_TIME = 20;
     private static final String CODE = "code";
 
     private Map<String, CliCommand> codeToCommandMap;

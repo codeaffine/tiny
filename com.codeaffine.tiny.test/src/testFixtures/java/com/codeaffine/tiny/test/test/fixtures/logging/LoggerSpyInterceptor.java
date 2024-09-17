@@ -34,20 +34,42 @@ class LoggerSpyInterceptor
     }
 
     @Override
-    public void interceptTestTemplateMethod(
-        Invocation<Void> invocation,
-        ReflectiveInvocationContext<Method> invocationContext,
-        ExtensionContext extensionContext)
-        throws Throwable {
-        intercept(invocation, extensionContext);
-    }
-
-    @Override
     public void interceptTestMethod(
         Invocation<Void> invocation,
         ReflectiveInvocationContext<Method> invocationContext,
         ExtensionContext extensionContext)
-        throws Throwable {
+        throws Throwable
+    {
+        intercept(invocation, extensionContext);
+    }
+
+    @Override
+    public void interceptTestTemplateMethod(
+        Invocation<Void> invocation,
+        ReflectiveInvocationContext<Method> invocationContext,
+        ExtensionContext extensionContext)
+        throws Throwable
+    {
+        intercept(invocation, extensionContext);
+    }
+
+    @Override
+    public void interceptBeforeEachMethod(
+        Invocation<Void> invocation,
+        ReflectiveInvocationContext<Method> invocationContext,
+        ExtensionContext extensionContext)
+        throws Throwable
+    {
+        intercept(invocation, extensionContext);
+    }
+
+    @Override
+    public void interceptAfterEachMethod(
+        Invocation<Void> invocation,
+        ReflectiveInvocationContext<Method> invocationContext,
+        ExtensionContext extensionContext)
+        throws Throwable
+    {
         intercept(invocation, extensionContext);
     }
 

@@ -12,7 +12,7 @@ import com.codeaffine.tiny.star.cli.test.fixtures.CliCommandContract;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemOutCaptor;
+import static com.codeaffine.tiny.test.test.fixtures.system.io.SystemPrintStreamCaptor.SystemOutCaptor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

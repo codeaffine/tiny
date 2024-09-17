@@ -12,5 +12,6 @@ module com.codeaffine.tiny.test.test.fixtures {
     requires org.slf4j;
     requires static lombok;
 
-    exports com.codeaffine.tiny.test.test.fixtures;
+    exports com.codeaffine.tiny.test.test.fixtures.logging;
+    exports com.codeaffine.tiny.test.test.fixtures.system.io;
 }

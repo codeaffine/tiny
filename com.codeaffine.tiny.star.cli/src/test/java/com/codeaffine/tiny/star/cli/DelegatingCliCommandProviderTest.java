@@ -8,7 +8,7 @@
 package com.codeaffine.tiny.star.cli;
 
 import com.codeaffine.tiny.star.cli.spi.CliCommand;
-import com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.test.test.fixtures.system.io.SystemPrintStreamCaptor.SystemErrCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

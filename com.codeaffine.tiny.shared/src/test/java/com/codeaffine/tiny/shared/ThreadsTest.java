@@ -15,7 +15,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemErrCaptor;
+import static com.codeaffine.tiny.test.test.fixtures.system.io.SystemPrintStreamCaptor.SystemErrCaptor;
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.*;

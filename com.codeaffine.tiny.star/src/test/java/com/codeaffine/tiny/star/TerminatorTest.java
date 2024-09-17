@@ -9,7 +9,7 @@ package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.Server;
-import com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.test.test.fixtures.system.io.SystemPrintStreamCaptor.SystemErrCaptor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

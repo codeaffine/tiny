@@ -9,7 +9,7 @@ package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.Server;
-import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
+import com.codeaffine.tiny.test.test.fixtures.logging.UseLoggerSpy;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

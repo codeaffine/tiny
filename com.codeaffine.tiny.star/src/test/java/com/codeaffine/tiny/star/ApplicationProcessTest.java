@@ -7,7 +7,7 @@
  */
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
+import com.codeaffine.tiny.test.test.fixtures.logging.UseLoggerSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

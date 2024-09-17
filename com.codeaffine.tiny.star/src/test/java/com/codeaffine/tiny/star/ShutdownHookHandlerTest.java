@@ -8,7 +8,7 @@
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.shared.Synchronizer;
-import com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemErrCaptor;
+import com.codeaffine.tiny.test.test.fixtures.system.io.SystemPrintStreamCaptor.SystemErrCaptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -213,16 +213,12 @@ class ShutdownHookHandlerTest {
 
     @Test
     void registerWithNullAsShutdownOperationArgument() {
-        ShutdownHookHandler shutdownHookHandler = new ShutdownHookHandler();
-
         assertThatThrownBy(() -> shutdownHookHandler.register(null))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void deregisterWithNullAsShutdownOperationArgument() {
-        ShutdownHookHandler shutdownHookHandler = new ShutdownHookHandler();
-
         assertThatThrownBy(() -> shutdownHookHandler.deregister(null))
             .isInstanceOf(NullPointerException.class);
     }

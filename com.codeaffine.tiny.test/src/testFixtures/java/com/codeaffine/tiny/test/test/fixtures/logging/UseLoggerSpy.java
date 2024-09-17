@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-package com.codeaffine.tiny.test.test.fixtures;
+package com.codeaffine.tiny.test.test.fixtures.logging;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

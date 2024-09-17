@@ -8,7 +8,7 @@
 package com.codeaffine.tiny.star;
 
 import com.codeaffine.tiny.star.spi.ServerConfigurationAssert;
-import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
+import com.codeaffine.tiny.test.test.fixtures.logging.UseLoggerSpy;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;

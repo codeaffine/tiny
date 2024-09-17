@@ -7,7 +7,7 @@
  */
 package com.codeaffine.tiny.star.log4j;
 
-import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
+import com.codeaffine.tiny.test.test.fixtures.logging.UseLoggerSpy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;

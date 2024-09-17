@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
 
-import static com.codeaffine.tiny.test.test.fixtures.SystemPrintStreamCaptor.SystemOutCaptor;
+import static com.codeaffine.tiny.test.test.fixtures.system.io.SystemPrintStreamCaptor.SystemOutCaptor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HelpCommandTest implements CliCommandContract<HelpCommand> {

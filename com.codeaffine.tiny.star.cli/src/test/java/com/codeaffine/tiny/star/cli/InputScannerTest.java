@@ -7,8 +7,8 @@
  */
 package com.codeaffine.tiny.star.cli;
 
-import com.codeaffine.tiny.test.test.fixtures.SystemInSupplier;
-import com.codeaffine.tiny.test.test.fixtures.UseLoggerSpy;
+import com.codeaffine.tiny.test.test.fixtures.logging.UseLoggerSpy;
+import com.codeaffine.tiny.test.test.fixtures.system.io.SystemInSupplier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -28,18 +28,30 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class LoggerSpyInterceptor
-    implements InvocationInterceptor
-{
+    implements InvocationInterceptor {
 
-    record LoggerBuffer(Field field, Logger logger) {}
+    record LoggerBuffer(Field field, Logger logger) {
+    }
+
+    @Override
+    public void interceptTestTemplateMethod(
+        Invocation<Void> invocation,
+        ReflectiveInvocationContext<Method> invocationContext,
+        ExtensionContext extensionContext)
+        throws Throwable {
+        intercept(invocation, extensionContext);
+    }
 
     @Override
     public void interceptTestMethod(
         Invocation<Void> invocation,
         ReflectiveInvocationContext<Method> invocationContext,
         ExtensionContext extensionContext)
-        throws Throwable
-    {
+        throws Throwable {
+        intercept(invocation, extensionContext);
+    }
+
+    private static void intercept(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
         Map<Class<?>, LoggerBuffer> loggerBuffers = new HashMap<>();
         extensionContext
             .getTestMethod()
@@ -66,8 +78,7 @@ class LoggerSpyInterceptor
 
     private static void replaceLoggersWithSpy(
         Map<Class<?>, LoggerBuffer> loggerBuffers,
-        Supplier<UseLoggerSpy> annotationSupplier)
-    {
+        Supplier<UseLoggerSpy> annotationSupplier) {
         UseLoggerSpy annotation = annotationSupplier.get();
         if (nonNull(annotation)) {
             stream(annotation.value())
@@ -80,8 +91,7 @@ class LoggerSpyInterceptor
 
     private static void replaceLoggerWithSpy(
         Map<Class<?>, LoggerBuffer> loggerBuffers,
-        Class<?> typeWithLogger)
-    {
+        Class<?> typeWithLogger) {
         Field loggerField = getLoggerField(typeWithLogger);
         Logger currentLogger = getCurrentLogger(loggerField);
         setNewLoggerSpy(loggerField);

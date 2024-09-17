@@ -10,6 +10,7 @@ package com.codeaffine.tiny.test.test.fixtures.logging;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,6 +21,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Tag("rwt")
 @Test
+@ParameterizedTest
 @ExtendWith({LoggerSpyInterceptor.class})
 public @interface UseLoggerSpy {
     Class<?>[] value();

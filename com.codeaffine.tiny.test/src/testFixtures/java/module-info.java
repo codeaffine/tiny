@@ -7,10 +7,11 @@
  */
 module com.codeaffine.tiny.test.test.fixtures {
 
-    requires org.junit.jupiter.api;
+    requires static lombok;
+
+    requires org.junit.jupiter.params;
     requires org.mockito;
     requires org.slf4j;
-    requires static lombok;
 
     exports com.codeaffine.tiny.test.test.fixtures.logging;
     exports com.codeaffine.tiny.test.test.fixtures.system.io;

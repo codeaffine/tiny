@@ -12,8 +12,10 @@ import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerConfigurationAssert;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.http.HttpServlet;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.application.EntryPoint;
+import org.eclipse.rap.rwt.engine.RWTServlet;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -60,7 +62,8 @@ class ApplicationServerConfigurationTest {
 
     @Test
     void getContextListenerMoreThanOnce() {
-        ApplicationServer server = ApplicationServer.newApplicationServerBuilder(APPLICATION_CONFIGURATION)
+        ApplicationServer server = ApplicationServer
+            .newApplicationServerBuilder(APPLICATION_CONFIGURATION)
             .build();
         ApplicationServerConfiguration configuration = new ApplicationServerConfiguration(WORKING_DIRECTORY, server);
 
@@ -68,6 +71,20 @@ class ApplicationServerConfigurationTest {
         ServletContextListener actual2 = configuration.getContextListener();
 
         assertThat(actual1).isSameAs(actual2);
+    }
+
+    @Test
+    void getHttpServletClass() throws Exception {
+        ApplicationServer server = ApplicationServer
+            .newApplicationServerBuilder(APPLICATION_CONFIGURATION)
+            .build();
+        ApplicationServerConfiguration configuration = new ApplicationServerConfiguration(WORKING_DIRECTORY, server);
+
+        Class<? extends HttpServlet> actualClass = configuration.getHttpServletClass();
+        HttpServlet actualInstance = actualClass.getConstructor().newInstance();// throws NoSuchMethodException if the class is not instantiable
+
+        assertThat(actualClass).isAssignableFrom(RWTServlet.class);
+        assertThat(actualInstance).isInstanceOf(RWTServlet.class);
     }
 
     @Test

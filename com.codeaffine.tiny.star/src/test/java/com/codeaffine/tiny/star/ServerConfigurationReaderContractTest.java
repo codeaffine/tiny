@@ -118,10 +118,11 @@ interface ServerConfigurationReaderContractTest {
     default void readEnvironmentConfigurationAttributeWithNullAsFactoryArgument() {
         ServerConfigurationReader configurationReader = newServerConfigurationReader(getConfigurationJson(CLASSPATH, KEY_STORE_FILE_ON_CLASSPATH));
 
-        Function<String, String> factory = null;
-
-        assertThatThrownBy(() -> configurationReader.readEnvironmentConfigurationAttribute(ATTRIBUTE_NAME, ATTRIBUTE_DEFAULT_VALUE, factory))
-            .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> configurationReader.readEnvironmentConfigurationAttribute(
+            ATTRIBUTE_NAME,
+            ATTRIBUTE_DEFAULT_VALUE,
+            (Function<String, String>) null)
+        ).isInstanceOf(NullPointerException.class);
     }
 
     @Test

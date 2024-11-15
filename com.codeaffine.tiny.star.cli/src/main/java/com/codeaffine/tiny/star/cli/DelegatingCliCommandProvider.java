@@ -33,7 +33,8 @@ class DelegatingCliCommandProvider implements CliCommandProvider {
         try {
             doLoadAndAdd(providers, result);
         } catch(Exception | ServiceConfigurationError cause) {
-            cause.printStackTrace();
+            //noinspection CallToPrintStackTrace
+            cause.printStackTrace(); // NOSONAR: logging might not be available yet
         }
     }
 

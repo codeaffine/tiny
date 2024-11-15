@@ -7,13 +7,14 @@
  */
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import com.codeaffine.tiny.star.spi.FilterDefinition;
 import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.http.HttpServlet;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.rap.rwt.engine.RWTServlet;
 
 import java.io.File;
 import java.util.List;
@@ -87,4 +88,9 @@ class ApplicationServerConfiguration implements ServerConfiguration {
         return applicationServer.sessionTimeout;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends HttpServlet> Class<T> getHttpServletClass() {
+        return (Class<T>) RWTServlet.class;
+    }
 }

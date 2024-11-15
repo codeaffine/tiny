@@ -164,7 +164,7 @@ class ShutdownHookHandlerTest {
 
     @Test
     void deregisterIfShutdownHookIsRunning() throws InterruptedException {
-        Runnable shutdownOperation = newSelfDeregisteringOperation(shutdownHookHandler);
+        Runnable shutdownOperation = newSelfUnregisteringOperation(shutdownHookHandler);
 
         shutdownHookHandler.register(shutdownOperation);
         simulateShutdownHandlerInvocation();
@@ -295,7 +295,7 @@ class ShutdownHookHandlerTest {
         return result;
     }
 
-    private static Runnable newSelfDeregisteringOperation(ShutdownHookHandler shutdownHookHandler) {
+    private static Runnable newSelfUnregisteringOperation(ShutdownHookHandler shutdownHookHandler) {
         return new Runnable() {
             @Override
             public void run() {

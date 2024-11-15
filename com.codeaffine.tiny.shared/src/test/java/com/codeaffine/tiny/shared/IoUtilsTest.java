@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.File;
 import java.util.UUID;
 
-import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
 import static java.lang.System.getProperty;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -46,7 +45,7 @@ class IoUtilsTest {
 
     @Test
     void createTemporaryDirectory() {
-        File actual = IoUtils.createTemporayDirectory(directoryNamePrefix);
+        File actual = IoUtils.createTemporaryDirectory(directoryNamePrefix);
         actual.deleteOnExit(); // housekeeping only, not part of the test
 
         assertThat(actual)
@@ -63,7 +62,7 @@ class IoUtilsTest {
         "^\\/;"
     })
     void createTemporaryDirectoryWithIllegalNameAsDirectoryNamePrefixArgument(String illegalDirectoryNamePrefix) {
-        Exception actual = catchException(() -> createTemporayDirectory(illegalDirectoryNamePrefix));
+        Exception actual = catchException(() -> IoUtils.createTemporaryDirectory(illegalDirectoryNamePrefix));
 
         assertThat(actual)
             .isInstanceOf(IllegalArgumentException.class)
@@ -72,13 +71,13 @@ class IoUtilsTest {
 
     @Test
     void createTemporaryDirectoryWithNullAsDirectoryNamePrefixArgument() {
-        assertThatThrownBy(() -> createTemporayDirectory(null))
+        assertThatThrownBy(() -> IoUtils.createTemporaryDirectory(null))
             .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     void deleteDirectory() {
-        File directoryToDelete = createTemporayDirectory(directoryNamePrefix);
+        File directoryToDelete = IoUtils.createTemporaryDirectory(directoryNamePrefix);
         File child = new File(directoryToDelete, "child");
         boolean created = child.mkdirs();
 

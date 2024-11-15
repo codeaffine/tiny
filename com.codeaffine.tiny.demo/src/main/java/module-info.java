@@ -9,7 +9,6 @@ open module com.codeaffine.tiny.demo {
 
     requires com.codeaffine.tiny.star.cli;
     requires com.codeaffine.tiny.star;
-    requires jakarta.servlet;
     requires org.eclipse.rap.rwt;
     requires org.slf4j;
 
@@ -17,6 +16,7 @@ open module com.codeaffine.tiny.demo {
     requires /*runtime*/ com.codeaffine.tiny.star.logback;
 //    requires /*runtime*/ com.codeaffine.tiny.star.log4j;
     requires /*runtime*/ com.codeaffine.tiny.star.undertow;
+    requires static lombok;
 //    requires /*runtime*/ com.codeaffine.tiny.star.tomcat;
 
     exports com.codeaffine.tiny.demo;

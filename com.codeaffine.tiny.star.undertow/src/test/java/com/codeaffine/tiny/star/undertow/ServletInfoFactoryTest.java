@@ -7,8 +7,8 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import io.undertow.servlet.api.ServletInfo;
+import jakarta.servlet.http.HttpServlet;
 import org.junit.jupiter.api.Test;
 
 import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerTestHelper.*;
@@ -25,7 +25,7 @@ class ServletInfoFactoryTest {
 
         assertThat(actual.getName()).isEqualTo(ServletInfoFactory.SERVLET_NAME);
         assertThat(actual.getLoadOnStartup()).isEqualTo(ServletInfoFactory.LOAD_ON_STARTUP);
-        assertThat(actual.getServletClass()).isEqualTo(RwtServletAdapter.class);
+        assertThat(HttpServlet.class).isAssignableFrom(actual.getServletClass());
         assertThat(actual.getMappings()).containsExactlyInAnyOrder(toPattern(ENTRYPOINT_PATH_1), toPattern(ENTRYPOINT_PATH_2));
     }
 

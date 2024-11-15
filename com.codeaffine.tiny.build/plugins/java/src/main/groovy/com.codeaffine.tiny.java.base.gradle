@@ -18,6 +18,10 @@ tasks.withType(JavaCompile.class).configureEach {
     options.encoding = "UTF-8"
 }
 
+configurations {
+    mockitoAgent
+}
+
 dependencies {
     compileOnly(
             libs.lombok
@@ -27,6 +31,9 @@ dependencies {
             libs.assertj.core,
             libs.mockito.core,
     )
+    mockitoAgent(libs.mockito.core) {
+        transitive = false
+    }
 }
 
 testing {
@@ -38,7 +45,10 @@ testing {
 }
 
 test {
-    jvmArgs "-Xshare:off"
+    jvmArgs = [
+        "-Xshare:off",
+        "-javaagent:${configurations.mockitoAgent.asPath}"
+    ]
     useJUnitPlatform()
     finalizedBy jacocoTestReport
 }

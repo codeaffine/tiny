@@ -10,7 +10,7 @@ package com.codeaffine.tiny.star.tomcat;
 import com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import org.apache.catalina.connector.Connector;
-import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class SslConnectorConfiguratorTest {
     void addListenerWithSslConfiguration(String keyStoreLocation, String keyStorePassword, String keyAlias, String keyPassword) throws IOException {
         ServerConfiguration serverConfiguration = stubServerConfiguration(keyStoreLocation, keyStorePassword, keyAlias, keyPassword);
         SslConnectorConfigurator configurator = new SslConnectorConfigurator(serverConfiguration);
-        AbstractHttp11JsseProtocol<?> protocolHandler = stubProtocolHandler();
+        AbstractHttp11Protocol<?> protocolHandler = stubProtocolHandler();
         Connector connector = stubConnector(protocolHandler);
 
         configurator.configureSsl(connector);
@@ -92,19 +92,19 @@ class SslConnectorConfiguratorTest {
         return result;
     }
 
-    private static AbstractHttp11JsseProtocol<?> stubProtocolHandler() {
-        AbstractHttp11JsseProtocol<?> result = mock(AbstractHttp11JsseProtocol.class);
+    private static AbstractHttp11Protocol<?> stubProtocolHandler() {
+        AbstractHttp11Protocol<?> result = mock(AbstractHttp11Protocol.class);
         when(result.getDefaultSSLHostConfigName()).thenReturn(DEFAULT_SSL_HOST_CONFIG_NAME);
         return result;
     }
 
-    private static Connector stubConnector(AbstractHttp11JsseProtocol<?> protocolHandler) {
+    private static Connector stubConnector(AbstractHttp11Protocol<?> protocolHandler) {
         Connector result = mock(Connector.class);
         when(result.getProtocolHandler()).thenReturn(protocolHandler);
         return result;
     }
 
-    private static SSLHostConfig captureSslHostConfig(AbstractHttp11JsseProtocol<?> protocolHandler) {
+    private static SSLHostConfig captureSslHostConfig(AbstractHttp11Protocol<?> protocolHandler) {
         ArgumentCaptor<SSLHostConfig> sslHostConfigCaptor = forClass(SSLHostConfig.class);
         verify(protocolHandler).addSslHostConfig(sslHostConfigCaptor.capture());
         return sslHostConfigCaptor.getValue();

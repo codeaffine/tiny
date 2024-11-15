@@ -11,16 +11,13 @@ import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.servlet.api.InstanceHandle;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
-import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import jakarta.servlet.ServletContext;
 
 import java.util.Collections;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -41,7 +38,7 @@ class SessionTimeoutConfiguratorTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void newServletContainerInitializerInfo() throws InstantiationException, ServletException {
+    void newServletContainerInitializerInfo() throws InstantiationException {
         ServletContainerInitializerInfo info = SessionTimeoutConfigurator.newServletContainerInitializerInfo(configuration);
         ImmediateInstanceFactory<SessionTimeoutConfigurator> instanceFactory = (ImmediateInstanceFactory<SessionTimeoutConfigurator>) info.getInstanceFactory();
         InstanceHandle<SessionTimeoutConfigurator> actual = instanceFactory.createInstance();
@@ -51,7 +48,7 @@ class SessionTimeoutConfiguratorTest {
     }
 
     @Test
-    void onStartup() throws ServletException {
+    void onStartup() {
         configurator.onStartup(null, context);
 
         verify(context).setSessionTimeout(SESSION_TIMEOUT_SETTING);

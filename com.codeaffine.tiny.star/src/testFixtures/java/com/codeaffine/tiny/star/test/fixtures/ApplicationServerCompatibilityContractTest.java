@@ -12,7 +12,7 @@ import com.codeaffine.tiny.star.ApplicationServer;
 import java.io.File;
 import java.net.URL;
 
-import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
+import static com.codeaffine.tiny.shared.IoUtils.createTemporaryDirectory;
 import static com.codeaffine.tiny.star.ApplicationServer.State;
 import static com.codeaffine.tiny.star.ApplicationServer.State.HALTED;
 import static com.codeaffine.tiny.star.ApplicationServer.State.RUNNING;
@@ -21,7 +21,7 @@ import static com.codeaffine.tiny.star.spi.FilterDefinition.of;
 import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerCompatibilityContractUtil.*;
 import static com.codeaffine.tiny.star.test.fixtures.ApplicationServerContractContext.ENTRY_POINT_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * <p>Defines the contract test for {@link com.codeaffine.tiny.star.spi.Server} implementations to verify their support
@@ -43,7 +43,7 @@ public interface ApplicationServerCompatibilityContractTest {
 
     @StartApplicationServer
     default void startApplicationServer(ApplicationServerContractContext context) {
-        File temporalDirectory = createTemporayDirectory(getClass().getName());
+        File temporalDirectory = createTemporaryDirectory(getClass().getName());
         temporalDirectory.deleteOnExit();
         context.setWorkingDirectory(temporalDirectory);
         ApplicationServer applicationServer = newApplicationServerBuilder(context::configure)

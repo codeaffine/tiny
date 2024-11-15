@@ -18,6 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @RequiredArgsConstructor(access = PACKAGE)
 class StartInfoPrinter {
 
+    @SuppressWarnings("CanBeFinal")
     static Logger logger = getLogger(StartInfoPrinter.class);
 
     @NonNull

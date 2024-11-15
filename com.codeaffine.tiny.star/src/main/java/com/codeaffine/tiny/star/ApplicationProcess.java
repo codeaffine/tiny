@@ -24,6 +24,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 class ApplicationProcess {
 
+    @SuppressWarnings("CanBeFinal")
     static Logger logger = getLogger(ApplicationProcess.class);
 
     private static final long OBSERVER_NOTIFICATION_TIMEOUT = 5000;

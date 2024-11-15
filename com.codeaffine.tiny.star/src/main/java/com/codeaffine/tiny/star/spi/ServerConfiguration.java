@@ -8,6 +8,7 @@
 package com.codeaffine.tiny.star.spi;
 
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.http.HttpServlet;
 
 import java.io.File;
 import java.util.List;
@@ -24,4 +25,5 @@ public interface ServerConfiguration {
     Set<String> getEntryPointPaths();
     List<FilterDefinition> getFilterDefinitions();
     int getSessionTimeout();
+    <T extends HttpServlet> Class<T> getHttpServletClass();
 }

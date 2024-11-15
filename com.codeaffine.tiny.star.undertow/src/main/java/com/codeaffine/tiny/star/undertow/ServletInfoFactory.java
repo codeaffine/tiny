@@ -7,7 +7,6 @@
  */
 package com.codeaffine.tiny.star.undertow;
 
-import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
 import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import io.undertow.servlet.api.ServletInfo;
 import lombok.NonNull;
@@ -29,7 +28,7 @@ class ServletInfoFactory {
     private final ServerConfiguration configuration;
 
     ServletInfo createRwtServletInfo() {
-        ServletInfo result = servlet(SERVLET_NAME, RwtServletAdapter.class);
+        ServletInfo result = servlet(SERVLET_NAME, configuration.getHttpServletClass());
         result.setLoadOnStartup(LOAD_ON_STARTUP);
         Set<String> entrypointPaths = configuration.getEntryPointPaths();
         entrypointPaths.forEach(path -> result.addMapping(path + ALL_SUB_PATHS_PATTERN));

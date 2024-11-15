@@ -6,11 +6,8 @@ plugins {
 
 extraJavaModuleInfo {
     failOnAutomaticModules.set(true)
-    module("javax.servlet:javax.servlet-api", "javax.servlet.api") {
-        exportAllPackages()
-    }
     module("org.eclipse.rap:org.eclipse.rap.rwt", "org.eclipse.rap.rwt") {
-        requires("javax.servlet.api")
+        requires("jakarta.servlet")
         exportAllPackages()
     }
     module("org.eclipse.rap:org.eclipse.rap.rwt.testfixture", "org.eclipse.rap.rwt.testfixture") {

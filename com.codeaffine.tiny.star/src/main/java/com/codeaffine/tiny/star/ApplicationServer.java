@@ -55,7 +55,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * <p>The {@link ApplicationServer} notifies lifecycle listeners about {@link State} changes. Listeners receive notifications via callback methods
  * annotated with {@link Starting}, {@link Started}, {@link Stopping}, and/or {@link Stopped}. Such callbacks have to be either parameterless or
  * expect the observed {@link ApplicationServer} instance as the only injection parameter.</p>
- * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure an new {@link ApplicationServer} instance.</p>
+ * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure a new {@link ApplicationServer} instance.</p>
  * <p>Example that demonstrates the general concepts:</p>
  * <pre>
  * public class DemoApplication extends AbstractEntryPoint {
@@ -302,6 +302,7 @@ public class ApplicationServer {
      */
     public static final String DEFAULT_APPLICATION_IDENTIFIER = ApplicationServer.class.getName().toLowerCase();
 
+    @SuppressWarnings("CanBeFinal")
     static Logger logger = getLogger(ApplicationServer.class);
 
     ApplicationConfiguration applicationConfiguration;
@@ -404,7 +405,7 @@ public class ApplicationServer {
     /**
      * <p>The {@link ApplicationServerBuilder} allows to configure and create an instance of {@link ApplicationServer}. The builder uses a fluent API
      * paradigm for concise configuration. The attribute setter methods mostly use the {@code with} prefix followed by the attribute name and return
-     * the builder instance itself which facilitates the easy to read fluent attribute assignments. The actual application server instance is created by
+     * the builder instance itself which facilitates the easy-to-read fluent attribute assignments. The actual application server instance is created by
      * calling the {@link ApplicationServerBuilder}'s build method. Note that at least the {@link ApplicationConfiguration} must be specified to start
      * the application server. Therefore, either the {@link #newApplicationServerBuilder(ApplicationConfiguration)} or the
      *  {@link #newApplicationServerBuilder(ApplicationConfiguration,String)} method serves as starting point of the

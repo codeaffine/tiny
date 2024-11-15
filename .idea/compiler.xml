@@ -8,30 +8,28 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.34/ec547ef414ab1d2c040118fb9c1c265ada63af14/lombok-1.18.34.jar" />
         </processorPath>
+        <module name="tiny.com.codeaffine.tiny.shared.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.main" />
         <module name="tiny.com.codeaffine.tiny.test.main" />
-        <module name="tiny.com.codeaffine.tiny.star.servlet.main" />
-        <module name="tiny.com.codeaffine.tiny.demo.main" />
-        <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />
-        <module name="tiny.com.codeaffine.tiny.star.cli.basic.test" />
-        <module name="tiny.com.codeaffine.tiny.star.logback.test" />
-        <module name="tiny.com.codeaffine.tiny.shared.test" />
-        <module name="tiny.com.codeaffine.tiny.star.cli.main" />
-        <module name="tiny.com.codeaffine.tiny.shared.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.logback.main" />
+        <module name="tiny.com.codeaffine.tiny.demo.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.main" />
         <module name="tiny.com.codeaffine.tiny.star.log4j.main" />
         <module name="tiny.com.codeaffine.tiny.demo.test" />
-        <module name="tiny.com.codeaffine.tiny.star.servlet.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.main" />
+        <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />
         <module name="tiny.com.codeaffine.tiny.star.main" />
+        <module name="tiny.com.codeaffine.tiny.star.cli.basic.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.test" />
         <module name="tiny.com.codeaffine.tiny.star.log4j.test" />
         <module name="tiny.com.codeaffine.tiny.star.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.test.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.test" />
+        <module name="tiny.com.codeaffine.tiny.star.logback.test" />
         <module name="tiny.com.codeaffine.tiny.shared.main" />
+        <module name="tiny.com.codeaffine.tiny.shared.test" />
+        <module name="tiny.com.codeaffine.tiny.star.cli.main" />
         <module name="tiny.com.codeaffine.tiny.test.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.cli.testFixtures" />
       </profile>

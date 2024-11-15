@@ -13,6 +13,7 @@ import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContextListener;
 import lombok.NoArgsConstructor;
+import org.eclipse.rap.rwt.engine.RWTServlet;
 
 import java.io.File;
 import java.util.List;
@@ -76,6 +77,7 @@ public class ApplicationServerTestHelper {
         when(result.getContextClassLoader()).thenReturn(ApplicationServerTestHelper.class.getClassLoader());
         when(result.getContextListener()).thenReturn(mock(ServletContextListener.class));
         when(result.getSessionTimeout()).thenReturn(DEFAULT_SESSION_TIMEOUT);
+        when(result.getHttpServletClass()).thenAnswer(invocation -> RWTServlet.class);
         return result;
     }
 }

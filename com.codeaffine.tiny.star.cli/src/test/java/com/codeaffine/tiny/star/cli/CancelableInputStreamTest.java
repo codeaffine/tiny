@@ -162,9 +162,8 @@ class CancelableInputStreamTest {
 
     @Test
     void constructWithNullAsDelegateArgument() {
-        InputStream inputStream = null;
-
-        assertThatThrownBy(() -> new CancelableInputStream(inputStream, CANCEL_SIGNAL))
+        //noinspection resource
+        assertThatThrownBy(() -> new CancelableInputStream(null, CANCEL_SIGNAL))
             .isInstanceOf(NullPointerException.class);
     }
 

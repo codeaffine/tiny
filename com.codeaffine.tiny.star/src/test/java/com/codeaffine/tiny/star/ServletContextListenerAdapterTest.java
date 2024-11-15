@@ -7,7 +7,6 @@
  */
 package com.codeaffine.tiny.star;
 
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,6 +1,0 @@
-plugins {
-    id("com.codeaffine.tiny.java.modules")
-    id("com.codeaffine.tiny.java.modules.publish")
-}
-
-project.description = "Servlet Adapter for Standalone Runner Applications"

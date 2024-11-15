@@ -15,7 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
-import static com.codeaffine.tiny.shared.Reflections.Mode.*;
+import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.Mode.WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.shared.Texts.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -26,7 +27,7 @@ public class Reflections {
 
     public enum Mode {
         FORWARD_RUNTIME_EXCEPTIONS,
-        WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS;
+        WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS
     }
 
     public static <T> T newInstance(@NonNull Class<T> type) {

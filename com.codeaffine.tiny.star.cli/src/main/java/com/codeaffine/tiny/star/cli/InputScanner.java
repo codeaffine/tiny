@@ -23,6 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @RequiredArgsConstructor(access = PACKAGE)
 class InputScanner {
 
+    @SuppressWarnings("CanBeFinal")
     static Logger logger = getLogger(InputScanner.class);
 
     private static final String STOP_SIGNAL = CommandLineInterface.class.getName() + "#stop\n";

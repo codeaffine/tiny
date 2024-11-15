@@ -12,7 +12,7 @@ import com.codeaffine.tiny.star.spi.ServerConfiguration;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.connector.Connector;
-import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 
@@ -27,12 +27,12 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
 import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
-import static com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration.*;
+import static com.codeaffine.tiny.star.spi.SecureSocketLayerConfiguration.SSL_PROTOCOL;
 import static java.util.Objects.nonNull;
 import static javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm;
 import static javax.net.ssl.KeyManagerFactory.getInstance;
 import static lombok.AccessLevel.PACKAGE;
-import static org.apache.tomcat.util.net.SSLHostConfigCertificate.Type.*;
+import static org.apache.tomcat.util.net.SSLHostConfigCertificate.Type.UNDEFINED;
 
 @RequiredArgsConstructor(access = PACKAGE)
 class SslConnectorConfigurator {
@@ -51,7 +51,7 @@ class SslConnectorConfigurator {
     }
 
     private static SSLHostConfig createAndConfigureSslHostConfig(Connector connector) {
-        AbstractHttp11JsseProtocol<?> protocol = (AbstractHttp11JsseProtocol<?>) connector.getProtocolHandler();
+        AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
         protocol.setSSLEnabled(true);
         SSLHostConfig result = new SSLHostConfig();
         result.setHostName(protocol.getDefaultSSLHostConfigName());

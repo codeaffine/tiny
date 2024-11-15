@@ -7,11 +7,11 @@
  */
 package com.codeaffine.tiny.star.tomcat;
 
-import com.codeaffine.tiny.star.servlet.RwtServletAdapter;
-import com.codeaffine.tiny.star.servlet.TinyStarServletContextListener;
+import com.codeaffine.tiny.star.TinyStarServletContextListener;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
@@ -37,7 +37,7 @@ class RwtServletRegistrarTest {
         registrar.addRwtServlet(context);
         simulateContainerStartup(context);
 
-        ArgumentCaptor<RwtServletAdapter> servletCaptor = forClass(RwtServletAdapter.class);
+        ArgumentCaptor<HttpServlet> servletCaptor = forClass(HttpServlet.class);
         verify(tomcat).addServlet(eq(ContextRegistrar.CONTEXT_PATH), eq(RwtServletRegistrar.SERVLET_NAME), servletCaptor.capture());
         verify(context).addServletMappingDecoded(ENTRYPOINT_PATH_1 + RwtServletRegistrar.ALL_SUB_PATHS_PATTERN, RwtServletRegistrar.SERVLET_NAME);
         verify(context).addServletMappingDecoded(ENTRYPOINT_PATH_2 + RwtServletRegistrar.ALL_SUB_PATHS_PATTERN, RwtServletRegistrar.SERVLET_NAME);

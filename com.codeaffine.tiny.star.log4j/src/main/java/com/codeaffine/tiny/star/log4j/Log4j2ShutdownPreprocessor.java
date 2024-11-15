@@ -38,9 +38,11 @@ class Log4j2ShutdownPreprocessor implements Runnable {
         } catch (InvocationTargetException cause) {
             System.err.printf("Warning: Could not stop log4j. Problem during execution of %s.%s().", shutdownMethod, logManagerClass); // NOSONAR
             if (cause.getCause() instanceof RuntimeException runtimeException) {
-                runtimeException.printStackTrace();
+                //noinspection CallToPrintStackTrace
+                runtimeException.printStackTrace(); // NOSONAR: logging is not available anymore at this point
             } else {
-                cause.printStackTrace();
+                //noinspection CallToPrintStackTrace
+                cause.printStackTrace(); // NOSONAR: logging is not available anymore at this point
             }
         } catch (ClassNotFoundException ignore) {
             // it seems log4j is not used, so hopefully we can safely ignore this...

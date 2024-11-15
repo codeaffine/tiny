@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 
-import static com.codeaffine.tiny.shared.IoUtils.createTemporayDirectory;
+import static com.codeaffine.tiny.shared.IoUtils.createTemporaryDirectory;
 import static com.codeaffine.tiny.star.Texts.ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST;
 import static com.codeaffine.tiny.star.Texts.ERROR_GIVEN_WORKING_DIRECTORY_FILE_IS_NOT_A_DIRECTORY;
 import static java.lang.String.format;
@@ -30,7 +30,7 @@ class WorkingDirectoryPreparer {
     File prepareWorkingDirectory() {
         File result = applicationServer.workingDirectory;
         if (isNull(applicationServer.workingDirectory)) {
-            result = createTemporayDirectory(encode(applicationServer.getIdentifier()));
+            result = createTemporaryDirectory(encode(applicationServer.getIdentifier()));
         } else if (!result.exists()) {
             throw new IllegalArgumentException(format(ERROR_GIVEN_WORKING_DIRECTORY_DOES_NOT_EXIST, result.getAbsolutePath()));
         } else if (!result.isDirectory()) {

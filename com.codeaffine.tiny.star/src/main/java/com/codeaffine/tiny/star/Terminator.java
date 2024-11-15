@@ -17,7 +17,7 @@ import lombok.Setter;
 import java.io.File;
 
 import static com.codeaffine.tiny.shared.IoUtils.deleteDirectory;
-import static com.codeaffine.tiny.shared.Threads.saveRun;
+import static com.codeaffine.tiny.shared.Threads.saveRunWithoutLogger;
 import static lombok.AccessLevel.PACKAGE;
 
 @RequiredArgsConstructor(access = PACKAGE)
@@ -49,7 +49,7 @@ class Terminator implements Runnable {
     void deleteWorkingDirectory() {
         if (applicationServer.deleteWorkingDirectoryOnShutdown) {
             if (isShutdownHookExecution()) {
-                saveRun(loggingFrameworkControl::halt);
+                saveRunWithoutLogger(loggingFrameworkControl::halt);
                 deleteDirectory(applicationWorkingDirectory);
             } else {
                 if(!loggingFrameworkControl.isBlockingWorkingDirectory()) {

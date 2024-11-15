@@ -129,22 +129,22 @@ class ThreadsTest {
     }
 
     @Test
-    void saveRun() {
+    void saveRunWithoutLogger() {
         Runnable runnable = mock(Runnable.class);
 
-        Threads.saveRun(runnable);
+        Threads.saveRunWithoutLogger(runnable);
 
         verify(runnable).run();
     }
 
     @Test
     @ExtendWith(SystemErrCaptor.class)
-    void saveRunWithRunnableArgumentThatThrowsRuntimeException(SystemErrCaptor systemErrCaptor) {
+    void saveRunWithoutLoggerWithRunnableArgumentThatThrowsRuntimeException(SystemErrCaptor systemErrCaptor) {
         Runnable runnable = mock(Runnable.class);
         RuntimeException expected = new RuntimeException("bad");
         doThrow(expected).when(runnable).run();
 
-        Threads.saveRun(runnable);
+        Threads.saveRunWithoutLogger(runnable);
 
         assertThat(systemErrCaptor.getLog()).contains(expected.getMessage());
     }

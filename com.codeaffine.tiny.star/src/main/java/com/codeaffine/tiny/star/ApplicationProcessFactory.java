@@ -29,6 +29,7 @@ class ApplicationProcessFactory {
     static final @NonNull BiConsumer<ApplicationServer, ApplicationProcess> LIFECYCLE_LISTENER_REGISTRAR
         = (appServer, appProcess) -> appServer.lifecycleListeners.forEach(appProcess::registerLifecycleListener);
 
+    @SuppressWarnings("CanBeFinal")
     static Logger logger = getLogger(ApplicationProcessFactory.class);
 
     @NonNull

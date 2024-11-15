@@ -31,6 +31,7 @@ public class CommandLineInterface {
 
     static final AtomicReference<Engine> GLOBAL_ENGINE = new AtomicReference<>();
 
+    @SuppressWarnings("CanBeFinal")
     static Logger logger = getLogger(CommandLineInterface.class);
 
     private static final EngineFactory ENGINE_FACTORY = new EngineFactory();

@@ -17,7 +17,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
 
 import static com.codeaffine.tiny.shared.Texts.*;
-import static com.codeaffine.tiny.shared.Threads.*;
+import static com.codeaffine.tiny.shared.Threads.sleepFor;
 import static java.lang.String.format;
 import static java.nio.file.Files.*;
 import static lombok.AccessLevel.PRIVATE;
@@ -33,12 +33,12 @@ public class IoUtils {
         }
     }
 
-    public static File createTemporayDirectory(@NonNull String directoryNamePrefix) throws IllegalArgumentException {
+    public static File createTemporaryDirectory(@NonNull String directoryNamePrefix) throws IllegalArgumentException {
         if(directoryNamePrefix.isEmpty()) {
             throw new IllegalArgumentException(ERROR_DIRECTORY_NAME_PREFIX_IS_EMPTY);
         }
         try {
-            return createTempDirectory(directoryNamePrefix + "-")
+            return createTempDirectory(directoryNamePrefix + "-") // NOSONAR: creation of temporary directory is intended
                 .toFile();
         } catch (Exception cause) {
             throw new IllegalArgumentException(format(ERROR_UNABLE_TO_CREATE_TEMPORARY_DIRECTORY, directoryNamePrefix), cause);

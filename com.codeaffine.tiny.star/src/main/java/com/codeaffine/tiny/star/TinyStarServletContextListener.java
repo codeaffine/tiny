@@ -5,7 +5,7 @@
  * which accompanies this distribution, and is available at
  * <a href="https://www.eclipse.org/legal/epl-v20.html">https://www.eclipse.org/legal/epl-v20.html</a></p>
  */
-package com.codeaffine.tiny.star.servlet;
+package com.codeaffine.tiny.star;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
@@ -26,7 +26,7 @@ public class TinyStarServletContextListener implements ServletContextListener {
     @Override
     public void contextInitialized( ServletContextEvent event ) {
         ServletContext servletContext = event.getServletContext();
-        applicationRunner = new ApplicationRunner(configuration, new JakartaToJavaxServletContextAdapter(servletContext));
+        applicationRunner = new ApplicationRunner(configuration, servletContext);
         applicationRunner.start();
     }
 

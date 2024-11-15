@@ -10,7 +10,6 @@ module com.codeaffine.tiny.star.test.fixtures {
     requires static lombok;
 
     requires com.codeaffine.tiny.shared;
-    requires com.codeaffine.tiny.star.servlet;
     requires com.codeaffine.tiny.star;
     requires jakarta.servlet;
     requires java.net.http;

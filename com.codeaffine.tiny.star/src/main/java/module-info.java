@@ -10,7 +10,6 @@ module com.codeaffine.tiny.star {
     requires static lombok;
 
     requires com.codeaffine.tiny.shared;
-    requires com.codeaffine.tiny.star.servlet;
     requires com.fasterxml.jackson.databind;
     requires jakarta.servlet;
     requires org.eclipse.rap.rwt;

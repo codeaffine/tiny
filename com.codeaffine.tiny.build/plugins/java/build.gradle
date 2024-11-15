@@ -9,9 +9,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.freefair.gradle:lombok-plugin:8.10")
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:7.0.0.BETA1")
-    implementation("org.gradlex:extra-java-module-info:1.8")
-    implementation("org.gradlex:java-module-dependencies:1.7")
-    implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.6.1")
+    implementation("io.freefair.gradle:lombok-plugin:8.10.2")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:7.0.0.BETA4")
+    implementation("org.gradlex:extra-java-module-info:1.9")
+    implementation("org.gradlex:java-module-dependencies:1.8")
 }

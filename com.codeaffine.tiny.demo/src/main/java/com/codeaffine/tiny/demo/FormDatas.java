@@ -7,11 +7,13 @@
  */
 package com.codeaffine.tiny.demo;
 
+import lombok.Getter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
 
+@Getter
 public class FormDatas { // NOSONAR
 
   static final int DENOMINATOR = 100;
@@ -155,10 +157,6 @@ public class FormDatas { // NOSONAR
   public FormDatas withHeight( int height ) { // NOSONAR
     formData.height = height;
     return this;
-  }
-
-  public FormData getFormData() { // NOSONAR
-    return formData;
   }
 
   private FormDatas(Control control ) {

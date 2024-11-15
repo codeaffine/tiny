@@ -86,7 +86,7 @@ class ShutdownHookHandler {
 
     private void executeRegisteredShutdownOperations() {
         synchronizer.execute(this::cloneFinalShutdownOperationsList)
-            .forEach(Threads::saveRun);
+            .forEach(Threads::saveRunWithoutLogger);
     }
 
     private List<Runnable> cloneFinalShutdownOperationsList() {

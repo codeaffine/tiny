@@ -47,7 +47,8 @@ public final class Threads {
         try {
             future.get(timeout, timeUnit);
         } catch (InterruptedException cause) {
-            cause.printStackTrace();
+            //noinspection CallToPrintStackTrace
+            cause.printStackTrace(); // NOSONAR: on termination there might no longer be a logger available
             currentThread().interrupt();
             exceptionHandler.accept(extractExceptionToReport(cause, IllegalStateException::new));
         } catch (TimeoutException cause) {
@@ -58,11 +59,12 @@ public final class Threads {
         }
     }
 
-    public static void saveRun(Runnable runnable) {
+    public static void saveRunWithoutLogger(Runnable runnable) {
         try {
             runnable.run();
         } catch (Exception cause) {
-            cause.printStackTrace();
+            //noinspection CallToPrintStackTrace
+            cause.printStackTrace(); // NOSONAR: on termination there might no longer be a logger available
         }
     }
 }

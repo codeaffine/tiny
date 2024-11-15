@@ -10,7 +10,6 @@ module com.codeaffine.tiny.star.tomcat {
     requires static lombok;
 
     requires com.codeaffine.tiny.shared;
-    requires com.codeaffine.tiny.star.servlet;
     requires com.codeaffine.tiny.star;
     requires jakarta.servlet;
     requires java.logging;

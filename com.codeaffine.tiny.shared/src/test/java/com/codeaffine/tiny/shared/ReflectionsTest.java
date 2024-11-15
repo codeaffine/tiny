@@ -7,7 +7,6 @@
  */
 package com.codeaffine.tiny.shared;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +15,6 @@ import java.util.function.Function;
 
 import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.shared.Texts.*;
-import static lombok.AccessLevel.PACKAGE;
 import static org.assertj.core.api.Assertions.*;
 
 class ReflectionsTest {
@@ -24,19 +22,17 @@ class ReflectionsTest {
     static class Operation implements Runnable {
         @Override
         public void run() {
+            // no operation
         }
     }
 
-    @RequiredArgsConstructor(access = PACKAGE)
-    static class OperationWithConstructorArgument implements Runnable {
+    record OperationWithConstructorArgument(String argument) implements Runnable {
 
-        final String argument;
-
-        @Override
-        public void run() {
-
+            @Override
+            public void run() {
+                // no operation
+            }
         }
-    }
 
     static class OperationWithConstructorThrowingException implements Runnable {
 
@@ -48,7 +44,7 @@ class ReflectionsTest {
 
         @Override
         public void run() {
-
+            // no operation
         }
     }
 

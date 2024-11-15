@@ -12,7 +12,6 @@ import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +26,7 @@ class SessionTimeoutConfigurator implements ServletContainerInitializer {
     private final ServerConfiguration configuration;
 
     @Override
-    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
+    public void onStartup(Set<Class<?>> classes, ServletContext servletContext) {
         servletContext.setSessionTimeout(configuration.getSessionTimeout());
     }
 

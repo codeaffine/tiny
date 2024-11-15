@@ -43,7 +43,7 @@ class DelegatingLoggingFrameworkControlFactory implements LoggingFrameworkContro
             throw new IllegalStateException(message);
         }
         return factories
-            .get(0)
+            .getFirst()
             .create();
     }
 }

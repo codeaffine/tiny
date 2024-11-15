@@ -33,6 +33,7 @@ class Log4j2Configurator {
 
     static final String CONFIGURATION_FILE_NAME_SUFFIX = "-log4j2.xml";
 
+    @SuppressWarnings("CanBeFinal")
     static Logger logger = getLogger(Log4j2Configurator.class);
 
     private static final String LOG4J_CONFIGURATOR_CLASS = "org.apache.logging.log4j.core.config.Configurator";

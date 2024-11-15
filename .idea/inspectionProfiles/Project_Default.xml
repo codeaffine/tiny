@@ -1,6 +1,9 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="AutoCloseableResource" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="METHOD_MATCHER_CONFIG" value="java.util.Formatter,format,java.io.Writer,append,com.google.common.base.Preconditions,checkNotNull,org.hibernate.Session,close,java.io.PrintWriter,printf,java.io.PrintStream,printf,java.lang.foreign.Arena,ofAuto,java.lang.foreign.Arena,global,com.codeaffine.tiny.star.test.fixtures.UserSession,ensureHttpClientExists,org.mockito.Mockito,mock" />
+    </inspection_tool>
     <inspection_tool class="DataFlowIssue" enabled="true" level="INFORMATION" enabled_by_default="true" editorAttributes="INFORMATION_ATTRIBUTES">
       <scope name="Production" level="WARNING" enabled="true">
         <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
@@ -8,6 +11,16 @@
       </scope>
       <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
       <option name="DONT_REPORT_TRUE_ASSERT_STATEMENTS" value="false" />
+    </inspection_tool>
+    <inspection_tool class="IncorrectHttpHeaderInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="customHeaders">
+        <set>
+          <option value="gzip, deflate, br" />
+          <option value="en-US,en;q=0.9,de;q=0.8,yo;q=0.7" />
+          <option value="*/*" />
+          <option value="application/json; charset=UTF-8" />
+        </set>
+      </option>
     </inspection_tool>
     <inspection_tool class="LoggingSimilarMessage" enabled="true" level="WEAK WARNING" enabled_by_default="true" editorAttributes="INFO_ATTRIBUTES">
       <scope name="Tests" level="INFORMATION" enabled="true" editorAttributes="INFORMATION_ATTRIBUTES" />

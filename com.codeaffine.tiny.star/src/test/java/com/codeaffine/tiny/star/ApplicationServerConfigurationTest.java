@@ -88,6 +88,21 @@ class ApplicationServerConfigurationTest {
     }
 
     @Test
+    void getHttpServletClassWithRwtServletExtension() throws Exception {
+        ApplicationServer server = ApplicationServer
+            .newApplicationServerBuilder(APPLICATION_CONFIGURATION)
+            .withRwtServletExtension(RwtServletExtension.class)
+            .build();
+        ApplicationServerConfiguration configuration = new ApplicationServerConfiguration(WORKING_DIRECTORY, server);
+
+        Class<? extends HttpServlet> actualClass = configuration.getHttpServletClass();
+        HttpServlet actualInstance = actualClass.getConstructor().newInstance();// throws NoSuchMethodException if the class is not instantiable
+
+        assertThat(RWTServlet.class).isAssignableFrom(actualClass);
+        assertThat(actualInstance).isInstanceOf(RwtServletExtension.class);
+    }
+
+    @Test
     void constructWithNullAsWorkingDirectoryArgument() {
         assertThatThrownBy(() -> new ApplicationServerConfiguration(null, mock(ApplicationServer.class)))
             .isInstanceOf(NullPointerException.class);

@@ -18,6 +18,7 @@ import org.eclipse.rap.rwt.engine.RWTServlet;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
@@ -91,6 +92,9 @@ class ApplicationServerConfiguration implements ServerConfiguration {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends HttpServlet> Class<T> getHttpServletClass() {
+        if (Objects.nonNull(applicationServer.rwtServletExtension)) {
+            return (Class<T>) applicationServer.rwtServletExtension;
+        }
         return (Class<T>) RWTServlet.class;
     }
 }

@@ -12,7 +12,9 @@ import com.codeaffine.tiny.test.test.fixtures.logging.UseLoggerSpy;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.http.HttpServlet;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
+import org.eclipse.rap.rwt.engine.RWTServlet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +59,6 @@ class ApplicationServerTest {
     private static final String ENTRY_POINT_PATH_1 = "/ep1";
     private static final String ENTRY_POINT_PATH_2 = "/ep2";
     private static final String SCHEME = "http";
-
     private static final ApplicationConfiguration MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION = application -> {
         application.addEntryPoint(ENTRY_POINT_PATH_1, () -> null, null);
         application.addEntryPoint(ENTRY_POINT_PATH_2, () -> null, null);
@@ -67,6 +68,8 @@ class ApplicationServerTest {
     private File persistentWorkingDirectory;
     @TempDir
     private File tempDir;
+
+    static class RwtServletExtensionWithoutPublicNoArgumentConstructor extends RWTServlet {}
 
     @AfterEach
     void tearDown() {
@@ -382,6 +385,18 @@ class ApplicationServerTest {
     }
 
     @Test
+    void startWithRwtServletExtension() {
+        applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
+            .withRwtServletExtension(RwtServletExtension.class)
+            .build();
+
+        applicationServer.startInternal(new ApplicationProcessFactory(applicationServer));
+        Class<HttpServlet> actual = getCurrentServerConfiguration().getHttpServletClass();
+
+        assertThat(actual).isSameAs(RwtServletExtension.class);
+    }
+
+    @Test
     void stop() {
         applicationServer = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION)
             .build();
@@ -474,6 +489,14 @@ class ApplicationServerTest {
     void newApplicationRunnerBuilderWithNullAsArgumentNameArgument() {
         assertThatThrownBy(() -> newApplicationServerBuilder(null))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void withRwtServletExtensionIfExtensionHasNoPublicNoArgumentConstructor() {
+        ApplicationServerBuilder applicationServerBuilder = newApplicationServerBuilder(MULTI_ENTRYPOINT_APPLICATION_CONFIGURATION);
+
+        assertThatThrownBy(() -> applicationServerBuilder.withRwtServletExtension(RwtServletExtensionWithoutPublicNoArgumentConstructor.class))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     private void verifyServerStartupLogMessages(InOrder order, ArgumentCaptor<String> captor, String startupMessage) {

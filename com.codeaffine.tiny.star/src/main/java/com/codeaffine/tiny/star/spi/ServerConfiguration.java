@@ -20,10 +20,10 @@ public interface ServerConfiguration {
     String getHost();
     int getPort();
     ClassLoader getContextClassLoader();
-    ServletContextListener getContextListener();
     File getWorkingDirectory();
     Set<String> getEntryPointPaths();
     List<FilterDefinition> getFilterDefinitions();
     int getSessionTimeout();
+    ServletContextListener getContextListener();
     <T extends HttpServlet> Class<T> getHttpServletClass();
 }

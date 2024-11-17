@@ -15,6 +15,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
+import org.eclipse.rap.rwt.engine.RWTServlet;
 import org.slf4j.Logger;
 
 import java.io.*;
@@ -320,6 +321,7 @@ public class ApplicationServer {
     int sessionTimeout;
     @Singular
     List<ServletContextListener> servletContextListeners;
+    Class<? extends RWTServlet> rwtServletExtension;
 
     private final AtomicReference<ApplicationProcess> processHolder = new AtomicReference<>();
 
@@ -647,6 +649,22 @@ public class ApplicationServer {
          */
         public ApplicationServerBuilder withServletContextListeners(List<ServletContextListener> servletContextListeners) {
             return new ApplicationServerBuilder(delegate.withServletContextListeners(servletContextListeners));
+        }
+
+        /**
+         * Extension of {@link RWTServlet} used to run the RWT standalone application.
+         *
+         * @param rwtServletExtension Extension of {@link RWTServlet} used to run the RWT standalone application. Must not be {@code null}. Must provide a
+         *                            public parameterless constructor for generic instance creation.
+         * @return a clone of this {@link ApplicationServerBuilder} instance having the specified {@link RWTServlet} extension registered. Never {@code null}.
+         */
+        public ApplicationServerBuilder withRwtServletExtension(Class<? extends RWTServlet> rwtServletExtension) {
+            try {
+                rwtServletExtension.getConstructor().newInstance();
+            } catch (Exception cause) {
+                throw new IllegalArgumentException(format("RwtServlet extension '%s' cannot be instantiated.", rwtServletExtension.getName()), cause);
+            }
+            return new ApplicationServerBuilder(delegate.withRwtServletExtension(rwtServletExtension));
         }
 
         /**

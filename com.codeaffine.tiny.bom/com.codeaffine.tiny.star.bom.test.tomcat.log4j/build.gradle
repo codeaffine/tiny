@@ -2,15 +2,20 @@ plugins {
     id("com.codeaffine.tiny.java.modules")
 }
 
+// === Configuration ===
 def testAppDir = file('app')
+def jarPath = testAppDir.toPath().resolve('target/com.codeaffine.tiny.star.tomcat.log4j.test-1.0.0-SNAPSHOT-jar-with-dependencies.jar').toFile()
 def testPort = project.hasProperty('testPort') ? project.testPort : findFreePort()
 def entryPointPath = "/ui"
-def jarPath = file('app/target/com.codeaffine.tiny.star.tomcat.log4j.test-1.0.0-SNAPSHOT-jar-with-dependencies.jar')
-def isWindowsOs = System.getProperty('os.name').toLowerCase().contains('windows')
-def pidFile = project.layout.buildDirectory.file("test-app.pid").get().asFile
+def appLogsDir = project.layout.buildDirectory.dir("app-logs").get().asFile
+def pidFile = new File(appLogsDir, "app.pid")
+def outputLog = new File(appLogsDir, "app-output.log")
+def errorLog = new File(appLogsDir, "app-error.log")
+def mavenLogFile = new File(appLogsDir, "app-maven-build.log")
 
 project.description = "Test of BOM for Standalone Runner Server Implementation adapting Tomcat as embedded servlet container and using Log4j for logging"
 
+// === Source Sets and Configurations ===
 sourceSets {
     integrationTest {
         java.srcDir 'src/integrationTest/java'
@@ -23,135 +28,12 @@ configurations {
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
+// === Lombok Configuration ===
 lombok {
     disableConfig = true
 }
 
-task buildMavenApp(type: Exec) {
-    workingDir testAppDir
-
-    doFirst {
-        def mvnw = testAppDir
-            .toPath()
-            .resolve(isWindowsOs ? 'mvnw.cmd' : 'mvnw')
-            .toFile()
-        if (!mvnw.exists()) {
-            println "Maven wrapper not found. Generating it..."
-            exec {
-                workingDir testAppDir
-                commandLine 'mvn', '-N', 'io.takari:maven:wrapper'
-            }
-        }
-    }
-
-    if (isWindowsOs) {
-        commandLine 'cmd', '/c', 'mvnw.cmd', 'clean', 'package'
-    } else {
-        commandLine './mvnw', 'clean', 'package'
-    }
-}
-
-task runTestApp {
-    dependsOn buildMavenApp
-    group = 'verification'
-    description = 'run the test application'
-
-    doLast {
-        def javaCmd = isWindowsOs ? 'java.exe' : 'java'
-
-        def processBuilder = new ProcessBuilder(
-                javaCmd,
-                "-jar",
-                jarPath.absolutePath
-        )
-
-        processBuilder.directory(testAppDir)
-
-        def env = processBuilder.environment()
-        env.put("com.codeaffine.tiny.star.configuration", "{\"port\":${testPort}}".toString())
-        env.put("ENTRY_POINT_PATH", entryPointPath.toString())
-
-        def outputLog = project.layout.buildDirectory.file("test-app-output.log").get().asFile
-        def errorLog = project.layout.buildDirectory.file("test-app-error.log").get().asFile
-        processBuilder.redirectOutput(outputLog)
-        processBuilder.redirectError(errorLog)
-
-        def process = processBuilder.start()
-
-        println "Test application started with PID: ${process.pid()}."
-        println "Server logs: ${outputLog.absolutePath}"
-        println "Error logs: ${errorLog.absolutePath}"
-
-        pidFile.parentFile.mkdirs()
-        pidFile.text = process.pid().toString()
-    }
-}
-
-task stopTestApp {
-    doLast {
-        if (!pidFile.exists()) {
-            println "No PID file found. Test app might not have started correctly."
-            return
-        }
-
-        def pid = pidFile.text.trim()
-        println "Stopping test application with PID: $pid"
-
-        try {
-            if (isWindowsOs) {
-                exec {
-                    commandLine 'cmd', '/c', "taskkill /PID $pid /F"
-                }
-            } else {
-                exec {
-                    commandLine 'kill', '-9', pid
-                }
-            }
-            println "Test application stopped successfully."
-        } catch (Exception e) {
-            println "Failed to stop test application: ${e.message}"
-        }
-    }
-}
-
-task integrationTest(type: Test) {
-    description = 'run integration tests'
-    group = 'verification'
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    dependsOn runTestApp
-    finalizedBy stopTestApp
-    useJUnitPlatform()
-    environment 'PORT', testPort
-    environment 'ENTRY_POINT_PATH', entryPointPath
-    doFirst {
-        println "Wait for the test application to start (port ${testPort})..."
-
-        def timeoutSeconds = 30
-        def sleepMillis = 500
-        def deadline = System.currentTimeMillis() + timeoutSeconds * 1000
-        def serverAvailable = false
-
-        while (System.currentTimeMillis() < deadline) {
-            try {
-                def socket = new Socket('localhost', testPort.toInteger())
-                socket.close()
-                serverAvailable = true
-                println "Test application is available on port ${testPort}."
-                break
-            } catch (Exception ignored) {
-                sleep(sleepMillis)
-            }
-        }
-
-        if (!serverAvailable) {
-            throw new GradleException("Test application not available after ${timeoutSeconds} seconds!")
-        }
-    }
-}
-
-check.dependsOn integrationTest
-
+// === Utility Methods ===
 static def findFreePort() {
     def socket = new ServerSocket(0)
     try {
@@ -161,3 +43,130 @@ static def findFreePort() {
         socket.close()
     }
 }
+
+def isWindows() {
+    System.getProperty('os.name').toLowerCase().contains('windows')
+}
+
+// === Build Maven App ===
+task buildMavenApp {
+    group = 'build'
+    description = 'Build the Maven-based test application'
+
+    doFirst {
+        appLogsDir.mkdirs()
+
+        // === Delete previous Maven log (if any) ===
+        if (mavenLogFile.exists()) {
+            mavenLogFile.delete()
+        }
+
+        // Maven Wrapper generieren falls nötig
+        def mvnw = testAppDir.toPath().resolve(isWindows() ? 'mvnw.cmd' : 'mvnw').toFile()
+        if (!mvnw.exists()) {
+            println "Maven wrapper not found. Generating it..."
+            project.exec {
+                workingDir testAppDir
+                commandLine 'mvn', '-N', 'io.takari:maven:wrapper'
+            }
+        }
+    }
+
+    doLast {
+        def result = project.exec {
+            workingDir testAppDir
+            commandLine isWindows() ? ['cmd', '/c', 'mvnw.cmd', 'clean', 'package'] : ['./mvnw', 'clean', 'package']
+            standardOutput = new FileOutputStream(mavenLogFile)
+            errorOutput = new FileOutputStream(mavenLogFile, true)
+            ignoreExitValue = true
+        }
+
+        if (result.exitValue != 0) {
+            System.err.println "\nERROR: Maven build failed. See details in: ${mavenLogFile.absolutePath}\n"
+            throw new GradleException("Maven build failed with exit code ${result.exitValue}")
+        }
+    }
+}
+
+// === Start Test App ===
+task runTestApp {
+    dependsOn buildMavenApp
+    group = 'verification'
+    description = 'Run the test application'
+
+    doLast {
+        appLogsDir.mkdirs()
+        def javaCmd = isWindows() ? 'java.exe' : 'java'
+        def processBuilder = new ProcessBuilder(
+                javaCmd, "-jar", jarPath.absolutePath
+        )
+
+        processBuilder.directory(testAppDir)
+
+        def env = processBuilder.environment()
+        env.put("com.codeaffine.tiny.star.configuration", "{\"port\":${testPort}}".toString())
+        env.put("ENTRY_POINT_PATH", entryPointPath.toString())
+
+        processBuilder.redirectOutput(outputLog)
+        processBuilder.redirectError(errorLog)
+
+        def process = processBuilder.start()
+        pidFile.text = process.pid().toString()
+    }
+}
+
+// === Stop Test App ===
+task stopTestApp {
+    doLast {
+        if (!pidFile.exists()) {
+            System.err.println "ERROR: No PID file found. Test app might not have started correctly."
+            return
+        }
+
+        def pid = pidFile.text.trim()
+
+        try {
+            exec {
+                commandLine isWindows() ? ['cmd', '/c', "taskkill /PID $pid /F"] : ['kill', '-9', pid]
+            }
+        } catch (Exception e) {
+            System.err.println "ERROR: Failed to stop test application on port $testPort with PID $pid: ${e.message}"
+        }
+    }
+}
+
+// === Integration Test ===
+task integrationTest(type: Test) {
+    description = 'Run integration tests'
+    group = 'verification'
+    dependsOn runTestApp
+    finalizedBy stopTestApp
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    useJUnitPlatform()
+
+    environment 'PORT', testPort
+    environment 'ENTRY_POINT_PATH', entryPointPath
+
+    doFirst {
+        def timeoutMillis = 30_000
+        def checkIntervalMillis = 500
+        def deadline = System.currentTimeMillis() + timeoutMillis
+
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                def socket = new Socket('localhost', testPort.toInteger())
+                socket.close()
+                return
+            } catch (Exception ignored) {
+                sleep(checkIntervalMillis)
+            }
+        }
+
+        System.err.println "ERROR: Test application not available on port ${testPort} after ${timeoutMillis / 1000} seconds."
+        throw new GradleException("Test application not available on port ${testPort}.")
+    }
+}
+
+// === Ensure check runs integration tests ===
+check.dependsOn integrationTest

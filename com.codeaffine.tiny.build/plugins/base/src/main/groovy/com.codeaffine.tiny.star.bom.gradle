@@ -3,16 +3,48 @@ plugins {
     id("java-platform")
 }
 
+def dependencyToBomMap = [
+    "org.eclipse.rap:org.eclipse.rap.rwt" : [
+        COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK,
+        COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J,
+        COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK_DEV,
+        COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J_DEV,
+        COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK,
+        COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOG4J,
+        COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK_DEV,
+        COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOG4J_DEV
+    ]
+]
+
 gradle.projectsEvaluated {
     dependencies {
+        // define dependency management block
         constraints {
-//            println("bom: " + project.name)
+            dependencyToBomMap.each { dependencyName, bomProjectNames ->
+                def artifactId = dependencyName.split(":")
+                if (bomProjectNames.contains(project.name)) {
+                    api(dependencyName + ":" + versionCatalogs.named("libs").findVersion(artifactId[1]).get().requiredVersion)
+                }
+            }
             project.rootProject.subprojects.forEach { subproject ->
                 bom.getBomProjectNames(subproject.name).forEach { bomProjectName ->
                     if (project.name.equals(bomProjectName)) {
-//                        println("  -> bom dependency: " + subproject.name)
                         api(subproject)
                     }
+                }
+            }
+        }
+
+        // define dependency block
+        dependencyToBomMap.each { dependencyName, bomProjectNames ->
+            if (bomProjectNames.contains(project.name)) {
+                api(dependencyName)
+            }
+        }
+        project.rootProject.subprojects.forEach { subproject ->
+            bom.getBomProjectNames(subproject.name).forEach { bomProjectName ->
+                if (project.name.equals(bomProjectName)) {
+                    api(subproject.group + ":" + subproject.name)
                 }
             }
         }
@@ -26,6 +58,15 @@ publishing {
             artifactId = project.name
             version = project.version
             afterEvaluate { from(components["javaPlatform"]) }
+
+            pom.withXml {
+                asNode().dependencies.dependency.findAll {
+                    def moduleProject = project.rootProject.findProject(it.artifactId.text())
+                    moduleProject != null && moduleProject.hasProperty("isRuntimeOnly") && moduleProject.isRuntimeOnly
+                }.each {
+                    it.scope[0].value = "runtime" // Set scope to runtime for runtime-only modules
+                }
+            }
         }
     }
 }

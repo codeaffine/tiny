@@ -27,6 +27,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.tomcat.log4j" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j.dev" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.logback" />
@@ -55,6 +56,9 @@
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j.dev" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j.test" />
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.logback" />

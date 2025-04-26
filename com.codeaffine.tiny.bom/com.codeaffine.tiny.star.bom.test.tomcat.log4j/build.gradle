@@ -1,0 +1,163 @@
+plugins {
+    id("com.codeaffine.tiny.java.modules")
+}
+
+def testAppDir = file('app')
+def testPort = project.hasProperty('testPort') ? project.testPort : findFreePort()
+def entryPointPath = "/ui"
+def jarPath = file('app/target/com.codeaffine.tiny.star.tomcat.log4j.test-1.0.0-SNAPSHOT-jar-with-dependencies.jar')
+def isWindowsOs = System.getProperty('os.name').toLowerCase().contains('windows')
+def pidFile = project.layout.buildDirectory.file("test-app.pid").get().asFile
+
+project.description = "Test of BOM for Standalone Runner Server Implementation adapting Tomcat as embedded servlet container and using Log4j for logging"
+
+sourceSets {
+    integrationTest {
+        java.srcDir 'src/integrationTest/java'
+        resources.srcDir 'src/integrationTest/resources'
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+lombok {
+    disableConfig = true
+}
+
+task buildMavenApp(type: Exec) {
+    workingDir testAppDir
+
+    doFirst {
+        def mvnw = testAppDir
+            .toPath()
+            .resolve(isWindowsOs ? 'mvnw.cmd' : 'mvnw')
+            .toFile()
+        if (!mvnw.exists()) {
+            println "Maven wrapper not found. Generating it..."
+            exec {
+                workingDir testAppDir
+                commandLine 'mvn', '-N', 'io.takari:maven:wrapper'
+            }
+        }
+    }
+
+    if (isWindowsOs) {
+        commandLine 'cmd', '/c', 'mvnw.cmd', 'clean', 'package'
+    } else {
+        commandLine './mvnw', 'clean', 'package'
+    }
+}
+
+task runTestApp {
+    dependsOn buildMavenApp
+    group = 'verification'
+    description = 'run the test application'
+
+    doLast {
+        def javaCmd = isWindowsOs ? 'java.exe' : 'java'
+
+        def processBuilder = new ProcessBuilder(
+                javaCmd,
+                "-jar",
+                jarPath.absolutePath
+        )
+
+        processBuilder.directory(testAppDir)
+
+        def env = processBuilder.environment()
+        env.put("com.codeaffine.tiny.star.configuration", "{\"port\":${testPort}}".toString())
+        env.put("ENTRY_POINT_PATH", entryPointPath.toString())
+
+        def outputLog = project.layout.buildDirectory.file("test-app-output.log").get().asFile
+        def errorLog = project.layout.buildDirectory.file("test-app-error.log").get().asFile
+        processBuilder.redirectOutput(outputLog)
+        processBuilder.redirectError(errorLog)
+
+        def process = processBuilder.start()
+
+        println "Test application started with PID: ${process.pid()}."
+        println "Server logs: ${outputLog.absolutePath}"
+        println "Error logs: ${errorLog.absolutePath}"
+
+        pidFile.parentFile.mkdirs()
+        pidFile.text = process.pid().toString()
+    }
+}
+
+task stopTestApp {
+    doLast {
+        if (!pidFile.exists()) {
+            println "No PID file found. Test app might not have started correctly."
+            return
+        }
+
+        def pid = pidFile.text.trim()
+        println "Stopping test application with PID: $pid"
+
+        try {
+            if (isWindowsOs) {
+                exec {
+                    commandLine 'cmd', '/c', "taskkill /PID $pid /F"
+                }
+            } else {
+                exec {
+                    commandLine 'kill', '-9', pid
+                }
+            }
+            println "Test application stopped successfully."
+        } catch (Exception e) {
+            println "Failed to stop test application: ${e.message}"
+        }
+    }
+}
+
+task integrationTest(type: Test) {
+    description = 'run integration tests'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    dependsOn runTestApp
+    finalizedBy stopTestApp
+    useJUnitPlatform()
+    environment 'PORT', testPort
+    environment 'ENTRY_POINT_PATH', entryPointPath
+    doFirst {
+        println "Wait for the test application to start (port ${testPort})..."
+
+        def timeoutSeconds = 30
+        def sleepMillis = 500
+        def deadline = System.currentTimeMillis() + timeoutSeconds * 1000
+        def serverAvailable = false
+
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                def socket = new Socket('localhost', testPort.toInteger())
+                socket.close()
+                serverAvailable = true
+                println "Test application is available on port ${testPort}."
+                break
+            } catch (Exception ignored) {
+                sleep(sleepMillis)
+            }
+        }
+
+        if (!serverAvailable) {
+            throw new GradleException("Test application not available after ${timeoutSeconds} seconds!")
+        }
+    }
+}
+
+check.dependsOn integrationTest
+
+static def findFreePort() {
+    def socket = new ServerSocket(0)
+    try {
+        socket.setReuseAddress(true)
+        return socket.getLocalPort()
+    } finally {
+        socket.close()
+    }
+}

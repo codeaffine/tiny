@@ -9,6 +9,10 @@ plugins {
     id("jacoco")
 }
 
+ext {
+    isRuntimeOnly = false // attribute indicates if the dependency gets scoped as runtime only when used in a BOM
+}
+
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(readJavaVersion(project)))
     withSourcesJar()

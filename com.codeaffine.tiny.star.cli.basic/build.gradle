@@ -4,6 +4,11 @@ plugins {
 }
 
 project.description = "Set of basic commands for the CLI used to control Standalone Runner Application Processes"
+
+ext {
+    isRuntimeOnly = true
+}
+
 bom.include(
     project.name,
     COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK_DEV,

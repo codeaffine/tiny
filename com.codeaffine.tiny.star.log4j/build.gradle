@@ -4,6 +4,11 @@ plugins {
 }
 
 project.description = "Integration of Log4j for Standalone Runner Applications"
+
+ext {
+    isRuntimeOnly = true
+}
+
 bom.include(
     project.name,
     COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J,

@@ -4,6 +4,11 @@ plugins {
 }
 
 project.description = "Standalone Runner Server Implementation adapting Tomcat as embedded servlet container"
+
+ext {
+    isRuntimeOnly = true
+}
+
 bom.include(
     project.name,
     COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK,

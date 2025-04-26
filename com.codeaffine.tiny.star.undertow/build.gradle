@@ -4,6 +4,11 @@ plugins {
 }
 
 project.description = "Standalone Runner Server Implementation adapting Undertow as embedded servlet container"
+
+ext {
+    isRuntimeOnly = true
+}
+
 bom.include(
     project.name,
     COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK,

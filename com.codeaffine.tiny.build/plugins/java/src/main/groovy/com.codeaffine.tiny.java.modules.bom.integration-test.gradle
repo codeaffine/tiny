@@ -1,0 +1,235 @@
+plugins {
+    id("com.codeaffine.tiny.java.modules")
+}
+
+// === Configuration ===
+def testAppDir = file('app')
+def jarPath = testAppDir.toPath().resolve("target/${project.name}.app-1.0.0-SNAPSHOT-jar-with-dependencies.jar").toFile()
+def testPort = findFreePort()
+def entryPointPath = "/ui"
+def appLogsDir = project.layout.buildDirectory.dir("app-logs").get().asFile
+def pidFile = new File(appLogsDir, "app.pid")
+def outputLog = new File(appLogsDir, "app-output.log")
+def errorLog = new File(appLogsDir, "app-error.log")
+def mavenLogFile = new File(appLogsDir, "app-maven-build.log")
+
+project.description = "Test of BOM ${project.name}"
+
+// === Utility Methods ===
+static def findFreePort() {
+    def socket = new ServerSocket(0)
+    try {
+        socket.setReuseAddress(true)
+        return socket.getLocalPort()
+    } finally {
+        socket.close()
+    }
+}
+
+static def isWindows() {
+    System.getProperty('os.name').toLowerCase().contains('windows')
+}
+
+// === Source Sets and Configurations ===
+sourceSets {
+    integrationTest {
+        java.srcDir 'src/integrationTest/java'
+        resources.srcDir 'src/integrationTest/resources'
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+// === Lombok Configuration ===
+lombok {
+    disableConfig = true
+}
+
+// === Tasks ===
+
+tasks.register('ensureMavenWrapper') {
+    group = 'build setup'
+    description = 'Ensure Maven Wrapper files exist for the test app'
+
+    doLast {
+        def mvnw = new File(testAppDir, isWindows() ? 'mvnw.cmd' : 'mvnw')
+        if (mvnw.exists()) {
+            return // Maven wrapper already exists, nothing to do
+        }
+
+        def resourceRoot = 'maven-wrapper-template/'
+
+        ['mvnw', 'mvnw.cmd', '.mvn/wrapper/maven-wrapper.jar', '.mvn/wrapper/maven-wrapper.properties'].each { relativePath ->
+            def inputStream = this.class.classLoader.getResourceAsStream(resourceRoot + relativePath)
+            if (inputStream == null) {
+                throw new GradleException("Required Maven Wrapper resource missing: ${relativePath}")
+            }
+            def targetFile = new File(testAppDir, relativePath)
+            targetFile.parentFile.mkdirs()
+            targetFile.bytes = inputStream.bytes
+        }
+        if (!isWindows()) {
+            def mvnwFile = new File(testAppDir, 'mvnw')
+            if (mvnwFile.exists()) {
+                mvnwFile.setExecutable(true)
+            }
+        }
+    }
+}
+
+tasks.register('generateTestAppPom') {
+    group = 'build setup'
+    description = 'Generates the Maven pom.xml for the test app from a template'
+
+    doLast {
+        def outputPom = new File(testAppDir, 'pom.xml')
+        def outputGitignore = new File(testAppDir, '.gitignore')
+        def templateFileName = 'bom-integration-test-pom-template.xml'
+        def templateInput = this.getClass().getClassLoader().getResourceAsStream(templateFileName)
+        if (templateInput == null) {
+            throw new GradleException("Cannot find ${templateFileName} in plugin resources!")
+        }
+        def pomTemplate = templateInput.text
+        def effectiveTestAppArtifactId = "${project.name}.app"
+        def effectiveBomArtifactId
+        if (project.hasProperty('bomArtifactIdUnderTest')) {
+            effectiveBomArtifactId = project.property('bomArtifactIdUnderTest')
+        } else {
+            throw new GradleException("Missing property 'bomArtifactIdUnderTest' to generate POM")
+        }
+
+        if (!outputGitignore.exists()) {
+            outputGitignore.text = '''\
+            pom.xml
+            mvnw
+            mvnw.cmd
+            .mvn/
+            target/
+            '''.stripIndent()
+        }
+        outputPom.text = pomTemplate
+                .replace('${testAppArtifactId}', effectiveTestAppArtifactId)
+                .replace('${artifactUnderTestId}', effectiveBomArtifactId)
+    }
+}
+
+tasks.register('buildMavenApp') {
+    dependsOn 'generateTestAppPom'
+    dependsOn 'ensureMavenWrapper'
+    group = 'build'
+    description = 'Build the Maven-based test application'
+
+    doFirst {
+        appLogsDir.mkdirs()
+        if (mavenLogFile.exists()) {
+            mavenLogFile.delete()
+        }
+    }
+
+    doLast {
+        def testedBomProject = project.rootProject.findProject(":${project.bomArtifactIdUnderTest}")
+        if (testedBomProject == null) {
+            throw new GradleException("Cannot find project for tested BOM '${project.bomArtifactIdUnderTest}'")
+        }
+        def testedBomVersion = testedBomProject.version
+
+        def result = project.exec {
+            workingDir testAppDir
+            commandLine isWindows()
+                    ? ['cmd', '/c', 'mvnw.cmd', '-B', 'clean', 'package', "-DartifactUnderTestVersion=${testedBomVersion}"]
+                    : ['./mvnw', '-B', 'clean', 'package', "-DartifactUnderTestVersion=${testedBomVersion}"]
+            standardOutput = new FileOutputStream(mavenLogFile)
+            errorOutput = new FileOutputStream(mavenLogFile, true)
+            ignoreExitValue = true
+        }
+        if (result.exitValue != 0) {
+            System.err.println "\nERROR: Maven build failed. See details in: ${mavenLogFile.absolutePath}\n"
+            throw new GradleException("Maven build failed with exit code ${result.exitValue}")
+        }
+        if (!jarPath.exists()) {
+            System.err.println "ERROR: Expected JAR ${jarPath} does not exist after Maven build!"
+            throw new GradleException("Missing JAR file: ${jarPath}")
+        }
+    }
+}
+
+tasks.register('runTestApp') {
+    dependsOn buildMavenApp
+    group = 'verification'
+    description = 'Run the test application'
+
+    doLast {
+        appLogsDir.mkdirs()
+        def javaCmd = isWindows() ? 'java.exe' : 'java'
+        def processBuilder = new ProcessBuilder(javaCmd, "-jar", jarPath.absolutePath)
+
+        processBuilder.directory(testAppDir)
+
+        def env = processBuilder.environment()
+        env.put("com.codeaffine.tiny.star.configuration", "{\"port\":${testPort}}".toString())
+        env.put("ENTRY_POINT_PATH", entryPointPath.toString())
+
+        processBuilder.redirectOutput(outputLog)
+        processBuilder.redirectError(errorLog)
+
+        def process = processBuilder.start()
+        pidFile.text = process.pid().toString()
+    }
+}
+
+tasks.register('stopTestApp') {
+    doLast {
+        if (!pidFile.exists()) {
+            System.err.println "ERROR: No PID file found. Test app might not have started correctly."
+            return
+        }
+
+        def pid = pidFile.text.trim()
+
+        try {
+            exec {
+                commandLine isWindows() ? ['cmd', '/c', "taskkill /PID $pid /F"] : ['kill', '-9', pid]
+            }
+        } catch (Exception e) {
+            System.err.println "ERROR: Failed to stop test application on port $testPort with PID $pid: ${e.message}"
+        }
+    }
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Run integration tests'
+    group = 'verification'
+    dependsOn runTestApp
+    finalizedBy stopTestApp
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    useJUnitPlatform()
+
+    environment 'PORT', testPort
+    environment 'ENTRY_POINT_PATH', entryPointPath
+
+    doFirst {
+        def timeoutMillis = 30_000
+        def checkIntervalMillis = 500
+        def deadline = System.currentTimeMillis() + timeoutMillis
+
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                def socket = new Socket('localhost', testPort.toInteger())
+                socket.close()
+                return
+            } catch (Exception ignored) {
+                sleep(checkIntervalMillis)
+            }
+        }
+
+        def pid = pidFile.exists() ? pidFile.text.trim() : "unknown"
+        throw new GradleException("Test application (PID: $pid) not available on port $testPort after ${timeoutMillis / 1000} seconds.")
+    }
+}
+
+// === Ensure check runs integration tests ===
+check.dependsOn integrationTest

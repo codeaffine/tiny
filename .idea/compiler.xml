@@ -38,6 +38,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17">
+      <module name="com.codeaffine.tiny.star.bom.test.tomcat.log4j.app" target="21" />
       <module name="com.codeaffine.tiny.star.tomcat.log4j.test" target="21" />
       <module name="meta-plugins.main" target="20" />
       <module name="meta-plugins.settings-plugins.test" target="20" />

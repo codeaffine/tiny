@@ -55,6 +55,15 @@
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.tomcat.logback" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.undertow.log4j" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.undertow.logback" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j.dev" />
       </GradleProjectSettings>
       <GradleProjectSettings>

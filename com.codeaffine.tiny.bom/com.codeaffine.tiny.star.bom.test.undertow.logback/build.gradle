@@ -1,0 +1,7 @@
+plugins {
+    id("com.codeaffine.tiny.java.modules.bom.integration-test")
+}
+
+ext {
+    bomArtifactIdUnderTest = project.findProperty('COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK')
+}

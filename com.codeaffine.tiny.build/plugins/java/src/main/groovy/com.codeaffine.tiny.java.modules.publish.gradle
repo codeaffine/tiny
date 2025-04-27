@@ -6,6 +6,10 @@ plugins {
 publishing {
     publications {
         module(MavenPublication) {
+            suppressPomMetadataWarningsFor('testFixturesApiElements')
+            suppressPomMetadataWarningsFor('testFixturesRuntimeElements')
+            suppressPomMetadataWarningsFor('testFixturesSourcesElements')
+
             from components.java
             versionMapping {
                 usage('java-api') {

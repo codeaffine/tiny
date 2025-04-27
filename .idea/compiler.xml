@@ -13,13 +13,21 @@
         <module name="tiny.com.codeaffine.tiny.test.main" />
         <module name="tiny.com.codeaffine.tiny.demo.main" />
         <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.log4j.test" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.logback.test" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.test" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.logback.main" />
         <module name="tiny.com.codeaffine.tiny.star.cli.basic.test" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.log4j.integrationTest" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.log4j.main" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.logback.integrationTest" />
         <module name="tiny.com.codeaffine.tiny.star.logback.test" />
         <module name="tiny.com.codeaffine.tiny.shared.test" />
         <module name="tiny.com.codeaffine.tiny.star.cli.main" />
         <module name="tiny.com.codeaffine.tiny.shared.testFixtures" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.logback.integrationTest" />
         <module name="tiny.com.codeaffine.tiny.star.logback.main" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.logback.test" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.logback.main" />
         <module name="tiny.com.codeaffine.tiny.star.tomcat.main" />
         <module name="tiny.com.codeaffine.tiny.star.log4j.main" />
         <module name="tiny.com.codeaffine.tiny.demo.test" />
@@ -32,6 +40,7 @@
         <module name="tiny.com.codeaffine.tiny.test.test" />
         <module name="tiny.com.codeaffine.tiny.star.undertow.test" />
         <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.log4j.integrationTest" />
+        <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.log4j.test" />
         <module name="tiny.com.codeaffine.tiny.shared.main" />
         <module name="tiny.com.codeaffine.tiny.test.testFixtures" />
         <module name="tiny.com.codeaffine.tiny.star.cli.testFixtures" />
@@ -86,6 +95,18 @@
       <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.log4j.integrationTest" options="-Xlint:-processing" />
       <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.log4j.main" options="-Xlint:-processing" />
       <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.log4j.test" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.logback" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.logback.integrationTest" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.logback.main" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.tomcat.logback.test" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.log4j" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.log4j.integrationTest" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.log4j.main" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.log4j.test" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.logback" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.logback.integrationTest" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.logback.main" options="-Xlint:-processing" />
+      <module name="tiny.com.codeaffine.tiny.star.bom.test.undertow.logback.test" options="-Xlint:-processing" />
       <module name="tiny.com.codeaffine.tiny.star.cli" options="-Xlint:-processing" />
       <module name="tiny.com.codeaffine.tiny.star.cli.basic" options="-Xlint:-processing" />
       <module name="tiny.com.codeaffine.tiny.star.cli.basic.main" options="-Xlint:-processing" />

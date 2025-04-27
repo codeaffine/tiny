@@ -233,16 +233,17 @@ tasks.register('integrationTest', Test) {
 
 afterEvaluate {
     tasks.named('buildMavenApp').configure { buildTask ->
-        def bomProjectPath = ":${project.bomArtifactIdUnderTest}"
-        def bomProject = project.rootProject.findProject(bomProjectPath)
-        if (bomProject == null) {
-            throw new GradleException("Cannot find BOM project '${bomProjectPath}'")
-        }
-
-        try {
-            buildTask.dependsOn "${bomProject.path}:publishToMavenLocal"
-        } catch (UnknownTaskException e) {
-            throw new GradleException("BOM project '${bomProjectPath}' does not have a publishToMavenLocal task")
+        project.rootProject.subprojects.each { sub ->
+            if (    !sub.name.startsWith("com.codeaffine.tiny.star.bom.test")
+                 && !sub.name.startsWith("com.codeaffine.tiny.demo")
+                 && sub.name != project.name)
+            {
+                try {
+                    buildTask.dependsOn "${sub.path}:publishToMavenLocal"
+                } catch (UnknownTaskException e) {
+                    println "Task ${sub.name}:publishToMavenLocal not found. Skipping dependency."
+                }
+            }
         }
     }
 }

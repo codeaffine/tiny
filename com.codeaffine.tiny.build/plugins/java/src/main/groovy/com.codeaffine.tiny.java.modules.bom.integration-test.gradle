@@ -231,5 +231,21 @@ tasks.register('integrationTest', Test) {
     }
 }
 
+afterEvaluate {
+    tasks.named('buildMavenApp').configure { buildTask ->
+        def bomProjectPath = ":${project.bomArtifactIdUnderTest}"
+        def bomProject = project.rootProject.findProject(bomProjectPath)
+        if (bomProject == null) {
+            throw new GradleException("Cannot find BOM project '${bomProjectPath}'")
+        }
+
+        try {
+            buildTask.dependsOn "${bomProject.path}:publishToMavenLocal"
+        } catch (UnknownTaskException e) {
+            throw new GradleException("BOM project '${bomProjectPath}' does not have a publishToMavenLocal task")
+        }
+    }
+}
+
 // === Ensure check runs integration tests ===
 check.dependsOn integrationTest

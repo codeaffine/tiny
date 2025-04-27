@@ -21,3 +21,9 @@ jobs:
           build-scan-terms-of-use-agree: "yes"
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Upload Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bom-integration-test-logs
+          path: '**/build/app-logs/**'

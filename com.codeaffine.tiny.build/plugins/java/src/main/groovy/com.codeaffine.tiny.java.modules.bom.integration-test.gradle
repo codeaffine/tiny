@@ -1,3 +1,5 @@
+import groovy.json.JsonBuilder
+
 plugins {
     id("com.codeaffine.tiny.java.modules")
 }
@@ -168,8 +170,15 @@ tasks.register('runTestApp') {
 
         processBuilder.directory(testAppDir)
 
+        def testAppWorkDir = project.layout.buildDirectory.dir("app-workdir").get().asFile
+        testAppWorkDir.mkdirs()
+        def jsonConfig = [
+            port: testPort,
+            "working-directory": testAppWorkDir.absolutePath
+        ] as JsonBuilder
+
         def env = processBuilder.environment()
-        env.put("com.codeaffine.tiny.star.configuration", "{\"port\":${testPort}}".toString())
+        env.put("com.codeaffine.tiny.star.configuration", jsonConfig.toString())
         env.put("ENTRY_POINT_PATH", entryPointPath.toString())
 
         processBuilder.redirectOutput(outputLog)

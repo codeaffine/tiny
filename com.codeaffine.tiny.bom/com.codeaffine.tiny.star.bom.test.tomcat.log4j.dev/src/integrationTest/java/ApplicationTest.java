@@ -12,14 +12,27 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static java.net.http.HttpClient.newHttpClient;
 import static java.net.http.HttpResponse.BodyHandlers;
+import static java.nio.file.Files.isDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ApplicationTest {
+
+    @Test
+    void workDirStructure() {
+        Path workDir = Paths.get("build/app-workdir");
+
+        assertThat(isDirectory(workDir)).isTrue();
+        assertThat(workDir.resolve("doc-base")).isDirectory();
+        assertThat(workDir.resolve("logs")).isDirectory();
+        assertThat(workDir.resolve("work")).isDirectory();
+    }
 
     @Test
     void initialUiRequest() throws IOException, InterruptedException {

@@ -21,6 +21,7 @@ import static java.net.http.HttpClient.newHttpClient;
 import static java.net.http.HttpResponse.BodyHandlers;
 import static java.nio.file.Files.isDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
+
 class ApplicationTest {
 
     @Test
@@ -28,9 +29,9 @@ class ApplicationTest {
         Path workDir = Paths.get("build/app-workdir");
 
         assertThat(isDirectory(workDir)).isTrue();
-        assertThat(workDir.resolve("doc-base")).isDirectory();
-        assertThat(workDir.resolve("logs")).isDirectory();
-        assertThat(workDir.resolve("work")).isDirectory();
+        assertThat(workDir.resolve("doc-base")).isNotEmptyDirectory();
+        assertThat(workDir.resolve("logs").resolve("application.log")).isRegularFile();
+        assertThat(workDir.resolve("work")).isNotEmptyDirectory();
     }
 
     @Test

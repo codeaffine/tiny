@@ -29,8 +29,8 @@ class ApplicationTest {
         Path workDir = Paths.get("build/app-workdir");
 
         assertThat(isDirectory(workDir)).isTrue();
-        assertThat(workDir.resolve("logs")).isDirectory();
-        assertThat(workDir.resolve("rwt-resources")).isDirectory();
+        assertThat(workDir.resolve("logs").resolve("application.log")).isRegularFile();
+        assertThat(workDir.resolve("rwt-resources")).isNotEmptyDirectory();
     }
 
     @Test

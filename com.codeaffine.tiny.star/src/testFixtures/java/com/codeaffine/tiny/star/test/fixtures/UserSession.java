@@ -20,7 +20,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.star.test.fixtures.FakeTrustManager.*;
+import static com.codeaffine.tiny.star.test.fixtures.FakeTrustManager.createSslContext;
 import static java.net.http.HttpClient.newBuilder;
 import static java.net.http.HttpResponse.BodyHandlers;
 import static java.util.Objects.isNull;
@@ -28,7 +28,7 @@ import static java.util.Objects.isNull;
 @RequiredArgsConstructor
 class UserSession {
 
-    private static final String INITIAL_WIDGET_TREE_REQUEST_BODY = """
+    static final String INITIAL_WIDGET_TREE_REQUEST_BODY = """
         {
           "head":{"requestCounter":0},
           "operations":[
@@ -89,7 +89,7 @@ class UserSession {
             .build();
     }
 
-    private static HttpRequest newRwtPostRequest(String rwtPostRequestBody, URI uri) {
+    static HttpRequest newRwtPostRequest(String rwtPostRequestBody, URI uri) {
         return HttpRequest.newBuilder()
             .uri(uri)
             .headers(

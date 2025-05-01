@@ -45,6 +45,11 @@ configurations {
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
+dependencies {
+    integrationTestImplementation testFixtures(project(":com.codeaffine.tiny.star"))
+    integrationTestImplementation testFixtures(project(":com.codeaffine.tiny.star.cli"))
+}
+
 // === Lombok Configuration ===
 lombok {
     disableConfig = true

@@ -28,9 +28,13 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.tomcat.log4j" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.tomcat.log4j.dev" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.tomcat.logback" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.tomcat.logback.dev" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.undertow.log4j" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.undertow.log4j.dev" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.undertow.logback" />
+            <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.bom.test.undertow.logback.dev" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.log4j.dev" />
             <option value="$PROJECT_DIR$/com.codeaffine.tiny.bom/com.codeaffine.tiny.star.tomcat.logback" />

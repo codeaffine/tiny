@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import static java.lang.String.format;
 import static java.lang.System.getenv;
 import static java.net.http.HttpClient.newHttpClient;
+import static java.net.http.HttpRequest.BodyPublishers.ofString;
 import static java.net.http.HttpResponse.BodyHandlers;
 import static java.nio.file.Files.isDirectory;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,16 +36,20 @@ class ApplicationTest {
     }
 
     @Test
-    void initialUiRequest() throws IOException, InterruptedException {
+    void uiStart() throws IOException, InterruptedException {
         String port = getenv().getOrDefault("PORT", "4711");
         String entryPointPath = getenv().getOrDefault("ENTRY_POINT_PATH", "/ui");
         String url = format("http://localhost:%s%s", port, entryPointPath);
-        HttpResponse<String> response = requestUi(url);
+        HttpResponse<String> startPage = requestStartPage(url);
+        HttpResponse<String> widgetTree = requestWidgetTree(url);
 
-        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(startPage.statusCode()).isEqualTo(200);
+        assertThat(startPage.body()).contains("<script type=\"text/javascript\" src=\"rwt-resources");
+        assertThat(widgetTree.statusCode()).isEqualTo(200);
+        assertThat(widgetTree.body()).contains("Hello World");
     }
 
-    private static HttpResponse<String> requestUi(String url) throws IOException, InterruptedException {
+    private static HttpResponse<String> requestStartPage(String url) throws IOException, InterruptedException {
         try(HttpClient client = newHttpClient()) {
             return client.send(
                 HttpRequest.newBuilder()
@@ -52,6 +57,31 @@ class ApplicationTest {
                     .build(),
                 BodyHandlers.ofString()
             );
+        }
+    }
+
+    private static HttpResponse<String> requestWidgetTree(String url) throws IOException, InterruptedException {
+        try(HttpClient client = newHttpClient()) {
+            return client.send(
+                HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .headers(
+                        "Accept", "*/*",
+                        "Accept-Encoding", "gzip, deflate, br",
+                        "Accept-Language", "en-US,en;q=0.9,de;q=0.8,yo;q=0.7",
+                        "Content-Type", "application/json; charset=UTF-8")
+                    .POST(ofString("""
+                    {
+                      "head":{"requestCounter":0},
+                      "operations":[
+                        ["set","w1",{"dpi":[96,96],"colorDepth":24}],
+                        ["set","rwt.client.ClientInfo",{"timezoneOffset":-60}],
+                        ["set","w1",{"cursorLocation":[0,0],"bounds":[0,0,982,792]}]
+                      ]
+                    }
+                    """))
+                    .build(),
+                BodyHandlers.ofString());
         }
     }
 }

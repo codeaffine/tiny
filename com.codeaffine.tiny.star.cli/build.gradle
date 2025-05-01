@@ -5,6 +5,14 @@ plugins {
 
 project.description = "CLI Engine for controlling Standalone Runner Application Processes"
 
+bom.include(
+        project.name,
+        COM_CODEAFFINE_TINY_STAR_TOMCAT_LOGBACK_DEV,
+        COM_CODEAFFINE_TINY_STAR_TOMCAT_LOG4J_DEV,
+        COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOGBACK_DEV,
+        COM_CODEAFFINE_TINY_STAR_UNDERTOW_LOG4J_DEV
+)
+
 dependencies {
     testImplementation(
         testFixtures(project(":com.codeaffine.tiny.shared")),

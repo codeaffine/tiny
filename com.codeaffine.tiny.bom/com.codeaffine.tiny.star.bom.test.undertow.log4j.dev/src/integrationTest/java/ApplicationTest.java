@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -32,6 +33,14 @@ class ApplicationTest {
         assertThat(isDirectory(workDir)).isTrue();
         assertThat(workDir.resolve("logs").resolve("application.log")).isRegularFile();
         assertThat(workDir.resolve("rwt-resources")).isNotEmptyDirectory();
+    }
+
+    @Test
+    void cliAvailability() throws IOException {
+        Path logFile = Paths.get("build/app-logs/app-output.log");
+        String logContent = Files.readString(logFile);
+
+        assertThat(logContent).contains("Type h to list available command descriptions.");
     }
 
     @Test

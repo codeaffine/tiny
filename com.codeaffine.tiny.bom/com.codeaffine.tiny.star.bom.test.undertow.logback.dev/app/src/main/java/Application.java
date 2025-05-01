@@ -3,6 +3,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import com.codeaffine.tiny.star.cli.CommandLineInterface;
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static java.lang.System.getenv;
 
@@ -10,6 +11,7 @@ public class Application extends AbstractEntryPoint {
 
     public static void main( String[] args ) {
         newApplicationServerBuilder(Application::configure)
+            .withLifecycleListener(new CommandLineInterface())
             .build()
             .start();
     }

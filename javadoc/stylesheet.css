@@ -90,7 +90,7 @@
 body {
     background-color:var(--body-background-color);
     color:var(--body-text-color);
-    font-family:var(--body-font-family);
+    font-family: var(--body-font-family), serif;
     font-size:var(--body-font-size);
     margin:0;
     padding:0;
@@ -114,7 +114,7 @@ a[href]:hover, a[href]:focus {
     color:var(--link-color-active);
 }
 pre {
-    font-family:var(--code-font-family);
+    font-family: var(--code-font-family), serif;
     font-size:var(--pre-font-size);
     color:var(--pre-text-color);
 }
@@ -144,7 +144,7 @@ ul {
     list-style-type:disc;
 }
 code, tt {
-    font-family:var(--code-font-family);
+    font-family: var(--code-font-family), serif;
 }
 :not(h1, h2, h3, h4, h5, h6) > code,
 :not(h1, h2, h3, h4, h5, h6) > tt {
@@ -154,12 +154,12 @@ code, tt {
     line-height:1.4em;
 }
 dt code {
-    font-family:var(--code-font-family);
+    font-family: var(--code-font-family), serif;
     font-size:1em;
     padding-top:4px;
 }
 .summary-table dt code {
-    font-family:var(--code-font-family);
+    font-family: var(--code-font-family), serif;
     font-size:1em;
     vertical-align:top;
     padding-top:4px;
@@ -168,7 +168,7 @@ sup {
     font-size:8px;
 }
 button {
-    font-family: var(--body-font-family);
+    font-family: var(--body-font-family), serif;
     font-size: 1em;
 }
 /*
@@ -686,7 +686,7 @@ div.block {
 }
 .deprecation-block {
     font-size:1em;
-    font-family:var(--block-font-family);
+    font-family: var(--block-font-family), serif;
     border-style:solid;
     border-width:thin;
     border-radius:10px;
@@ -697,7 +697,7 @@ div.block {
 }
 .preview-block {
     font-size:1em;
-    font-family:var(--block-font-family);
+    font-family: var(--block-font-family), serif;
     border-style:solid;
     border-width:thin;
     border-radius:10px;
@@ -711,7 +711,7 @@ div.block div.deprecation-comment {
 }
 details.invalid-tag, span.invalid-tag {
     font-size:1em;
-    font-family:var(--block-font-family);
+    font-family: var(--block-font-family), serif;
     color: var(--invalid-tag-text-color);
     background: var(--invalid-tag-background-color);
     border: thin solid var(--table-border-color);

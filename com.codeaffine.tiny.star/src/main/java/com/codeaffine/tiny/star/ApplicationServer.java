@@ -58,7 +58,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * expect the observed {@link ApplicationServer} instance as the only injection parameter.</p>
  * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure a new {@link ApplicationServer} instance.</p>
  * <p>Example that demonstrates the general concepts:</p>
- * <pre>
+ * <pre><code class="language-java">
  * public class DemoApplication extends AbstractEntryPoint {
  *
  *     // observer of ApplicationServer lifecycle state changes
@@ -116,7 +116,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  *         button.addListener(SWT.Selection, event -> label.setText(labelText + "\n" + UUID.randomUUID()));
  *     }
  * }
- * </pre>
+ * </code></pre>
  * Launching the above example will produce something similar to the following output:
  * <pre>
  *      Server is starting
@@ -545,12 +545,12 @@ public class ApplicationServer {
          * invoked as notification is done asynchronously.
          *
          * <p>Example:</p>
-         * <pre>
+         * <pre><code class="language-java">
          *     &#64;Starting
          *     void captureStarting(ApplicationServer applicationServer) {
          *     // ...
          *     }
-         * </pre>
+         * </code></pre>
          * <p>Listener instances are notified in the order they have been registered.</p>
          *
          * @param lifecycleListener the listener to register. Must not be {@code null}.
@@ -565,12 +565,12 @@ public class ApplicationServer {
          * notified via callback methods annotated by the {@link Starting}, {@link Started}, {@link Stopping}, or {@link Stopped} annotations. These methods
          * have to be either parameterless or expect the {@link ApplicationServer} as single injection parameter.
          * <p>Example:</p>
-         * <pre>
+         * <pre><code class="language-java">
          *     &#64;Starting
          *     void captureStarting(ApplicationServer applicationServer) {
          *     // ...
          *     }
-         * </pre>
+         * </code></pre>
          * <p>Listeners are notified in the order they occur in the given listener List.</p>
          *
          * @param lifecycleListeners the listeners to register. Must not be {@code null}.
@@ -704,14 +704,14 @@ public class ApplicationServer {
      * Create a new {@link ApplicationServerBuilder} instance representing the starting point of a fluent API configuration chain that eventually
      * uses the configured parameters to {@link ApplicationServerBuilder#build()} an {@link ApplicationServer} instance.
      * <p>Example:</p>
-     * <pre>
+     * <pre><code class="language-java">
      *     public static void main(String[] args) {
      *         newApplicationServerBuilder(new DemoApplicationConfiguration())
      *             .withLifecycleListener(new DemoLifecycleListener())
      *             .build()
      *             .start();
      *     }
-     * </pre>
+     * </code></pre>
      *
      * @param applicationConfiguration the {@link ApplicationConfiguration} implementation that defines the RWT application to start. Must not be
      *                                 {@code null}.
@@ -727,14 +727,14 @@ public class ApplicationServer {
      * Create a new {@link ApplicationServerBuilder} instance representing the starting point of a fluent API configuration chain that eventually
      * uses the configured parameters to {@link ApplicationServerBuilder#build()} an {@link ApplicationServer} instance.
      * <p>Example:</p>
-     * <pre>
+     * <pre><code class="language-java">
      *     public static void main(String[] args) {
      *         newApplicationServerBuilder(new DemoApplicationConfiguration(), "com.codeaffine.tiny.star.demo.DemoApplication")
      *             .withLifecycleListener(new DemoLifecycleListener())
      *             .build()
      *             .start();
      *     }
-     * </pre>
+     * </code></pre>
      *
      * @param applicationConfiguration the {@link ApplicationConfiguration} implementation that defines the RWT application to start. Must not be
      *                                 {@code null}.

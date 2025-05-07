@@ -7,6 +7,7 @@ import org.gradle.internal.component.external.model.TestFixturesSupport
 import org.gradle.jvm.component.internal.DefaultJvmSoftwareComponent
 
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher
 
 plugins {
     id("com.codeaffine.tiny.java.base")
@@ -27,6 +28,56 @@ testFixturesJavadoc {
         stylesheetFile = project.parent.file('javadoc/stylesheet.css')
         windowTitle = 'TINY API'
         header = '<a href="https://codeaffine.com"><img class="logo" src="https://www.codeaffine.com/wp-content/uploads/2014/07/logo.svg" alt="Code Affine"></a>'
+    }
+}
+
+if (plugins.hasPlugin('java')) {
+    tasks.register('copyTestFixturesJavadocAssets', Copy) {
+        from("${rootProject.projectDir}/javadoc/resources")
+        into(layout.buildDirectory.dir('docs/javadoc/resources'))
+        include('fonts/**', 'prism/**')
+    }
+
+    tasks.register('injectTestFixturesPrismScript') {
+        dependsOn tasks.named('testFixturesJavadoc')
+
+        doLast {
+            def javadocDir = layout.buildDirectory.dir('docs/javadoc').get().asFile
+            if (!javadocDir.exists()) {
+                return
+            }
+
+            def scriptTag = '''<script>
+            (function(){
+              var path = window.location.pathname;
+              var base = path.substring(path.indexOf('/docs/javadoc/') + 14);
+              var depth = (base.match(/\\//g) || []).length;
+              var relativePath = '../'.repeat(depth) + 'resources/prism/prism.js';
+              var s = document.createElement('script');
+              s.src = relativePath;
+              document.body.appendChild(s);
+            })();
+            </script>'''
+            javadocDir.eachFileRecurse { file ->
+                if (file.name.endsWith('.html')) {
+                    def content = file.text
+                    if (!content.contains('prism.js')) {
+                        file.text = content.replaceFirst('</body>', Matcher.quoteReplacement(scriptTag + '\n</body>'))
+                    }
+                }
+            }
+        }
+    }
+
+    tasks.matching { it.name == 'testFixturesJavadocJar' }.configureEach {
+        dependsOn(tasks.named('copyTestFixturesJavadocAssets'))
+    }
+
+    tasks.named('testFixturesJavadoc') {
+        finalizedBy(
+                tasks.named('copyTestFixturesJavadocAssets'),
+                tasks.named('injectTestFixturesPrismScript')
+        )
     }
 }
 

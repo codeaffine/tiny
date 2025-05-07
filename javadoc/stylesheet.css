@@ -1,6 +1,7 @@
 /*
  * Javadoc style sheet
  */
+@import url('resources/prism/prism.css');
 
 @font-face {
     font-family: 'Open Sans';
@@ -24,7 +25,7 @@
     /* Font Sizes */
     --body-font-size: 20px;
     --button-font-size: 17px;
-    --code-font-size: 16px;
+    --code-font-size: 18px;
     --h1-font-size: 32px; /* Main heading */
     --h2-font-size: 28px; /* Section heading */
     --h3-font-size: 24px; /* Subsection heading */
@@ -267,7 +268,7 @@ ul.nav-list li {
 .sub-nav .nav-list-search {
     float:right;
     margin:0;
-    padding:8px 6px 6px 4px;
+    padding:6px;
     clear:none;
     text-align:right;
     position:relative;
@@ -351,7 +352,7 @@ main {
     margin: 0 auto;
 }
 dl.notes > dt {
-    font-family: var(--body-font-family);
+    font-family: var(--body-font-family), serif;
     font-size:0.856em;
     font-weight:bold;
     margin:10px 0 0 0;
@@ -360,7 +361,7 @@ dl.notes > dt {
 dl.notes > dd {
     margin:5px 10px 10px 0;
     font-size:1em;
-    font-family:var(--block-font-family)
+    font-family: var(--block-font-family), serif
 }
 dl.name-value > dt {
     margin-left:1px;
@@ -631,7 +632,7 @@ div.checkboxes > label > input {
  */
 div.block {
     font-size:var(--body-font-size);
-    font-family:var(--block-font-family);
+    font-family: var(--block-font-family), serif;
 }
 .col-last div {
     padding-top:0;
@@ -643,7 +644,7 @@ div.block {
 .package-signature,
 .type-signature,
 .member-signature {
-    font-family:var(--code-font-family);
+    font-family: var(--code-font-family), serif;
     font-size:1em;
     margin:14px 0;
     white-space: pre-wrap;
@@ -769,7 +770,7 @@ ul.ui-autocomplete li.ui-static-link {
     left:0;
     background: var(--subnav-background-color);
     padding: 5px 0;
-    font-family: var(--body-font-family);
+    font-family: var(--body-font-family), serif;
     font-size: 0.93em;
     font-weight: bolder;
     z-index: 2;

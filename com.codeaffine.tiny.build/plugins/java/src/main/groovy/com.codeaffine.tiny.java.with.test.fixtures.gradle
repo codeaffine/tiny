@@ -22,6 +22,7 @@ dependencies {
     )
 }
 
+// duplicated from the java base plugin for the time being
 testFixturesJavadoc {
     options {
         encoding = 'UTF-8'
@@ -72,11 +73,44 @@ if (plugins.hasPlugin('java')) {
     tasks.matching { it.name == 'testFixturesJavadocJar' }.configureEach {
         dependsOn(tasks.named('copyTestFixturesJavadocAssets'))
     }
+    tasks.register('cleanTestFixturesJavadocAnnotations') {
+        dependsOn tasks.javadoc
+
+        doLast {
+            def javadocDir = layout.buildDirectory.dir('docs/javadoc').get().asFile
+            if (!javadocDir.exists()) {
+                return
+            }
+
+            javadocDir.eachFileRecurse { file ->
+                if (file.name.endsWith(".html")) {
+                    def cleaned = file.getText('UTF-8')
+                            .replace("(@NonNull\n @NonNull ", "(")
+                            .replace("(@NonNull\r\n @NonNull ", "(")
+                            .replace(",\n @NonNull\n @NonNull ", ",\n ")
+                            .replace(",\r\n @NonNull\r\n @NonNull ", ",\n ")
+                            .replace("(@NonNull ", "(")
+                            .replaceAll(",\\s*@NonNull\\s*", ", ")
+                            .replaceAll(
+                                    /<span class="annotations">@NonNull\s*<\/span>\s*<span class="modifiers">(public|protected)<\/span>&nbsp;<span class="return-type">@NonNull\s*/,
+                                    '<span class="modifiers">$1</span>&nbsp;'
+                            )
+                            .replaceAll(",\\s*\\R\\s*@NonNull\\s+", ", ")
+                            .replaceAll('<code>@NonNull\\s+', '<code>')
+                            .replaceAll('<span class="annotations">@NonNull\\s*</span>', '')
+                            .replaceAll('\\s*@NonNull\\s+', ' ')
+                            .replaceAll('(?m)^\\s*@NonNull\\s*', '')
+                    file.write(cleaned, 'UTF-8')
+                }
+            }
+        }
+    }
 
     tasks.named('testFixturesJavadoc') {
         finalizedBy(
                 tasks.named('copyTestFixturesJavadocAssets'),
-                tasks.named('injectTestFixturesPrismScript')
+                tasks.named('injectTestFixturesPrismScript'),
+                tasks.named('cleanTestFixturesJavadocAnnotations')
         )
     }
 }

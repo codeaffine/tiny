@@ -4,7 +4,7 @@ plugins {
 
 scmVersion {
     tag {
-        prefix = 'v'
+        prefix = ''
     }
     releaseBranchNames = ['main']
     repository {
@@ -26,6 +26,17 @@ def assertOnReleaseBranch() {
     }
 }
 
+static def assertLocalBranchSynchronized() {
+    def branch = ['git', 'rev-parse', '--abbrev-ref', 'HEAD'].execute().text.trim()
+    ['git', 'fetch', 'origin'].execute().waitFor()
+    def behind = ['git', 'rev-list', '--left-only', '--count', "HEAD...origin/${branch}"].execute().text.trim().toInteger()
+    def ahead  = ['git', 'rev-list', '--right-only', '--count', "HEAD...origin/${branch}"].execute().text.trim().toInteger()
+    if (behind > 0 || ahead > 0) {
+        throw new GradleException(
+            "Local branch '${branch}' is not synchronized with origin/${branch} (ahead: ${ahead}, behind: ${behind}). Please sync before releasing."
+        )
+    }
+}
 /**
  * Registers a wrapper release task that asserts the branch and runs Axion's 'release'
  * with the given version incrementer (e.g. 'incrementPatch').
@@ -40,6 +51,7 @@ def registerReleaseTask(String taskName, String incrementer) {
 
         doLast {
             assertOnReleaseBranch()
+            assertLocalBranchSynchronized()
             project.ext.set('release.versionIncrementer', incrementer)
 
             // Execute the actions of the existing 'release' task manually
@@ -58,7 +70,6 @@ def registerAggregateTask(String taskName, String taskDescription) {
     tasks.register(taskName) {
         group = mainBuildGroup
         description = taskDescription
-
         dependsOn(subprojects.collect { subproject ->
             //noinspection ConfigurationAvoidance: named does not work
             def task = subproject.tasks.findByName(taskName)

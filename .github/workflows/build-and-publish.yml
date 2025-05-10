@@ -1,9 +1,8 @@
 name: Tiny Build and Publish
 on:
   push:
-    branches:
-      - 'master'
-      - 'development'
+    tags:
+      - 'v*'  # nur Releases
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

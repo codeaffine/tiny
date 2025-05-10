@@ -2,7 +2,6 @@ plugins {
     id("pl.allegro.tech.build.axion-release")
 }
 
-// versioning and release management
 scmVersion {
     tag {
         prefix = 'v'
@@ -14,6 +13,59 @@ scmVersion {
 }
 
 project.version = scmVersion.version
+
+def assertOnReleaseBranch() {
+    def currentBranch = ['git', 'rev-parse', '--abbrev-ref', 'HEAD'].execute().text.trim()
+    def scmExt = project.extensions.findByName('scmVersion')
+    def releaseBranchNames = scmExt?.releaseBranchNames
+    if (releaseBranchNames == null || releaseBranchNames.get().isEmpty()) {
+        throw new GradleException("Property 'releaseBranchNames' is not configured in the 'scmVersion' extension.")
+    }
+    if (!releaseBranchNames.get().contains(currentBranch)) {
+        throw new GradleException("Releases are only allowed on branches: ${releaseBranchNames.get()} (current: '${currentBranch}')")
+    }
+}
+
+/**
+ * Registers a wrapper release task that asserts the branch and runs Axion's 'release'
+ * with the given version incrementer (e.g. 'incrementPatch').
+ *
+ * @param taskName the name of the new Gradle task (e.g. 'releasePatch')
+ * @param incrementer the Axion version increment strategy (e.g. 'incrementPatch')
+ */
+def registerReleaseTask(String taskName, String incrementer) {
+    tasks.register(taskName) {
+        group = mainBuildGroup
+        description = "Release new ${incrementer - 'increment'} version and push to remote"
+
+        doLast {
+            assertOnReleaseBranch()
+            project.ext.set('release.versionIncrementer', incrementer)
+
+            // Execute the actions of the existing 'release' task manually
+            tasks.release.actions.each { it.execute(tasks.release) }
+        }
+    }
+}
+
+/**
+ * Registers an aggregate task that delegates to all subprojects that have a task with the same name.
+ *
+ * @param taskName the name of the top-level task (e.g. 'javadoc', 'publish', etc.)
+ * @param taskDescription the description for the task
+ */
+def registerAggregateTask(String taskName, String taskDescription) {
+    tasks.register(taskName) {
+        group = mainBuildGroup
+        description = taskDescription
+
+        dependsOn(subprojects.collect { subproject ->
+            //noinspection ConfigurationAvoidance: named does not work
+            def task = subproject.tasks.findByName(taskName)
+            task ? ":${subproject.name}:${task.name}" : null
+        }.findAll { it != null })
+    }
+}
 
 // Configure the ':tasks' task of the root project to only show
 // the main lifecycle tasks as entry points to the build
@@ -35,82 +87,13 @@ tasks.register("clean") {
     dependsOn(subprojects.collect { ":${it.name}:$name" })
 }
 
-tasks.register("javadoc") {
-    group = mainBuildGroup
-    description = "Run javadoc of all modules and the application"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("javadocJar") {
-    group = mainBuildGroup
-    description = "Run javadocJar of all modules and the application"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("testFixturesJavadoc") {
-    group = mainBuildGroup
-    description = "Run javadoc for test fixtures of all related modules"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("testFixturesJavadocJar") {
-    group = mainBuildGroup
-    description = "Run javadocJar for test fixtures of all related modules"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("recommendModuleVersions") {
-    group = mainBuildGroup
-    description = "Run recommendModuleVersions of all modules and the application"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("moduleDependencies") {
-    group = mainBuildGroup
-    description = "Run moduleDependencies of all modules and the application"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("publish") {
-    group = mainBuildGroup
-    description = "Run publish of all modules"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("releaseMajor") {
-    group = mainBuildGroup
-    description = "Release new major version and push to remote"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("releaseMinor") {
-    group = mainBuildGroup
-    description = "Release new minor version and push to remote"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
-
-tasks.register("releasePatch") {
-    group = mainBuildGroup
-    description = "Release new patch version and push to remote"
-    dependsOn(subprojects.collect { subproject ->
-        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
-    }.findAll { it != null })
-}
+registerAggregateTask("javadoc", "Run javadoc of all modules and the application")
+registerAggregateTask("javadocJar", "Run javadocJar of all modules and the application")
+registerAggregateTask("testFixturesJavadoc", "Run javadoc for test fixtures of all related modules")
+registerAggregateTask("testFixturesJavadocJar", "Run javadocJar for test fixtures of all related modules")
+registerAggregateTask("recommendModuleVersions", "Run recommendModuleVersions of all modules and the application")
+registerAggregateTask("moduleDependencies", "Run moduleDependencies of all modules and the application")
+registerAggregateTask("publish", "Run publish of all modules")
+registerReleaseTask('releaseMajor', 'incrementMajor')
+registerReleaseTask('releaseMinor', 'incrementMinor')
+registerReleaseTask('releasePatch', 'incrementPatch')

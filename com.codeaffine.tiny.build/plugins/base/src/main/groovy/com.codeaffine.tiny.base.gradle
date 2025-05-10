@@ -17,52 +17,6 @@ def git = org.ajoberstar.grgit.Grgit.open{
 def headHash = git.head().id
 project.ext.headHash = headHash
 
-// release handling
-def assertOnReleaseBranch() {
-    def currentBranch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-
-    def scmExt = project.extensions.findByName('scmVersion')
-    def allowedBranches = scmExt?.releaseBranchNames
-
-    if (!(allowedBranches instanceof List) || allowedBranches.isEmpty()) {
-        throw new GradleException("releaseBranchNames is not configured – please set it in the 'scmVersion' extension")
-    }
-
-    if (!allowedBranches.contains(currentBranch)) {
-        throw new GradleException("Releases are only allowed on: ${allowedBranches} (current branch is: '${currentBranch}')")
-    }
-}
-
-tasks.register('releaseMajor') {
-    group = 'release'
-    description = 'Release new major version and push to remote'
-    doFirst {
-        assertOnReleaseBranch()
-        project.ext.set('release.versionIncrementer', 'incrementMajor')
-    }
-    finalizedBy('release')
-}
-
-tasks.register('releaseMinor') {
-    group = 'release'
-    description = 'Release new minor version and push to remote'
-    doFirst {
-        assertOnReleaseBranch()
-        project.ext.set('release.versionIncrementer', 'incrementMinor')
-    }
-    finalizedBy('release')
-}
-
-tasks.register('releasePatch') {
-    group = 'release'
-    description = 'Release new patch version and push to remote'
-    doFirst {
-        assertOnReleaseBranch()
-        project.ext.set('release.versionIncrementer', 'incrementPatch')
-    }
-    finalizedBy('release')
-}
-
 // initialize bom affiliation settings by excluding the project from each bom by default
 bom.exclude(
     project.name,

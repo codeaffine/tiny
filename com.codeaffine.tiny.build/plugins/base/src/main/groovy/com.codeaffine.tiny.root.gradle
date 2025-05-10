@@ -2,16 +2,15 @@ plugins {
     id("pl.allegro.tech.build.axion-release")
 }
 
+// versioning and release management
 scmVersion {
-    releaseOnlyOnReleaseBranches = true
-    releaseBranchNames = [
-        'main',
-        'development'
-    ]
-    branchVersionIncrementer.putAll( [
-        'main': 'incrementMinor',
-        'development': 'incrementPatch',
-    ])
+    tag {
+        prefix = 'v'
+    }
+    releaseBranchNames = ['main']
+    repository {
+        pushTagsOnly = true // needed for CI/CD trigger
+    }
 }
 
 project.version = scmVersion.version
@@ -87,6 +86,30 @@ tasks.register("moduleDependencies") {
 tasks.register("publish") {
     group = mainBuildGroup
     description = "Run publish of all modules"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("releaseMajor") {
+    group = mainBuildGroup
+    description = "Release new major version and push to remote"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("releaseMinor") {
+    group = mainBuildGroup
+    description = "Release new minor version and push to remote"
+    dependsOn(subprojects.collect { subproject ->
+        subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
+    }.findAll { it != null })
+}
+
+tasks.register("releasePatch") {
+    group = mainBuildGroup
+    description = "Release new patch version and push to remote"
     dependsOn(subprojects.collect { subproject ->
         subproject.tasks.findByName(name) ? ":${subproject.name}:$name" : null
     }.findAll { it != null })

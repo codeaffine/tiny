@@ -2,7 +2,7 @@ name: Tiny Build and Publish
 on:
   push:
     tags:
-      - 'v*'  # nur Releases
+      - 'v*'
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:

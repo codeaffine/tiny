@@ -4,7 +4,7 @@ plugins {
 
 scmVersion {
     tag {
-        prefix = ''
+        prefix = 'v'
     }
     releaseBranchNames = ['main']
     repository {

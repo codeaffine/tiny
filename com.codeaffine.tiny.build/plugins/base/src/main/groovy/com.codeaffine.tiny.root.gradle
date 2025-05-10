@@ -14,15 +14,41 @@ scmVersion {
 
 project.version = scmVersion.version
 
-def assertOnReleaseBranch() {
+def allowedIncrementsForBranch(String branch) {
+    if (branch.startsWith("hotfix/")) {
+        return ['incrementPatch']
+    }
+    def scmExt = project.extensions.findByName('scmVersion')
+    def releaseBranches = scmExt?.releaseBranchNames?.get() ?: []
+    if (releaseBranches.contains(branch)) {
+        return ['incrementMinor', 'incrementMajor']
+    }
+    return []
+}
+
+def assertOnReleaseBranch(String incrementer) {
     def currentBranch = ['git', 'rev-parse', '--abbrev-ref', 'HEAD'].execute().text.trim()
     def scmExt = project.extensions.findByName('scmVersion')
-    def releaseBranchNames = scmExt?.releaseBranchNames
-    if (releaseBranchNames == null || releaseBranchNames.get().isEmpty()) {
-        throw new GradleException("Property 'releaseBranchNames' is not configured in the 'scmVersion' extension.")
+    def releaseBranches = scmExt?.releaseBranchNames?.get() ?: []
+    def allowed = allowedIncrementsForBranch(currentBranch)
+    if (allowed.isEmpty()) {
+        throw new GradleException("❌ Releases are not allowed on branch '${currentBranch}'.")
     }
-    if (!releaseBranchNames.get().contains(currentBranch)) {
-        throw new GradleException("Releases are only allowed on branches: ${releaseBranchNames.get()} (current: '${currentBranch}')")
+    if (!allowed.contains(incrementer)) {
+        throw new GradleException("❌ On branch '${currentBranch}', only allowed increments are: ${allowed}. Tried: '${incrementer}'")
+    }
+    if (currentBranch.startsWith("hotfix/")) {
+        def baseTagFound = releaseBranches.any { releaseBranch ->
+            def baseCommit = ['git', 'merge-base', 'HEAD', "origin/${releaseBranch}"].execute().text.trim()
+            def tagsOnBase = ['git', 'tag', '--points-at', baseCommit].execute().text.trim()
+            if (!tagsOnBase.isEmpty()) {
+                return true
+            }
+            return false
+        }
+        if (!baseTagFound) {
+            throw new GradleException("❌ Hotfix '${currentBranch}' is not based on any tagged commit from release branches: ${releaseBranches}")
+        }
     }
 }
 
@@ -50,7 +76,7 @@ def registerReleaseTask(String taskName, String incrementer) {
         description = "Release new ${incrementer - 'increment'} version and push to remote"
 
         doLast {
-            assertOnReleaseBranch()
+            assertOnReleaseBranch(incrementer)
             assertLocalBranchSynchronized()
             project.ext.set('release.versionIncrementer', incrementer)
 

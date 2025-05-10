@@ -8,9 +8,7 @@ plugins {
 scmVersion {
 }
 
-gradle.projectsEvaluated {
-    project.version = scmVersion.version
-}
+project.version = scmVersion.version
 group =  "com.codeaffine." + rootProject.name
 
 def git = org.ajoberstar.grgit.Grgit.open{

@@ -10,11 +10,13 @@ scmVersion {
     repository {
         pushTagsOnly = true // needed for CI/CD trigger
     }
+    branchVersionIncrementer.putAll( [
+        'main' : 'incrementMinor',
+        'hotfix/.*' : { c -> c.currentVersion.incrementPatchVersion() }
+    ])
 }
 
-gradle.projectsEvaluated {
-    project.version = scmVersion.version
-}
+project.version = scmVersion.version
 
 def allowedIncrementsForBranch(String branch) {
     if (branch.startsWith("hotfix/")) {
@@ -101,7 +103,9 @@ def registerReleaseTask(String taskName, String incrementer) {
     tasks.register(taskName) {
         group = mainBuildGroup
         description = "Release new ${incrementer - 'increment'} version and push to remote"
-
+        doFirst {
+            project.extensions.extraProperties.set('release.versionIncrementer', incrementer)
+        }
         doLast {
             assertOnReleaseBranch(incrementer)
             assertNoUncommittedChanges()
@@ -160,6 +164,5 @@ registerAggregateTask("testFixturesJavadocJar", "Run javadocJar for test fixture
 registerAggregateTask("recommendModuleVersions", "Run recommendModuleVersions of all modules and the application")
 registerAggregateTask("moduleDependencies", "Run moduleDependencies of all modules and the application")
 registerAggregateTask("publish", "Run publish of all modules")
-registerReleaseTask('releaseMajor', 'incrementMajor')
 registerReleaseTask('releaseMinor', 'incrementMinor')
 registerReleaseTask('releasePatch', 'incrementPatch')

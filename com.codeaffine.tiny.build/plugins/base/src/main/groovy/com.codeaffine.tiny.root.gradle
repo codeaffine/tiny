@@ -52,6 +52,30 @@ def assertOnReleaseBranch(String incrementer) {
     }
 }
 
+static def assertNoUncommittedChanges() {
+    def status = ['git', 'status', '--porcelain'].execute().text.trim()
+    if (!status.isEmpty()) {
+        throw new GradleException("❌ Uncommitted changes detected:\n${status}")
+    }
+}
+
+def assertTagDoesNotExist() {
+    def version = project.extensions.scmVersion.version
+    def tagName = "v${version}"
+
+    // Check local tags
+    def localTags = ['git', 'tag'].execute().text.readLines()
+    if (localTags.contains(tagName)) {
+        throw new GradleException("❌ Tag '${tagName}' already exists locally.")
+    }
+
+    // Check remote tags
+    def remoteOutput = ['git', 'ls-remote', '--tags', 'origin', tagName].execute().text.trim()
+    if (!remoteOutput.isEmpty()) {
+        throw new GradleException("❌ Tag '${tagName}' already exists on remote (origin).")
+    }
+}
+
 static def assertLocalBranchSynchronized() {
     def branch = ['git', 'rev-parse', '--abbrev-ref', 'HEAD'].execute().text.trim()
     ['git', 'fetch', 'origin'].execute().waitFor()
@@ -63,6 +87,7 @@ static def assertLocalBranchSynchronized() {
         )
     }
 }
+
 /**
  * Registers a wrapper release task that asserts the branch and runs Axion's 'release'
  * with the given version incrementer (e.g. 'incrementPatch').
@@ -77,6 +102,8 @@ def registerReleaseTask(String taskName, String incrementer) {
 
         doLast {
             assertOnReleaseBranch(incrementer)
+            assertNoUncommittedChanges()
+            assertTagDoesNotExist()
             assertLocalBranchSynchronized()
             project.ext.set('release.versionIncrementer', incrementer)
 

@@ -12,7 +12,9 @@ scmVersion {
     }
 }
 
-project.version = scmVersion.version
+gradle.projectsEvaluated {
+    project.version = scmVersion.version
+}
 
 def allowedIncrementsForBranch(String branch) {
     if (branch.startsWith("hotfix/")) {

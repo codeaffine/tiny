@@ -1,13 +1,17 @@
 // Include all sub folders that contain a 'build.gradle' as subprojects
 rootDir.eachFile { file ->
+    if (file.name == "com.codeaffine.tiny.bom") {
+        return
+    }
     if (new File(file, "build.gradle").exists()) {
         include(file.name)
     }
     if (file == new File(rootDir, "com.codeaffine.tiny.bom")) {
         file.eachFile { bomDefinitionDirectory ->
             if (new File(bomDefinitionDirectory, "build.gradle").exists()) {
-                include(bomDefinitionDirectory.name)
-                project(":${bomDefinitionDirectory.name}").projectDir = bomDefinitionDirectory
+                def projectPath = ":${bomDefinitionDirectory.name}"
+                include(projectPath)
+                project(projectPath).projectDir = bomDefinitionDirectory
             }
         }
     }

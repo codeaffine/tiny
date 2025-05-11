@@ -3,6 +3,9 @@
 **/build
 **/out
 /lib
+*.iml
+*.iws
+
 
 ### Mac OS ###
 **.DS_Store

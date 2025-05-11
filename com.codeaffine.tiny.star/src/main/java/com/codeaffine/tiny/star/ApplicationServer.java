@@ -49,91 +49,48 @@ import static lombok.AccessLevel.PRIVATE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * <p>An {@link ApplicationServer} instance is an {@link jakarta.servlet.http.HttpServlet} engine adapter that controls the lifecycle of a standalone
- * <a href="https://eclipse.dev/rap/developers-guide/devguide.php?topic=rwt.html" target="_blank">RWT application</a>. It allows to {@link #start()} and
- * {@link #stop()} an RWT {@link org.eclipse.rap.rwt.application.Application} defined by a given RWT
- * <a href="https://eclipse.dev/rap/developers-guide/devguide.php?topic=application-configuration.html">{@link ApplicationConfiguration}</a>.</p>
- * <p>The {@link ApplicationServer} notifies lifecycle listeners about {@link State} changes. Listeners receive notifications via callback methods
- * annotated with {@link Starting}, {@link Started}, {@link Stopping}, and/or {@link Stopped}. Such callbacks have to be either parameterless or
- * expect the observed {@link ApplicationServer} instance as the only injection parameter.</p>
- * <p>Use {@link #newApplicationServerBuilder(ApplicationConfiguration)} to create and configure a new {@link ApplicationServer} instance.</p>
- * <p>Example that demonstrates the general concepts:</p>
+ * <p>An {@link ApplicationServer} is an embedded Servlet engine adapter used to launch
+ * standalone <a href="https://eclipse.dev/rap/developers-guide/rwt-standalone.html" target="_blank">RWT applications</a>.
+ * It manages the lifecycle of an RWT application (start and stop) defined by an
+ * <a href="https://eclipse.dev/rap/developers-guide/application-configuration.html">{@link ApplicationConfiguration}</a>.</p>
+ *
+ * <p>The simplest way to start an application is as follows:</p>
  * <pre><code class="language-java">
- * public class DemoApplication extends AbstractEntryPoint {
- *
- *     // observer of ApplicationServer lifecycle state changes
- *     public static class StateChangeObserver {
- *         &#64;ApplicationServer.Starting
- *         public void reportStarting() {
- *             System.out.println("Server is starting.");
- *         }
- *         &#64;ApplicationServer.Started
- *         public void reportStarted(ApplicationServer server) {
- *             System.out.println("Server is running with the following entrypoint URLs:");
- *             stream(server.getUrls()).forEach(System.out::println);
- *         }
- *         &#64;ApplicationServer.Stopping
- *         public void reportStopping() {
- *             System.out.println("Server is stopping.");
- *         }
- *         &#64;ApplicationServer.Stopped
- *         public void reportStopped() {
- *             System.out.println("Server is halted.");
- *         }
- *     }
- *
- *     // Main method to create, start and stop the ApplicationServer instance
- *     public static void main(String[] args) throws InterruptedException {
- *         ApplicationServer server = newApplicationServerBuilder(DemoApplication::configure)
- *             .withLifecycleListener(new StateChangeObserver())
+ * public class DemoApplication {
+ *     public static void main(String[] args) {
+ *         ApplicationServerBuilder
+ *             .newApplicationServerBuilder(new DemoApplicationConfiguration())
  *             .build()
  *             .start();
- *         // wait a second and then stop the server
- *         Thread.sleep(1000L);
- *         new Thread(server::stop)
- *             .start();
- *     }
- *
- *     // RWT org.eclipse.rap.rwt.application.ApplicationConfiguration
- *     private static void configure(Application application) {
- *         application.addEntryPoint("/ui", DemoApplication.class, null);
- *     }
- *
- *     // Hello World UI implementation extending org.eclipse.rap.rwt.application.AbstractEntrypoint
- *     &#64;Override
- *     protected void createContents(Composite parent) {
- *         FillLayout layout = new FillLayout(SWT.VERTICAL);
- *         layout.marginHeight = 20;
- *         layout.marginWidth = 20;
- *         parent.setLayout(layout);
- *
- *         String labelText = "Hello World!\n\nGive me something unique:";
- *         Label label = new Label(parent, SWT.WRAP);
- *         label.setText(labelText);
- *
- *         Button button = new Button(parent, SWT.PUSH);
- *         button.setText("Push me");
- *         button.addListener(SWT.Selection, event -> label.setText(labelText + "\n" + UUID.randomUUID()));
  *     }
  * }
  * </code></pre>
- * Launching the above example will produce something similar to the following output:
+ *
+ * <p>Launching the snippet above will start a server instance on a random port and print
+ * something similar to the following output to the console:</p>
  * <pre>
- *      Server is starting
- *      Server is running with the following entrypoint URLs:
- *      http://localhost:53765/ui
- *      Server is stopping.
- *      Server is halted.
+ * INFO: Application server working directory: [...]
+ * INFO: Starting com.codeaffine.tiny.star.applicationserver with embedded Undertow.
+ * INFO: Creation of com.codeaffine.tiny.star.applicationserver application process took 106 ms.
+ * INFO: Application Entrypoint URL: http://localhost:52963/ui
+ * INFO: Starting com.codeaffine.tiny.star.applicationserver application process took 356 ms.
  * </pre>
- * <p>To play with the UI simply comment out the lines in the main method containing the thread that stops the application server instance. After launching
- * the application open the entry point URL printed in the console in your favoured browser.</p>
- * <p>See {@link ApplicationServerBuilder} for details on the {@link ApplicationServer}'s configuration possibilities.</p>
- * <p>The actual servlet engine is provided as a service that implements the {@link com.codeaffine.tiny.star.spi.Server} interface. Clients specify
- * an appropriate runtime dependency to use one of the available server implementations. Note that the server implementations are not part of the public API.
- * They may be subject to change without notice. Note also that only one server implementation at a time must be available on the module-/classpath.</p>
- * <p>Providing an own server implementation is possible by implementing the {@link com.codeaffine.tiny.star.spi.Server} interface and registering it as a
- * service via the {@link java.util.ServiceLoader} mechanism using an {@link com.codeaffine.tiny.star.spi.ServerFactory}. Ensure that the implementation
- * passes the contract tests provided by the com.codeaffine.tiny.star.tck module.</p>
+ *
+ * <p>An {@link ApplicationServer} instance can be configured using the {@link ApplicationServerBuilder} class. The builder
+ * provides a fluent API for configuring the server's parameters, such as the host, port, working directory, and
+ * session timeout. The builder allows to register lifecycle listeners, servlet context listeners,
+ * and filter definitions. Most of the configuration settings can also be provided by an environment variable.
+ * For more details, see the {@link ApplicationServerBuilder}'s class documentation.</p>
+ *
+ * <p>A notable capability of the {@link ApplicationServer} is its ability to observe lifecycle events. You can register
+ * lifecycle listeners that will be notified when the server enters different states, such as
+ * {@link State#STARTING}, {@link State#RUNNING}, {@link State#STOPPING}, and {@link State#HALTED}. This allows you to
+ * perform custom actions or logging at various points in the server's lifecycle.</p>
+ *
+ * <p><strong>Advanced:</strong> The servlet engine itself is pluggable and provided as a service implementing the
+ * {@link com.codeaffine.tiny.star.spi.Server} interface. To supply your own server implementation, refer to the
+ * {@link com.codeaffine.tiny.star.spi.ServerFactory} and ensure compliance with contract tests from the
+ * <code>com.codeaffine.tiny.star.tck</code> module.</p>
  */
 @Builder(
     builderClassName = "InternalApplicationServerBuilder",
@@ -405,41 +362,60 @@ public class ApplicationServer {
     }
 
     /**
-     * <p>The {@link ApplicationServerBuilder} allows to configure and create an instance of {@link ApplicationServer}. The builder uses a fluent API
-     * paradigm for concise configuration. The attribute setter methods mostly use the {@code with} prefix followed by the attribute name and return
-     * the builder instance itself which facilitates the easy-to-read fluent attribute assignments. The actual application server instance is created by
-     * calling the {@link ApplicationServerBuilder}'s build method. Note that at least the {@link ApplicationConfiguration} must be specified to start
-     * the application server. Therefore, either the {@link #newApplicationServerBuilder(ApplicationConfiguration)} or the
-     *  {@link #newApplicationServerBuilder(ApplicationConfiguration,String)} method serves as starting point of the
-     * configuration chain.</p>
-     * <p>Most configuration attributes may be set by an environment variable. To do so specify the
-     * {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable for execution. By using the
-     * {@link #newApplicationServerBuilder(ApplicationConfiguration)} method for building and launching an {@link ApplicationServer} instance
-     * the environment variable's value exists of a json that contains simply the name/value map for the attributes to configure. This approach
-     * assumes that the application server instance is the one and only instance running on the current machine and will be sufficient for
-     * simple use cases.</p>
-     * <p>Example configuration that specifies a particular port to use if no application server identifier is specified:</p>
+     * <p>The {@link ApplicationServerBuilder} is used to create and configure an instance of {@link ApplicationServer} via a fluent API.
+     * At minimum, an {@link ApplicationConfiguration} must be provided to start the server.</p>
+     *
+     * <p><strong>Minimal Example:</strong></p>
+     * <pre><code class="language-java">
+     * ApplicationServerBuilder
+     *     .newApplicationServerBuilder(new MyAppConfiguration())
+     *     .build()
+     *     .start();
+     * </code></pre>
+     *
+     * <p><strong>Customizing the Server:</strong></p>
+     * <pre><code class="language-java">
+     * ApplicationServerBuilder
+     *     .newApplicationServerBuilder(new MyAppConfiguration())
+     *     .withPort(8080)
+     *     .withHost("localhost")
+     *     .withSessionTimeout(30)
+     *     .withWorkingDirectory(Paths.get("./work"))
+     *     .build()
+     *     .start();
+     * </code></pre>
+     *
+     * <p><strong>Configuration via Environment Variable:</strong></p>
+     * <p>Most configuration options can be provided via the environment variable
+     * {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION}. This variable accepts a JSON representing an attribute map.</p>
+     *
+     * <p>Example:</p>
      * <pre>
-     *     com.codeaffine.tiny.star.configuration={"port":12000}
-     * </pre>
-     * <p>However, if multiple application server instances are running on the same machine or particular file mappings infos (e.g. to the server's working
-     * directory) are needed an application server identifier must be specified. This more general approach is done by using the
-     * {@link #newApplicationServerBuilder(ApplicationConfiguration, String)} method for building and launching an {@link ApplicationServer} instance. In this
-     * case the {@link ApplicationServer#ENVIRONMENT_APPLICATION_RUNNER_CONFIGURATION} environment variable's value exists of a json that contains
-     * a map of application server identifiers to name/value maps for the attributes to configure.</p>
-     * <p>Example configuration that specifies a particular port to use if an application server identifier is specified:</p>
-     * <pre>
-     *     com.codeaffine.tiny.star.configuration={"com.codeaffine.tiny.demo.DemoApplication": {"port": 4711}}
+     * com.codeaffine.tiny.star.configuration={"port":8080,"sessionTimeout":30}
      * </pre>
      *
-     * <p>Setting an attribute value programmatically will override the value provided by the environment variable.</p>
-     * <p>Alternatively, the configuration can be specified programmatically by using the {@link #withConfiguration(String)} or
-     * {@link #withConfiguration(InputStream)} methods. The configuration string or stream must contain a json that contains a map of name/value
-     * pairs for the attributes to configure.</p>
-     * <p>Example configuration that specifies a particular port to use:</p>
+     * <p>If multiple server instances run on the same machine, use identifiers
+     * (see <code>{@link #newApplicationServerBuilder(ApplicationConfiguration, String)}</code>):</p>
      * <pre>
-     *     {"port": 4711}
+     * com.codeaffine.tiny.star.configuration={
+     *     "com.codeaffine.tiny.demo.MyApp": {"port":8080},
+     *     "com.codeaffine.tiny.demo.AnotherApp": {"port":9090}
+     * }
      * </pre>
+     *
+     * <p>Values set programmatically will always override environment settings.</p>
+     *
+     * <p><strong>Programmatic Configuration with JSON:</strong></p>
+     * <pre><code class="language-java">
+     * String configJson = "{\"port\":8080, \"host\":\"localhost\"}";
+     * ApplicationServerBuilder
+     *     .newApplicationServerBuilder(new MyAppConfiguration())
+     *     .withConfiguration(configJson)
+     *     .build()
+     *     .start();
+     * </code></pre>
+     *
+     * @see ApplicationServer
      */
     @RequiredArgsConstructor(access = PRIVATE)
     public static class ApplicationServerBuilder {
@@ -703,15 +679,6 @@ public class ApplicationServer {
     /**
      * Create a new {@link ApplicationServerBuilder} instance representing the starting point of a fluent API configuration chain that eventually
      * uses the configured parameters to {@link ApplicationServerBuilder#build()} an {@link ApplicationServer} instance.
-     * <p>Example:</p>
-     * <pre><code class="language-java">
-     *     public static void main(String[] args) {
-     *         newApplicationServerBuilder(new DemoApplicationConfiguration())
-     *             .withLifecycleListener(new DemoLifecycleListener())
-     *             .build()
-     *             .start();
-     *     }
-     * </code></pre>
      *
      * @param applicationConfiguration the {@link ApplicationConfiguration} implementation that defines the RWT application to start. Must not be
      *                                 {@code null}.
@@ -726,15 +693,6 @@ public class ApplicationServer {
     /**
      * Create a new {@link ApplicationServerBuilder} instance representing the starting point of a fluent API configuration chain that eventually
      * uses the configured parameters to {@link ApplicationServerBuilder#build()} an {@link ApplicationServer} instance.
-     * <p>Example:</p>
-     * <pre><code class="language-java">
-     *     public static void main(String[] args) {
-     *         newApplicationServerBuilder(new DemoApplicationConfiguration(), "com.codeaffine.tiny.star.demo.DemoApplication")
-     *             .withLifecycleListener(new DemoLifecycleListener())
-     *             .build()
-     *             .start();
-     *     }
-     * </code></pre>
      *
      * @param applicationConfiguration the {@link ApplicationConfiguration} implementation that defines the RWT application to start. Must not be
      *                                 {@code null}.

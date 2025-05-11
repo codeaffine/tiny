@@ -1,0 +1,7 @@
+This folder is used to organize Gradle subprojects.
+
+It is not a buildable Gradle project itself, but it may contain subfolders
+that are valid projects and will be included individually.
+
+Presence of this file signals to the build system and IDEs
+that this folder should not be treated as a module.

@@ -1,18 +1,25 @@
-// Include all sub folders that contain a 'build.gradle' as subprojects
-rootDir.eachFile { file ->
-    if (file.name == "com.codeaffine.tiny.bom") {
-        return
-    }
-    if (new File(file, "build.gradle").exists()) {
-        include(file.name)
-    }
-    if (file == new File(rootDir, "com.codeaffine.tiny.bom")) {
-        file.eachFile { bomDefinitionDirectory ->
-            if (new File(bomDefinitionDirectory, "build.gradle").exists()) {
-                def projectPath = ":${bomDefinitionDirectory.name}"
+static def isStructuringContainer(File dir) {
+    new File(dir, '.gradle-structure').exists()
+}
+
+/*
+* Include all sub folders that contain a 'build.gradle' as subprojects.
+* Subfolders that are marked as StructuringContainer will be scanned for
+* subprojects as well.
+*/
+rootDir.eachFile { dir ->
+    if (!dir.isDirectory()) return
+
+    if (isStructuringContainer(dir)) {
+        dir.eachFile { sub ->
+            if (sub.isDirectory() && new File(sub, 'build.gradle').exists()) {
+                def projectPath = ":${sub.name}"
                 include(projectPath)
-                project(projectPath).projectDir = bomDefinitionDirectory
+                project(projectPath).projectDir = sub
             }
         }
+    } else if (new File(dir, 'build.gradle').exists()) {
+        def projectPath = ":${dir.name}"
+        include(projectPath)
     }
 }

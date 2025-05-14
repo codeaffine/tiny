@@ -294,7 +294,21 @@ public class ApplicationServer {
      * @see #CONFIGURATION_ATTRIBUTE_SECURE_SOCKET_LAYER
      */
     public enum KeyStoreLocationType {
+        /**
+         * The key store file is located in the classpath of the application server. The file name has to be a valid classpath resource.
+         * <p>Example:</p>
+         * <pre>
+         *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"classpath:keystore.jks", ... }}
+         * </pre>
+         */
         CLASSPATH,
+        /**
+         * The key store file is located in the file system of the application server. The file name has to be a valid file system resource.
+         * <p>Example:</p>
+         * <pre>
+         *     com.codeaffine.tiny.star.configuration={"secure-socket-layer":{"keystore-location":"filesystem:src/test/resources/keystore.jks", ... }}
+         * </pre>
+         */
         FILESYSTEM
     }
     /**

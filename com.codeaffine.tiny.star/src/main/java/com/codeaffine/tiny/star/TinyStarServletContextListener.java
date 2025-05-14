@@ -10,18 +10,32 @@ package com.codeaffine.tiny.star;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.application.ApplicationRunner;
 
-@RequiredArgsConstructor
+import static java.util.Objects.isNull;
+
+/**
+ * RWT specific implementation of the {@link ServletContextListener} interface.
+ */
 public class TinyStarServletContextListener implements ServletContextListener {
 
-    @NonNull
     private final ApplicationConfiguration configuration;
 
     private ApplicationRunner applicationRunner;
+
+    /**
+     * Creates a new instance of @{link TinyStarServletContextListener}.
+     *
+     * @param configuration the application configuration. Must not be null.
+     * @throws NullPointerException if the configuration is null
+     */
+    public TinyStarServletContextListener(ApplicationConfiguration configuration) {
+        if (isNull(configuration)) {
+            throw new NullPointerException("configuration is marked non-null but is null");
+        }
+        this.configuration = configuration;
+    }
 
     @Override
     public void contextInitialized( ServletContextEvent event ) {

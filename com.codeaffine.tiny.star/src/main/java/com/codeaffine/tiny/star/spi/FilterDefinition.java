@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.codeaffine.tiny.shared.Reflections.newInstance;
+import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 
@@ -24,10 +25,29 @@ import static java.util.Collections.emptyList;
 @Value(staticConstructor = "of")
 public class FilterDefinition {
 
+    /**
+     * <p>The name of the {@link Filter} to be registered with the {@link jakarta.servlet.ServletContext} of the underlying web container.</p>
+     * <p>Note that filter names should be unique.</p>
+     * <p>Must not be {@code null}.</p>
+     * @return the name of the {@link Filter} to be registered with the {@link jakarta.servlet.ServletContext} of the underlying web container.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @NonNull
     String filterName;
+    /**
+     * <p>The {@link Filter} to be registered with the {@link jakarta.servlet.ServletContext} of the underlying web container.</p>
+     * <p>Must not be {@code null}.</p>
+     * @return the {@link Filter} to be registered with the {@link jakarta.servlet.ServletContext} of the underlying web container.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @NonNull
     Filter filter;
+    /**
+     * <p>The URL patterns to register the {@link Filter} for. Url patterns match the conventions specified in the Servlet specification.</p>
+     * <p>Must not be {@code null}.</p>
+     * @return the URL patterns to register the {@link Filter} for.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @NonNull
     List<String> urlPatterns;
 

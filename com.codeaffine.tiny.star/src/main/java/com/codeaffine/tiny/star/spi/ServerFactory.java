@@ -7,7 +7,18 @@
  */
 package com.codeaffine.tiny.star.spi;
 
+/**
+ * Factory declaring the contract for creating a server instance.
+ */
 public interface ServerFactory {
 
+    /**
+     * Creates a new instance of {@code Server}.
+     *
+     * @param configuration the server configuration. Must not be null.
+     * @return a new instance of {@code Server}. Never null.
+     * @see Server
+     * @see ServerConfiguration
+     */
     Server create(ServerConfiguration configuration);
 }

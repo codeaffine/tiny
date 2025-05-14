@@ -52,17 +52,57 @@ public class SecureSocketLayerConfiguration {
      * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyStore">KeyStore</a>
      */
     public enum KeyStoreType {
+        /**
+         * Java Key Store (JKS) is the default key store type in Java. It is a proprietary format that is not compatible with other key store types.
+         * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyStore">KeyStore</a>
+         */
         JKS,
+        /**
+         * Public Key Cryptography Standards #12 (PKCS#12) is a standard for storing cryptographic keys and certificates in a single file.
+         * It is a binary format that is compatible with other key store types.
+         * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#KeyStore">KeyStore</a>
+         */
         PKCS12
     }
 
+    /**
+     * returns the content of the key store as a byte array.
+     *
+     * @return the key store content as a byte array.
+     */
+    @SuppressWarnings("JavadocDeclaration")
+    @Getter
     private final byte[] bytes;
+    /**
+     * returns the type of the key store.
+     *
+     * @return the type of the key store.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @Getter
     private final KeyStoreType keyStoreType;
+    /**
+     * returns the password of the key store.
+     *
+     * @return the password of the key store.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @Getter
     private final String keyStorePassword;
+    /**
+     * returns the password of the key entry.
+     *
+     * @return the password of the key entry.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @Getter
     private final String keyAlias;
+    /**
+     * returns the password of the key entry.
+     *
+     * @return the password of the key entry.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @Getter
     private final String keyPassword;
 
@@ -91,13 +131,18 @@ public class SecureSocketLayerConfiguration {
         verifyAlias(loadedKeyStore, this.keyAlias);
     }
 
+    /**
+     * returns the content of the key store as an input stream.
+     *
+     * @return the key store content as an input stream. The client is not required to close the stream.
+     */
     public InputStream getKeyStore() {
         return new ByteArrayInputStream(bytes);
     }
 
     private static byte[] readAllBytes(InputStream keyStore) {
         try (InputStream inputStream = keyStore) {
-            return keyStore.readAllBytes();
+            return inputStream.readAllBytes();
         } catch (IOException ioe) {
             throw extractExceptionToReport(ioe, cause -> new IllegalArgumentException(ERROR_READING_KEY_STORE, cause));
         }

@@ -7,6 +7,17 @@
  */
 package com.codeaffine.tiny.star.spi;
 
+/**
+ * Factory interface for creating instances of {@link LoggingFrameworkControl}.
+ *
+ * @see LoggingFrameworkControl
+ */
 public interface LoggingFrameworkControlFactory {
+
+    /**
+     * Creates a new instance of {@link LoggingFrameworkControl}.
+     *
+     * @return a new instance of {@link LoggingFrameworkControl}
+     */
     LoggingFrameworkControl create();
 }

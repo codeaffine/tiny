@@ -15,6 +15,7 @@ extraJavaModuleInfo {
         exportAllPackages()
     }
     module("org.mockito:mockito-core", "org.mockito") {
+        patchRealModule()
         exportAllPackages()
     }
     module("org.objenesis:objenesis", "org.objenesis")

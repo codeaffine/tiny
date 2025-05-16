@@ -15,9 +15,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 
+/**
+ * A factory for creating daemon threads with a specified name prefix.
+ * <p> This class implements the {@link ThreadFactory} interface and provides a method to create new daemon threads.
+ * The created threads will have names that start with the specified prefix, followed by a unique number. </p>
+ */
 @RequiredArgsConstructor
 public class DaemonThreadFactory implements ThreadFactory {
 
+    /**
+     * @param threadNamePrefix The prefix to be used for naming the threads created by this factory.
+     */
+    @SuppressWarnings("JavadocDeclaration")
     @NonNull
     private final String threadNamePrefix;
 

@@ -19,7 +19,7 @@ import java.io.File;
 
 import static com.codeaffine.tiny.star.ApplicationServer.newApplicationServerBuilder;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.CURRENT_SERVER;
-import static com.codeaffine.tiny.shared.test.test.fixtures.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
+import static com.codeaffine.tiny.shared.test.test.fixtures.ServiceLoaderAdapterTestHelper.stubServiceLoaderAdapter;
 import static com.codeaffine.tiny.star.ApplicationServerTestContext.getCurrentServerConfiguration;
 import static com.codeaffine.tiny.star.EntrypointPathCaptor.captureEntrypointPaths;
 import static com.codeaffine.tiny.star.Texts.ERROR_NO_SERVER_FACTORY_FOUND;
@@ -55,7 +55,7 @@ class DelegatingServerFactoryTest {
     @Test
     void createIfNoServerFactoryIsRegisteredOnClasspath() {
         ApplicationServer applicationServer = newApplicationServerBuilder(APPLICATION_CONFIGURATION).build();
-        ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter = fakeServiceLoaderAdapter();
+        ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter = stubServiceLoaderAdapter();
         DelegatingServerFactory factory = new DelegatingServerFactory(applicationServer, serviceLoaderAdapter);
 
         Exception actual = catchException(() -> factory.create(workingDirectory));
@@ -70,7 +70,7 @@ class DelegatingServerFactoryTest {
         ApplicationServer applicationServer = newApplicationServerBuilder(APPLICATION_CONFIGURATION).build();
         ServerFactory factory1 = configuration -> null;
         ServerFactory factory2 = configuration -> null;
-        ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter = fakeServiceLoaderAdapter(factory1, factory2);
+        ServiceLoaderAdapter<ServerFactory> serviceLoaderAdapter = stubServiceLoaderAdapter(factory1, factory2);
         DelegatingServerFactory factory = new DelegatingServerFactory(applicationServer, serviceLoaderAdapter);
 
         Exception actual = catchException(() -> factory.create(workingDirectory));

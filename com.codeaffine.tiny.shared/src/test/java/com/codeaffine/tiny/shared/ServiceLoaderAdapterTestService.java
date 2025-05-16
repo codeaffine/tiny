@@ -7,6 +7,6 @@
  */
 package com.codeaffine.tiny.shared;
 
-public interface ServiceLoaderAdapterTestServiceFactory {
+public interface ServiceLoaderAdapterTestService {
     Runnable create();
 }

@@ -9,7 +9,7 @@ package com.codeaffine.tiny.star;
 
 import static com.codeaffine.tiny.star.Texts.ERROR_INVALID_METHOD_SIGNATURE;
 import static com.codeaffine.tiny.star.Texts.ERROR_LISTENER_NOTIFICATION;
-import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.shared.Threads.runAsyncAwaitingTermination;
 

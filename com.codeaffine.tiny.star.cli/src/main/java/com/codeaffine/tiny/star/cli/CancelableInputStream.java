@@ -24,7 +24,7 @@ import static lombok.AccessLevel.PACKAGE;
 @RequiredArgsConstructor(access = PACKAGE)
 class CancelableInputStream extends InputStream {
 
-    static final long SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS = 50;
+    static final long SUSPENDED_TIME_IN_MILLIS_BETWEEN_DATA_AVAILABILITY_CHECKS = 70;
     static final int NO_MORE_DATA = -1;
 
     @NonNull

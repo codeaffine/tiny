@@ -83,7 +83,7 @@ class ReflectionsTest {
     void extractExceptionToReportIfIfExceptionArgumentIsNotInstanceOfReturnTypeOfRuntimeExceptionFactoryButForwardRuntimeExceptionIsUsedAsModeArgument() {
         RuntimeException expected = new RuntimeException();
 
-        RuntimeException actual = extractExceptionToReport(expected, IllegalStateException::new, Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS);
+        RuntimeException actual = extractExceptionToReport(expected, IllegalStateException::new, Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS);
 
         assertThat(actual).isSameAs(expected);
     }
@@ -173,7 +173,7 @@ class ReflectionsTest {
         Function<Throwable, RuntimeException> runtimeExceptionFactory = RuntimeException::new;
 
         //noinspection ThrowableNotThrown
-        assertThatThrownBy(() -> extractExceptionToReport(null, runtimeExceptionFactory, Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS))
+        assertThatThrownBy(() -> extractExceptionToReport(null, runtimeExceptionFactory, Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS))
             .isInstanceOf(NullPointerException.class);
     }
 
@@ -182,7 +182,7 @@ class ReflectionsTest {
         Exception exception = new Exception();
 
         //noinspection ThrowableNotThrown
-        assertThatThrownBy(() -> extractExceptionToReport(exception, null, Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS))
+        assertThatThrownBy(() -> extractExceptionToReport(exception, null, Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS))
             .isInstanceOf(NullPointerException.class);
     }
 

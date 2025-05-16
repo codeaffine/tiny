@@ -41,12 +41,12 @@ class DelegatingServerFactory implements ServerFactory {
 
     @Override
     public Server create(ServerConfiguration configuration) {
-        List<ServerFactory> serverFactories = serviceLoaderAdapter.collectServiceTypeFactories();
+        List<ServerFactory> serverFactories = serviceLoaderAdapter.collectServiceTypeImplementations();
         if (serverFactories.isEmpty()) {
             throw new IllegalStateException(ERROR_NO_SERVER_FACTORY_FOUND);
         }
         if (serverFactories.size() > 1) {
-            throw new IllegalStateException(format(ERROR_MORE_THAN_ONE_SERVER_FACTORY, serviceLoaderAdapter.collectServiceTypeFactoryClassNames()));
+            throw new IllegalStateException(format(ERROR_MORE_THAN_ONE_SERVER_FACTORY, serviceLoaderAdapter.collectServiceTypeImplementationClassNames()));
         }
         return serverFactories
             .getFirst()

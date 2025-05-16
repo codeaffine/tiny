@@ -22,7 +22,7 @@ class Log4j2LoggingFrameworkControlFactoryTest {
     void load() {
         ServiceLoaderAdapter<LoggingFrameworkControlFactory> loader = new ServiceLoaderAdapter<>(LoggingFrameworkControlFactory.class, ServiceLoader::load);
 
-        List<LoggingFrameworkControlFactory> actual = loader.collectServiceTypeFactories();
+        List<LoggingFrameworkControlFactory> actual = loader.collectServiceTypeImplementations();
 
         assertThat(actual)
             .hasSize(1)

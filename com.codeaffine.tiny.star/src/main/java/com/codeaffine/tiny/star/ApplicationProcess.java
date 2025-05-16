@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.ENFORCED;
 import static com.codeaffine.tiny.star.ApplicationProcess.StopMode.NORMAL;

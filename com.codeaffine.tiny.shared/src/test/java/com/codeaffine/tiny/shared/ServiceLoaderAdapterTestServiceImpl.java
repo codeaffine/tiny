@@ -7,7 +7,7 @@
  */
 package com.codeaffine.tiny.shared;
 
-public class ServiceLoaderAdapterTestServiceFactoryImpl implements ServiceLoaderAdapterTestServiceFactory {
+public class ServiceLoaderAdapterTestServiceImpl implements ServiceLoaderAdapterTestService {
     @Override
     public Runnable create() {
         return () -> {};

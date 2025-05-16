@@ -19,14 +19,27 @@ import static lombok.AccessLevel.PRIVATE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Helper class to create a fake {@link ServiceLoaderAdapter} for testing purposes.
+ */
 @NoArgsConstructor(access = PRIVATE)
 public class ServiceLoaderAdapterTestHelper {
 
+    /**
+     * Creates a fake {@link ServiceLoaderAdapter} that returns the provided service implementations
+     * when {@link ServiceLoaderAdapter#collectServiceTypeImplementations()} is called.
+     * No service registration is needed nor any service loader is used. It is just a stub
+     * for testing purposes.
+     *
+     * @param serviceTypeImplementations the service implementation types to be returned
+     * @param <T>      the service type
+     * @return a {@link ServiceLoaderAdapter} stub
+     */
     @SuppressWarnings("unchecked")
-    public static <T> ServiceLoaderAdapter<T> fakeServiceLoaderAdapter(T... factories) {
+    public static <T> ServiceLoaderAdapter<T> stubServiceLoaderAdapter(T... serviceTypeImplementations) {
         ServiceLoaderAdapter<T> result = mock(ServiceLoaderAdapter.class);
-        when(result.collectServiceTypeFactories()).thenReturn(new ArrayList<>(List.of(factories)));
-        when(result.collectServiceTypeFactoryClassNames()).thenReturn(collectClassNamesOf(factories));
+        when(result.collectServiceTypeImplementations()).thenReturn(new ArrayList<>(List.of(serviceTypeImplementations)));
+        when(result.collectServiceTypeImplementationClassNames()).thenReturn(collectClassNamesOf(serviceTypeImplementations));
         return result;
     }
 

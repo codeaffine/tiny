@@ -15,21 +15,40 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
-import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
-import static com.codeaffine.tiny.shared.Reflections.Mode.WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.ExceptionExtractionMode.WRAP_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.shared.Texts.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static lombok.AccessLevel.PRIVATE;
 
+/**
+ * Utility class for performing common reflection-related operations.
+ */
 @NoArgsConstructor(access = PRIVATE)
 public class Reflections {
 
-    public enum Mode {
+    /**
+     * Exception extraction handling modes.
+     */
+    public enum ExceptionExtractionMode {
+        /**
+         * Forward runtime exceptions as is.
+         */
         FORWARD_RUNTIME_EXCEPTIONS,
-        WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS
+        /**
+         * Wrap runtime exceptions in a custom runtime exception.
+         */
+        WRAP_RUNTIME_EXCEPTIONS
     }
 
+    /**
+     * Creates a new instance of the specified class using its empty argument constructor.
+     *
+     * @param type The class type to create an instance of. Must not be null.
+     * @param <T>  The type of the class to create an instance of.
+     * @return A new instance of the specified class.
+     */
     public static <T> T newInstance(@NonNull Class<T> type) {
         try {
             Constructor<T> constructor = type.getDeclaredConstructor();
@@ -40,23 +59,41 @@ public class Reflections {
         }
     }
 
+    /**
+     * Extracts an exception to report, wrapping it in a custom runtime exception if necessary.
+     *
+     * @param exception The exception to extract. Must not be null.
+     * @param runtimeExceptionFactory A factory function to create a custom runtime exception. Must not be null.
+     * @param <T> The type of the custom runtime exception.
+     * @return The extracted exception, wrapped in a custom runtime exception if necessary.
+     */
     public static <T extends RuntimeException> RuntimeException extractExceptionToReport(
         @NonNull Exception exception,
         @NonNull Function<Throwable, T> runtimeExceptionFactory)
     {
-        return extractExceptionToReport(exception, runtimeExceptionFactory, WRAP_NON_ASSIGNABLE_RUNTIME_EXCEPTIONS);
+        return extractExceptionToReport(exception, runtimeExceptionFactory, WRAP_RUNTIME_EXCEPTIONS);
     }
 
+    /**
+     * Extracts an exception to report, wrapping it in a custom runtime exception if necessary.
+     *
+     * @param exception The exception to extract. Must not be null.
+     * @param runtimeExceptionFactory A factory function to create a custom runtime exception. Must not be null.
+     * @param mode The mode for extracting the exception. Must not be null.
+     * @param <T> The type of the custom runtime exception.
+     * @return The extracted exception, wrapped in a custom runtime exception if necessary.
+     */
     public static <T extends RuntimeException> RuntimeException extractExceptionToReport(
         @NonNull Exception exception,
         @NonNull Function<Throwable, T> runtimeExceptionFactory,
-        @NonNull Mode mode)
+        @NonNull ExceptionExtractionMode mode)
     {
         RuntimeException result;
         T wrappedException = wrapException(exception, runtimeExceptionFactory);
         if(FORWARD_RUNTIME_EXCEPTIONS.equals(mode) && exception instanceof RuntimeException runtimeException) {
             result = runtimeException;
         } else if(wrappedException.getClass().isAssignableFrom(exception.getClass()) ) {
+            //noinspection DataFlowIssue :: this is a valid cast since the exception is of the same type as the wrapped exception
             result = (RuntimeException)exception;
         } else if(exception instanceof ExecutionException executionException && executionException.getCause() instanceof Exception cause) {
             result = extractExceptionToReport(cause, runtimeExceptionFactory, mode);

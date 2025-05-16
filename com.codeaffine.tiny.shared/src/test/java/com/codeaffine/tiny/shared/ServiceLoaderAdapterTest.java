@@ -17,27 +17,27 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ServiceLoaderAdapterTest {
 
-    private static final Class<ServiceLoaderAdapterTestServiceFactory> SERVICE_FACTORY_CLASS = ServiceLoaderAdapterTestServiceFactory.class;
+    private static final Class<ServiceLoaderAdapterTestService> SERVICE_CLASS = ServiceLoaderAdapterTestService.class;
 
     @Test
-    void collectServiceTypeFactories() {
-        ServiceLoaderAdapter<ServiceLoaderAdapterTestServiceFactory> loaderAdapter = new ServiceLoaderAdapter<>(SERVICE_FACTORY_CLASS, ServiceLoader::load);
+    void collectServiceTypeImplementations() {
+        ServiceLoaderAdapter<ServiceLoaderAdapterTestService> loaderAdapter = new ServiceLoaderAdapter<>(SERVICE_CLASS, ServiceLoader::load);
 
-        List<ServiceLoaderAdapterTestServiceFactory> actual = loaderAdapter.collectServiceTypeFactories();
+        List<ServiceLoaderAdapterTestService> actual = loaderAdapter.collectServiceTypeImplementations();
 
         assertThat(actual)
             .hasSize(1)
-            .allSatisfy(factory -> assertThat(factory.getClass()).isSameAs(ServiceLoaderAdapterTestServiceFactoryImpl.class))
+            .allSatisfy(factory -> assertThat(factory.getClass()).isSameAs(ServiceLoaderAdapterTestServiceImpl.class))
             .allSatisfy(factory -> assertThat(factory.create()).isNotNull());
     }
 
     @Test
-    void collectServiceTypeFactoryClassNames() {
-        ServiceLoaderAdapter<ServiceLoaderAdapterTestServiceFactory> loaderAdapter = new ServiceLoaderAdapter<>(SERVICE_FACTORY_CLASS, ServiceLoader::load);
+    void collectServiceTypeImplementationClassNames() {
+        ServiceLoaderAdapter<ServiceLoaderAdapterTestService> loaderAdapter = new ServiceLoaderAdapter<>(SERVICE_CLASS, ServiceLoader::load);
 
-        String actual = loaderAdapter.collectServiceTypeFactoryClassNames();
+        String actual = loaderAdapter.collectServiceTypeImplementationClassNames();
 
-        assertThat(actual).isEqualTo(ServiceLoaderAdapterTestServiceFactoryImpl.class.getName());
+        assertThat(actual).isEqualTo(ServiceLoaderAdapterTestServiceImpl.class.getName());
     }
 
     @Test
@@ -48,7 +48,7 @@ class ServiceLoaderAdapterTest {
 
     @Test
     void constructWithNullAsServiceLoaderFunctionArgument() {
-        assertThatThrownBy(() -> new ServiceLoaderAdapter<>(SERVICE_FACTORY_CLASS, null))
+        assertThatThrownBy(() -> new ServiceLoaderAdapter<>(SERVICE_CLASS, null))
             .isInstanceOf(NullPointerException.class);
     }
 }

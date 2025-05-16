@@ -34,12 +34,12 @@ class DelegatingLoggingFrameworkControlFactory implements LoggingFrameworkContro
 
     @Override
     public LoggingFrameworkControl create() {
-        List<LoggingFrameworkControlFactory> factories = serviceLoaderAdapter.collectServiceTypeFactories();
+        List<LoggingFrameworkControlFactory> factories = serviceLoaderAdapter.collectServiceTypeImplementations();
         if (factories.isEmpty()) {
             factories.add(DummyLoggingFrameworkControl::new);
         }
         if (factories.size() > 1) {
-            String message = format(ERROR_MORE_THAN_ONE_LOGGING_FRAMEWORK_CONTROL_FACTORY, serviceLoaderAdapter.collectServiceTypeFactoryClassNames());
+            String message = format(ERROR_MORE_THAN_ONE_LOGGING_FRAMEWORK_CONTROL_FACTORY, serviceLoaderAdapter.collectServiceTypeImplementationClassNames());
             throw new IllegalStateException(message);
         }
         return factories

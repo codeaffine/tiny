@@ -7,6 +7,7 @@
  */
 package com.codeaffine.tiny.shared;
 
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import java.util.function.LongConsumer;
@@ -14,16 +15,14 @@ import java.util.function.ObjLongConsumer;
 import java.util.function.Supplier;
 
 import static java.lang.System.currentTimeMillis;
+import static lombok.AccessLevel.PRIVATE;
 
 /**
  * helper class for measuring the execution time of operations for reporting
  */
+@NoArgsConstructor(access = PRIVATE)
 public class Metric {
 
-    private Metric() {
-        // prevent instance creation
-    }
-    
     /**
      * Duration result reporting class for operations with return value.
      *

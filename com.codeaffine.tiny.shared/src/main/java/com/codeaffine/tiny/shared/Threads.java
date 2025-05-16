@@ -16,27 +16,56 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.shared.Texts.ERROR_TIMEOUT_CALLING_RUNNABLE;
 import static java.lang.String.format;
+import static java.lang.Thread.*;
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 import static java.util.concurrent.CompletableFuture.runAsync;
 import static lombok.AccessLevel.PRIVATE;
 
+/**
+ * Utility class for thread-related operations.
+ */
 @NoArgsConstructor(access = PRIVATE)
 public final class Threads {
 
-    public static void sleepFor(long millis) {
+    /**
+     * <p>Sleeps for the specified number of milliseconds. This method is a
+     * convenience method that wraps the {@link Thread#sleep(long)} method
+     * and takes care of the checked {@link InterruptedException}.</p>
+     * <p>One might use this method when a sleep interrupt is not expected. However,
+     * if the sleep is interrupted unexpectedly, the according exception is caught,
+     * the current thread is interrupted again and an {@link IllegalStateException}
+     * with the original exception as cause gets thrown.</p>
+     *
+     * @param millis The number of milliseconds to sleep.
+     * @throws IllegalStateException If the sleep is interrupted.
+     */
+    public static void sleepFor(long millis) throws IllegalStateException {
         try {
             sleep(millis); // NOSONAR
         } catch (InterruptedException interruptedException) {
-            Thread.currentThread().interrupt();
+            currentThread().interrupt();
             throw new IllegalStateException(interruptedException);
         }
     }
 
+    /**
+     * Runs a {@link Runnable} asynchronously and waits for the specified
+     * timeout duration before terminating the thread.
+     *
+     * @param runnable The {@link Runnable} to run asynchronously. Must not be null.
+     * @param exceptionHandler The {@link Consumer} to handle exceptions that occur
+     *                         during the execution of the {@link Runnable}. Must
+     *                         not be null.
+     * @param timeout The timeout duration to wait for the {@link Runnable} to complete.
+     *                Must be greater than 0.
+     * @param timeUnit The {@link TimeUnit} of the timeout duration. Must not be null.
+     *
+     */
     public static void runAsyncAwaitingTermination(
         @NonNull Runnable runnable,
         @NonNull Consumer<Exception> exceptionHandler,
@@ -59,7 +88,16 @@ public final class Threads {
         }
     }
 
-    public static void saveRunWithoutLogger(Runnable runnable) {
+    /**
+     * Executes a {@link Runnable} and catches any exceptions that occur during its execution.
+     * The exceptions are printed to the standard error stream without using a logger. This
+     * method is intended for use in situations where a logger may not be available and
+     * exceptions need to be handled gracefully. For example when an application is
+     * shutting down and the logging framework has already been disposed.
+     *
+     * @param runnable The {@link Runnable} to execute. Must not be null.
+     */
+    public static void saveRunWithoutLogger(@NonNull Runnable runnable) {
         try {
             runnable.run();
         } catch (Exception cause) {

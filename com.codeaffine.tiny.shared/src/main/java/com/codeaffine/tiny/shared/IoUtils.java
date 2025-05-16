@@ -22,9 +22,17 @@ import static java.lang.String.format;
 import static java.nio.file.Files.*;
 import static lombok.AccessLevel.PRIVATE;
 
+/**
+ * Utility class for performing input/output related operations.
+ */
 @NoArgsConstructor(access = PRIVATE)
 public class IoUtils {
 
+    /**
+     * Finds a free port on the local machine.
+     *
+     * @return A free port number, or -1 if unable to find a free port.
+     */
     public static int findFreePort() {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
@@ -33,6 +41,13 @@ public class IoUtils {
         }
     }
 
+    /**
+     * Creates a temporary directory with the specified prefix.
+     *
+     * @param directoryNamePrefix The prefix for the temporary directory name. Must not be null or empty.
+     * @return The created temporary directory as a {@link File} object.
+     * @throws IllegalArgumentException If the provided prefix is empty or if an error occurs during directory creation.
+     */
     public static File createTemporaryDirectory(@NonNull String directoryNamePrefix) throws IllegalArgumentException {
         if(directoryNamePrefix.isEmpty()) {
             throw new IllegalArgumentException(ERROR_DIRECTORY_NAME_PREFIX_IS_EMPTY);
@@ -45,6 +60,12 @@ public class IoUtils {
         }
     }
 
+    /**
+     * Deletes the specified directory and all its contents.
+     *
+     * @param toDelete The directory to delete. Must not be null.
+     * @throws IllegalArgumentException If an error occurs during deletion.
+     */
     public static void deleteDirectory(@NonNull File toDelete) {
         try {
             doDelete(toDelete);

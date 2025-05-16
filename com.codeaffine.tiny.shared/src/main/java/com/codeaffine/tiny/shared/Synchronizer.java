@@ -7,14 +7,31 @@
  */
 package com.codeaffine.tiny.shared;
 
+import lombok.NonNull;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
+/**
+ * Synchronizer is a utility class that provides a way to execute operations
+ * in a thread-safe manner using a lock.
+ * <p> It allows you to execute both {@link Runnable} and {@link Supplier} operations
+ * while ensuring that the lock is acquired and released properly.</p>
+ *
+ * <p>Although, the {@link Synchronizer} does not much clue code reduction it
+ * eases class structuring for testing purposes. Being a dependent-on-component it
+ * can be injected into the class that needs to have synchronized sections and can be
+ * replaced by a stub at test time. Therefore, the accompanying test fixture provides a
+ * helper class that can be used to stub the {@link Synchronizer}.</p>
+ */
 public class Synchronizer {
 
     private final Lock lock;
 
+    /**
+     * Creates a new instance of Synchronizer.
+     */
     public Synchronizer() {
         this(new ReentrantLock());
     }
@@ -23,7 +40,12 @@ public class Synchronizer {
         this.lock = lock;
     }
 
-    public void execute(Runnable operation) {
+    /**
+     * Executes the given operation while holding the lock.
+     *
+     * @param operation the operation to execute
+     */
+    public void execute(@NonNull Runnable operation) {
         lock.lock();
         try {
             operation.run();
@@ -32,7 +54,14 @@ public class Synchronizer {
         }
     }
 
-    public <T> T execute(Supplier<T> operation) {
+    /**
+     * Executes the given operation while holding the lock and returns the result.
+     *
+     * @param operation the operation to execute
+     * @param <T>       the type of the result
+     * @return the result of the operation
+     */
+    public <T> T execute(@NonNull Supplier<T> operation) {
         lock.lock();
         try {
             return operation.get();

@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.function.Function;
 
-import static com.codeaffine.tiny.shared.Reflections.Mode.FORWARD_RUNTIME_EXCEPTIONS;
+import static com.codeaffine.tiny.shared.Reflections.ExceptionExtractionMode.FORWARD_RUNTIME_EXCEPTIONS;
 import static com.codeaffine.tiny.shared.Reflections.extractExceptionToReport;
 import static com.codeaffine.tiny.star.log4j.Texts.*;
 import static java.lang.Thread.currentThread;

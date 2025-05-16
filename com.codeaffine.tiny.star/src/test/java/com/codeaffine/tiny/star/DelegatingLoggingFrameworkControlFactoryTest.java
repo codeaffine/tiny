@@ -12,7 +12,7 @@ import com.codeaffine.tiny.star.spi.LoggingFrameworkControl;
 import com.codeaffine.tiny.star.spi.LoggingFrameworkControlFactory;
 import org.junit.jupiter.api.Test;
 
-import static com.codeaffine.tiny.shared.test.test.fixtures.ServiceLoaderAdapterTestHelper.fakeServiceLoaderAdapter;
+import static com.codeaffine.tiny.shared.test.test.fixtures.ServiceLoaderAdapterTestHelper.stubServiceLoaderAdapter;
 import static org.assertj.core.api.Assertions.*;
 
 class DelegatingLoggingFrameworkControlFactoryTest {
@@ -30,7 +30,7 @@ class DelegatingLoggingFrameworkControlFactoryTest {
 
     @Test
     void createIfNoFactoryIsAvailableOnClasspath() {
-        ServiceLoaderAdapter<LoggingFrameworkControlFactory> serviceLoaderAdapter = fakeServiceLoaderAdapter();
+        ServiceLoaderAdapter<LoggingFrameworkControlFactory> serviceLoaderAdapter = stubServiceLoaderAdapter();
         DelegatingLoggingFrameworkControlFactory factory = new DelegatingLoggingFrameworkControlFactory(serviceLoaderAdapter);
 
         LoggingFrameworkControl actual = factory.create();
@@ -44,7 +44,7 @@ class DelegatingLoggingFrameworkControlFactoryTest {
     void createIfMultiplyFactoriesAreAvailableOnClasspath() {
         LoggingFrameworkControlFactory factory1 = () -> new LoggingFrameworkControl() {};
         LoggingFrameworkControlFactory factory2 = () -> new LoggingFrameworkControl() {};
-        ServiceLoaderAdapter<LoggingFrameworkControlFactory> serviceLoaderAdapter = fakeServiceLoaderAdapter(factory1, factory2);
+        ServiceLoaderAdapter<LoggingFrameworkControlFactory> serviceLoaderAdapter = stubServiceLoaderAdapter(factory1, factory2);
         DelegatingLoggingFrameworkControlFactory factory = new DelegatingLoggingFrameworkControlFactory(serviceLoaderAdapter);
 
         Throwable actual = catchException(factory::create);

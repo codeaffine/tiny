@@ -10,6 +10,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  id-token: write
 
 jobs:
   build:
@@ -41,3 +42,21 @@ jobs:
         with:
           name: bom-integration-test-logs
           path: '**/build/app-logs/**'
+
+  submit-dependencies:
+    name: Submit Dependency Graph
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Generate and submit dependency graph
+        uses: gradle/actions/dependency-submission@v3

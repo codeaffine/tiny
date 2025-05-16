@@ -31,7 +31,7 @@ dependencyResolutionManagement {
         version("net.bytebuddy", "1.17.5")
         version("org.apache.logging.log4j", "2.24.1")
         version("org.apache.logging.log4j.slf4j2.impl", "2.24.1")
-        version("org.apache.tomcat.embed.core", "11.0.1")
+        version("org.apache.tomcat.embed.core", "11.0.6")
         version("org.assertj.core", "3.27.3")
         version("org.eclipse.rap.rwt", "4.2.0")
         version("org.jboss.logging", "3.6.1.Final")
